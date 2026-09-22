@@ -1,0 +1,10 @@
+.env.local
+.env
+.env.*
+!.env.example
+node_modules/
+.wrangler/
+.wrangler-tmp/
+dist/
+.DS_Store
+public/videos/

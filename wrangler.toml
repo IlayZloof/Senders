@@ -1,0 +1,9 @@
+name = "wispy-forest-75b9"
+account_id = "83c5a33a4c7060584bb5f76d1d234dab"
+compatibility_date = "2026-08-17"
+main = "worker.js"
+
+[assets]
+directory = "./dist"
+binding = "ASSETS"
+run_worker_first = ["/api/*"]

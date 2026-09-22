@@ -1,0 +1,66 @@
+/* Backup 2026-08-17: hero slideshow CSS BEFORE landscape-unify / community pass.
+   Source: styles.css hero-bg-* rules. Restore this block if the contain-only slides look worse. */
+
+.hero-bg-slideshow {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background-color: #0c2744;
+}
+
+.hero-bg-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  animation: hero-slide-fade 18s ease-in-out infinite;
+}
+
+.hero-bg-slide:nth-child(1) { animation-delay: 0s; }
+.hero-bg-slide:nth-child(2) { animation-delay: 6s; }
+.hero-bg-slide:nth-child(3) { animation-delay: 12s; }
+
+.hero-bg-blur,
+.hero-bg-sharp {
+  position: absolute;
+  inset: 0;
+  background-image: var(--hero-img);
+  background-repeat: no-repeat;
+}
+
+.hero-bg-blur {
+  background-size: cover;
+  background-position: center center;
+  filter: blur(28px);
+  transform: scale(1.12);
+}
+
+.hero-bg-sharp {
+  background-size: contain;
+  background-position: center center;
+}
+
+.hero-bg-slide--landscape .hero-bg-sharp {
+  background-size: cover;
+  background-position: center 35%;
+}
+
+.hero-bg-slide--vertical .hero-bg-sharp {
+  background-size: contain;
+  background-position: center center;
+}
+
+@media (max-width: 640px) {
+  .hero-bg-blur {
+    filter: blur(20px);
+    transform: scale(1.08);
+  }
+}
+
+/* MOBILE-V2-2026-08-17 (max-width: 768px): */
+.hero-bg-sharp,
+.hero-bg-slide--landscape .hero-bg-sharp,
+.hero-bg-slide--vertical .hero-bg-sharp {
+  background-size: contain;
+  background-position: center 22%;
+}

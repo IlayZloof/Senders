@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0ea5e9" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+  <meta name="robots" content="noindex, nofollow, noarchive" />
+  <title>ניהול — Senders</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="admin-page">
+  <nav class="nav" id="nav">
+    <a href="index.html" class="nav-logo">SEND<span>ERS</span></a>
+    <button class="nav-toggle" id="navToggle" aria-label="תפריט מידע">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links nav-links-primary" id="navLinksPrimary">
+      <li><a href="index.html">בית</a></li>
+      <li><a href="map.html">מפה</a></li>
+      <li><a href="community.html">קהילה</a></li>
+      <li><a href="add-spot.html">הוספת ספוט</a></li>
+      <li><a href="profile.html">פרופיל</a></li>
+    </ul>
+    <ul class="nav-links nav-links-info" id="navLinks">
+      <li><a href="about.html">קצת עליי</a></li>
+      <li><a href="safety.html">בטיחות</a></li>
+      <li><a href="faq.html">שאלות נפוצות</a></li>
+      <li><a href="terms.html">תנאי שימוש</a></li>
+      <li><a href="privacy.html">מדיניות פרטיות</a></li>
+      <li><a href="contact.html">צור קשר</a></li>
+    </ul>
+    <div class="nav-auth" id="authArea"></div>
+  </nav>
+
+  <main>
+    <section class="section" style="padding-top: calc(var(--content-top) + 2rem)">
+      <div class="container">
+        <div class="section-header">
+          <span class="tag">מנהל</span>
+          <h1 class="page-title">לוח <span class="accent">ניהול</span></h1>
+          <p class="page-desc">אישור ספוטים חדשים, התראות ופעילות אחרונה מהקהילה.</p>
+          <a href="users.html" class="btn btn-ghost btn-sm" style="margin-top: 0.75rem">ניהול משתמשים →</a>
+        </div>
+
+        <div id="adminDenied" class="login-locked" hidden>
+          <p>אין לך הרשאות מנהל.</p>
+          <a href="map.html">חזרה למפה</a>
+        </div>
+
+        <div id="adminPanel" hidden>
+          <div class="admin-stats" id="adminStats"></div>
+
+          <div class="admin-section">
+            <h2>🔔 התראות <span class="admin-count" id="notifCount"></span></h2>
+            <div id="notificationsList"></div>
+          </div>
+
+          <div class="admin-section">
+            <h2>⏳ ספוטים ממתינים לאישור</h2>
+            <div id="pendingList"></div>
+          </div>
+
+          <div class="admin-section">
+            <h2>🗺️ ספוטים חיים <span class="admin-count" id="liveSpotCount"></span></h2>
+            <p class="page-desc">מחיקה מסירה מהמפה, מהפיד ומדף הספוט. ספוטים עם תגית «לא אומת» נראים רק למנהל.</p>
+            <div class="users-toolbar">
+              <input type="search" id="adminSpotSearch" placeholder="חיפוש ספוט..." />
+            </div>
+            <div id="liveSpotList"></div>
+          </div>
+
+          <div class="admin-section">
+            <h2>📅 מפגשים <span class="admin-count" id="meetupAdminCount"></span></h2>
+            <p class="page-desc">מחיקת מפגש מהקהילה.</p>
+            <div id="meetupAdminList"></div>
+          </div>
+
+          <div class="admin-section">
+            <h2>📋 פעילות אחרונה</h2>
+            <div id="recentList"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script type="module">
+    import { initNav, formatDate, formatDateTime, heightLabel, escapeHtml } from './js/ui.js';
+    import {
+      getSession, isAdmin, getPendingSpots, approveSpot, rejectSpot,
+      getAdminNotifications, markNotificationsRead, getRecentUserSpots, getAllSpots,
+      getMeetups, deleteSpot, deleteMeetup,
+    } from './js/store.js';
+
+    initNav();
+
+    let adminSpotQuery = '';
+    let cachedLiveSpots = [];
+
+    function renderLiveSpotList() {
+      const searchEl = document.getElementById('adminSpotSearch');
+      if (searchEl) searchEl.value = adminSpotQuery;
+      const q = adminSpotQuery.trim().toLowerCase();
+      const visibleLive = cachedLiveSpots.filter((spot) => {
+        if (!q) return true;
+        const name = String(spot.name || '').toLowerCase();
+        const aliases = (spot.aliases || []).map((a) => String(a).toLowerCase());
+        return name.includes(q) || aliases.some((a) => a.includes(q));
+      });
+      document.getElementById('liveSpotCount').textContent = cachedLiveSpots.length ? `(${cachedLiveSpots.length})` : '';
+      document.getElementById('liveSpotList').innerHTML = visibleLive.length
+        ? visibleLive.map((spot) => `
+          <div class="admin-pending-card" data-id="${escapeHtml(spot.id)}">
+            <div>
+              <strong>${escapeHtml(spot.name || '')}</strong>
+              <span>${heightLabel(spot)}</span>
+              ${spot.unverified ? '<span class="status-badge unverified">לא אומת</span>' : ''}
+            </div>
+            <div class="admin-actions">
+              <a href="spot.html?id=${encodeURIComponent(spot.id)}" class="btn btn-ghost btn-sm">צפייה</a>
+              <button type="button" class="btn btn-ghost btn-sm delete-spot-btn">מחיקה</button>
+            </div>
+          </div>
+        `).join('')
+        : '<p class="admin-empty">אין ספוטים לפי החיפוש</p>';
+
+      document.querySelectorAll('.delete-spot-btn').forEach((btn) => {
+        btn.addEventListener('click', async (e) => {
+          const card = e.target.closest('.admin-pending-card');
+          const id = card?.dataset.id;
+          const name = card?.querySelector('strong')?.textContent || 'הספוט';
+          if (!id || !confirm(`למחוק את הספוט "${name}"?\nהוא ייעלם מהמפה, מהפיד ומדף הספוט.`)) return;
+          try {
+            await deleteSpot(id);
+            await renderAdmin();
+          } catch (err) {
+            alert(err.message || 'המחיקה נכשלה');
+          }
+        });
+      });
+    }
+
+    async function renderAdmin() {
+      const session = await getSession();
+      if (!session || !isAdmin(session.profile, session.user)) {
+        document.getElementById('adminDenied').hidden = false;
+        return;
+      }
+
+      document.getElementById('adminPanel').hidden = false;
+      await markNotificationsRead();
+
+      let pending = [];
+      let notifications = [];
+      let recent = [];
+      let allSpots = [];
+      let meetups = [];
+      try {
+        [pending, notifications, recent, allSpots, meetups] = await Promise.all([
+          getPendingSpots(),
+          getAdminNotifications(),
+          getRecentUserSpots(15),
+          getAllSpots(),
+          getMeetups({ includeHidden: true }),
+        ]);
+      } catch (err) {
+        document.getElementById('pendingList').innerHTML =
+          `<p class="admin-empty">${escapeHtml(err.message || 'שגיאה בטעינת הספוטים הממתינים')}</p>`;
+        return;
+      }
+
+      document.getElementById('adminStats').innerHTML = `
+        <div class="stat-card"><span class="num">${allSpots.length}</span><span class="label">ספוטים פעילים</span></div>
+        <div class="stat-card"><span class="num">${pending.length}</span><span class="label">ממתינים לאישור</span></div>
+        <div class="stat-card"><span class="num">${notifications.filter(n => !n.read).length}</span><span class="label">התראות חדשות</span></div>
+      `;
+
+      document.getElementById('notifCount').textContent = notifications.length ? `(${notifications.length})` : '';
+
+      document.getElementById('notificationsList').innerHTML = notifications.length
+        ? notifications.slice(0, 10).map((n) => `
+          <div class="admin-notif ${n.read ? '' : 'unread'}">
+            <strong>${n.title}</strong>
+            <p>${n.body}</p>
+            <span class="admin-date">${formatDate(n.created_at)}</span>
+          </div>
+        `).join('')
+        : '<p class="admin-empty">אין התראות חדשות</p>';
+
+      document.getElementById('pendingList').innerHTML = pending.length
+        ? pending.map((spot) => `
+          <div class="admin-pending-card" data-id="${spot.id}">
+            <div>
+              <strong>${spot.name}</strong>
+              <span>${heightLabel(spot)} · ${formatDate(spot.created_at)}</span>
+              <p>${spot.description || ''}</p>
+            </div>
+            <div class="admin-actions">
+              <button class="btn btn-primary btn-sm approve-btn">אישור</button>
+              <button class="btn btn-ghost btn-sm reject-btn">דחייה</button>
+              <a href="spot.html?id=${spot.id}" class="btn btn-ghost btn-sm">צפייה</a>
+            </div>
+          </div>
+        `).join('')
+        : '<p class="admin-empty">אין ספוטים ממתינים 🎉</p>';
+
+      cachedLiveSpots = allSpots;
+      renderLiveSpotList();
+
+      document.getElementById('meetupAdminCount').textContent = meetups.length ? `(${meetups.length})` : '';
+      document.getElementById('meetupAdminList').innerHTML = meetups.length
+        ? meetups.map((m) => `
+          <div class="admin-pending-card" data-id="${escapeHtml(m.id)}">
+            <div>
+              <strong>${escapeHtml(m.spotName || 'ספוט')}</strong>
+              <span>${escapeHtml(formatDateTime(m.when))} · ${escapeHtml(m.displayName || 'משתמש')}</span>
+              ${m.note ? `<p>${escapeHtml(m.note)}</p>` : ''}
+            </div>
+            <div class="admin-actions">
+              <button type="button" class="btn btn-ghost btn-sm delete-meetup-btn">מחיקה</button>
+            </div>
+          </div>
+        `).join('')
+        : '<p class="admin-empty">אין מפגשים</p>';
+
+      document.getElementById('recentList').innerHTML = recent.length
+        ? recent.map((spot) => `
+          <div class="admin-recent-item">
+            <strong>${spot.name}</strong>
+            <span class="status-badge ${spot.status}">${spot.status === 'pending' ? 'ממתין' : 'מאושר'}</span>
+            <span class="admin-date">${formatDate(spot.created_at)}</span>
+          </div>
+        `).join('')
+        : '<p class="admin-empty">אין פעילות</p>';
+
+      document.querySelectorAll('.approve-btn').forEach((btn) => {
+        btn.addEventListener('click', async (e) => {
+          const id = e.target.closest('.admin-pending-card').dataset.id;
+          await approveSpot(id);
+          renderAdmin();
+        });
+      });
+
+      document.querySelectorAll('.reject-btn').forEach((btn) => {
+        btn.addEventListener('click', async (e) => {
+          if (!confirm('לדחות את הספוט?')) return;
+          const id = e.target.closest('.admin-pending-card').dataset.id;
+          await rejectSpot(id);
+          renderAdmin();
+        });
+      });
+
+      document.querySelectorAll('.delete-meetup-btn').forEach((btn) => {
+        btn.addEventListener('click', async (e) => {
+          const card = e.target.closest('.admin-pending-card');
+          const id = card?.dataset.id;
+          const name = card?.querySelector('strong')?.textContent || 'המפגש';
+          if (!id || !confirm(`למחוק את המפגש ב${name}?\nהוא ייעלם מרשימת המפגשים.`)) return;
+          try {
+            await deleteMeetup(id);
+            await renderAdmin();
+          } catch (err) {
+            alert(err.message || 'המחיקה נכשלה');
+          }
+        });
+      });
+    }
+
+    document.getElementById('adminSpotSearch')?.addEventListener('input', (e) => {
+      adminSpotQuery = e.target.value || '';
+      renderLiveSpotList();
+    });
+
+    renderAdmin();
+  </script>
+</body>
+</html>

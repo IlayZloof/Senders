@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0ea5e9" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+  <meta name="robots" content="noindex, nofollow, noarchive" />
+  <title>Senders — ספוטי קפיצה</title>
+  <meta name="description" content="מצאו ספוטי קפיצה בישראל. מפה, חוויות וקהילה." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="home-feed.css" />
+</head>
+<body class="home-page">
+  <nav class="nav" id="nav">
+    <a href="index.html" class="nav-logo">SEND<span>ERS</span></a>
+    <button class="nav-toggle" id="navToggle" aria-label="תפריט מידע">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links nav-links-primary" id="navLinksPrimary">
+      <li><a href="index.html">בית</a></li>
+      <li><a href="map.html">מפה</a></li>
+      <li><a href="community.html">קהילה</a></li>
+      <li><a href="add-spot.html">הוספת ספוט</a></li>
+      <li><a href="profile.html">פרופיל</a></li>
+    </ul>
+    <ul class="nav-links nav-links-info" id="navLinks">
+      <li><a href="about.html">קצת עליי</a></li>
+      <li><a href="safety.html">בטיחות</a></li>
+      <li><a href="faq.html">שאלות נפוצות</a></li>
+      <li><a href="terms.html">תנאי שימוש</a></li>
+      <li><a href="privacy.html">מדיניות פרטיות</a></li>
+      <li><a href="contact.html">צור קשר</a></li>
+    </ul>
+    <div class="nav-auth" id="authArea"></div>
+  </nav>
+
+  <main>
+    <div class="home-first-screen">
+    <section class="hero hero-with-image">
+      <div class="hero-bg-slideshow" aria-hidden="true">
+        <div class="hero-bg-slide hero-bg-slide--landscape" style="--hero-img: url('/images/hero/hero-cliff-landscape.png')">
+          <div class="hero-bg-blur"></div>
+          <div class="hero-bg-sharp"></div>
+        </div>
+        <div class="hero-bg-slide hero-bg-slide--landscape" style="--hero-img: url('/images/hero/hero-cliff-vertical-1.png')">
+          <div class="hero-bg-blur"></div>
+          <div class="hero-bg-sharp"></div>
+        </div>
+        <div class="hero-bg-slide hero-bg-slide--landscape" style="--hero-img: url('/images/hero/hero-cliff-vertical-2.png')">
+          <div class="hero-bg-blur"></div>
+          <div class="hero-bg-sharp"></div>
+        </div>
+      </div>
+      <div class="hero-overlay"></div>
+      <div class="hero-content reveal">
+        <div class="hero-content-left">
+          <h1 class="hero-title hero-title-en" aria-label="Senders">
+            <span class="hero-brand send-it">SEND<span class="hero-brand-accent">ERS</span></span>
+          </h1>
+        </div>
+      </div>
+    </section>
+      <section class="home-showcase" aria-label="יכולות האפליקציה">
+        <div class="home-tiles">
+          <a class="home-tile" href="map.html">
+            <span class="home-tile-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.4"/></svg>
+            </span>
+            <span class="home-tile-label">מציאת ספוטים לקפיצה ברחבי הארץ</span>
+          </a>
+          <a class="home-tile" href="add-spot.html">
+            <span class="home-tile-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="5"/><path d="M12 8v8M8 12h8"/></svg>
+            </span>
+            <span class="home-tile-label">הוספת מיקומי קפיצות</span>
+          </a>
+          <a class="home-tile" href="community.html">
+            <span class="home-tile-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.4-3.2 2.8-5 5.5-5s5.1 1.8 5.5 5"/><circle cx="17" cy="9" r="2.4"/><path d="M16.2 14.2c2.2.3 4 1.8 4.3 4.8"/></svg>
+            </span>
+            <span class="home-tile-label">קביעת מפגשי קהילה</span>
+          </a>
+          <a class="home-tile" href="safety.html">
+            <span class="home-tile-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 5 6.2v6.1c0 4.2 2.9 7.2 7 8.7 4.1-1.5 7-4.5 7-8.7V6.2L12 3z"/><path d="M9.2 12.1 11 13.9l3.8-3.8"/></svg>
+            </span>
+            <span class="home-tile-label">הנחיות בטיחותיות</span>
+          </a>
+        </div>
+        <a class="home-scroll-hint" href="#homeFeed">
+          <span>גללו להמלצות של ספוטים</span>
+          <svg class="home-scroll-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </a>
+      </section>
+    </div>
+    <div id="homeFeed" class="home-feed"></div>
+  </main>
+
+  <button type="button" class="home-plus" id="homePlus" aria-label="העלאת סרטון"></button>
+
+  <div class="home-sheet-backdrop" id="sheetBackdrop" hidden></div>
+
+  <aside class="home-sheet" id="spotSheet" hidden>
+    <div class="home-sheet-top">
+      <h2>הספוט</h2>
+      <button type="button" class="home-sheet-close" id="spotSheetClose" aria-label="סגירה">×</button>
+    </div>
+    <div id="spotSheetBody"></div>
+  </aside>
+
+  <aside class="home-sheet" id="commentsSheet" hidden>
+    <div class="home-sheet-top">
+      <h2>תגובות</h2>
+      <button type="button" class="home-sheet-close" id="commentsSheetClose" aria-label="סגירה">×</button>
+    </div>
+    <div id="commentsList"></div>
+    <p class="muted" id="commentsLoginHint" hidden>
+      <a href="login.html?redirect=index.html">התחברו</a> כדי להגיב.
+    </p>
+    <div id="commentsFormWrap" hidden>
+      <p id="commentsMsg"></p>
+      <form id="commentsForm">
+        <div class="form-group">
+          <label for="commentText">שאלה או תגובה</label>
+          <input type="text" id="commentText" name="text" maxlength="240" required placeholder="איך מגיעים / איך המים היום?" />
+        </div>
+        <button type="submit" class="btn btn-primary btn-full">שליחה</button>
+      </form>
+    </div>
+  </aside>
+
+  <aside class="home-sheet" id="uploadSheet" hidden>
+    <div class="home-sheet-top">
+      <h2>העלאת סרטון</h2>
+      <button type="button" class="home-sheet-close" id="uploadSheetClose" aria-label="סגירה">×</button>
+    </div>
+    <form id="uploadForm">
+      <p id="uploadMsg"></p>
+      <div class="form-group">
+        <label for="uploadVideo">סרטון</label>
+        <input type="file" id="uploadVideo" name="video" accept="video/*" required />
+      </div>
+      <div class="form-group">
+        <label for="uploadSpot">תיוג ספוט</label>
+        <select id="uploadSpot" name="spotId" required>
+          <option value="">בחרו ספוט</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="uploadCaption">כיתוב (אופציונלי)</label>
+        <input type="text" id="uploadCaption" name="caption" maxlength="200" placeholder="מילה על הקפיצה" />
+      </div>
+      <button type="submit" class="btn btn-primary btn-full" id="uploadSubmit">פרסום</button>
+    </form>
+  </aside>
+
+  <footer class="footer" id="siteFooter"></footer>
+
+  <script type="module">
+    import { initNav, initReveal } from './js/ui.js';
+    import { initHomeFeed } from './js/home-feed.js';
+
+    initNav();
+    initReveal();
+    initHomeFeed();
+  </script>
+</body>
+</html>

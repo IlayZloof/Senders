@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0ea5e9" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+  <meta name="robots" content="noindex, nofollow, noarchive" />
+  <title>ספוט — Senders</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="spot-page">
+  <nav class="nav" id="nav">
+    <a href="index.html" class="nav-logo">SEND<span>ERS</span></a>
+    <button class="nav-toggle" id="navToggle" aria-label="תפריט מידע">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links nav-links-primary" id="navLinksPrimary">
+      <li><a href="index.html">בית</a></li>
+      <li><a href="map.html">מפה</a></li>
+      <li><a href="community.html">קהילה</a></li>
+      <li><a href="add-spot.html">הוספת ספוט</a></li>
+      <li><a href="profile.html">פרופיל</a></li>
+    </ul>
+    <ul class="nav-links nav-links-info" id="navLinks">
+      <li><a href="about.html">קצת עליי</a></li>
+      <li><a href="safety.html">בטיחות</a></li>
+      <li><a href="faq.html">שאלות נפוצות</a></li>
+      <li><a href="terms.html">תנאי שימוש</a></li>
+      <li><a href="privacy.html">מדיניות פרטיות</a></li>
+      <li><a href="contact.html">צור קשר</a></li>
+    </ul>
+    <div class="nav-auth" id="authArea"></div>
+  </nav>
+
+  <div class="guest-banner" id="guestBanner" hidden></div>
+
+  <main>
+    <section class="section" style="padding-top: calc(var(--content-top) + 2rem)">
+      <div class="container" id="spotContent">
+        <p>טוען...</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer" id="siteFooter"></footer>
+
+  <dialog class="report-dialog" id="reportDialog">
+    <form id="reportForm">
+      <h3>דיווח על ספוט</h3>
+      <p class="report-dialog-desc">עזרו לנו לשמור על מידע מדויק ובטוח.</p>
+      <div class="form-group">
+        <label for="reportReason">סיבת הדיווח</label>
+        <select name="reason" id="reportReason" required>
+          <option value="">בחרו</option>
+          <option value="מידע לא מדויק">מידע לא מדויק</option>
+          <option value="ספוט מסוכן / סגור">ספוט מסוכן / סגור</option>
+          <option value="תוכן לא הולם">תוכן לא הולם</option>
+          <option value="אחר">אחר</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="reportDetails">פרטים (אופציונלי)</label>
+        <textarea name="details" id="reportDetails" rows="3" placeholder="מה לא בסדר?"></textarea>
+      </div>
+      <div class="report-dialog-actions">
+        <button type="button" class="btn btn-ghost" id="reportCancel">ביטול</button>
+        <button type="submit" class="btn btn-primary">שליחת דיווח</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script type="module">
+    import { initNav, showGuestBanner, requireAuth, formatDate, heightLabel, stars, wazeNavUrl, googleMapsNavUrl, escapeHtml, safePhotoSrc, spotBriefHtml } from './js/ui.js';
+    import {
+      getSpot, getExperiences, addExperience, addJump, submitSpotReport,
+      REGION_LABELS, ACCESSIBILITY_LABELS, isFavorite, toggleFavorite,
+      getSpotPosts, addSpotPost, getJumpVideos, normalizeInstagramUrl,
+    } from './js/store.js';
+    import { compressImageFile } from './js/media.js';
+    import { emptySpotMediaHtml, spotColor, getSpotMedia, ROCKS_LABEL, rocksDisplay } from './js/spots-util.js';
+    import { initSpotSlider } from './js/spot-slider.js';
+
+    initNav();
+    showGuestBanner();
+
+    const params = new URLSearchParams(window.location.search);
+    const spotId = params.get('id');
+
+    if (!spotId) {
+      window.location.href = 'map.html';
+    }
+
+    async function renderSpot() {
+      const spot = await getSpot(spotId);
+      if (!spot) {
+        document.getElementById('spotContent').innerHTML = `
+          <div class="login-locked">
+            <p>הספוט הזה לא זמין, או שהוא הוסר.</p>
+            <a href="map.html">חזרה למפה</a>
+          </div>
+        `;
+        return;
+      }
+
+      const experiences = await getExperiences(spotId);
+      const spotPosts = await getSpotPosts(spotId);
+      const session = await import('./js/store.js').then((m) => m.getSession());
+
+      document.title = `${spot.name} — Senders`;
+
+      const spotMedia = getSpotMedia(spot);
+      const feedVideos = (await getJumpVideos(80)).filter((v) => String(v.spotId) === String(spot.id));
+      const seen = new Set(spotMedia.map((item) => item.src));
+      for (const video of feedVideos) {
+        if (!video.videoUrl || seen.has(video.videoUrl)) continue;
+        seen.add(video.videoUrl);
+        spotMedia.push({ type: 'video', src: video.videoUrl });
+      }
+
+      const hasMedia = spotMedia.length > 0;
+      const multi = spotMedia.length > 1;
+      const instagramUrl = normalizeInstagramUrl(spot.instagram_url || spot.instagram_video);
+      const instagramLink = instagramUrl
+        ? `<a href="${escapeHtml(instagramUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-primary">צפו בסרטון באינסטגרם</a>`
+        : '';
+
+      const sliderMedia = hasMedia
+        ? `
+          <div class="spot-slider-viewport">
+            <div class="spot-slider-track" style="--slide-count: ${spotMedia.length}">
+              ${spotMedia.map((item, i) => `
+                <div class="spot-slider-slide">
+                  ${item.type === 'video' ? `
+                    <video class="spot-slider-video" src="${escapeHtml(item.src)}" playsinline webkit-playsinline muted defaultMuted loop preload="${i === 0 ? 'auto' : 'metadata'}"></video>
+                    <span class="spot-media-badge">סרטון</span>
+                  ` : `
+                    <img src="${escapeHtml(item.src)}" alt="${escapeHtml(spot.name)}${item.caption ? ` — ${escapeHtml(item.caption)}` : (multi ? ` — ${i + 1}` : '')}" class="spot-slider-img" ${i === 0 ? '' : 'loading="lazy"'} />
+                  `}
+                  ${item.caption ? `<p class="spot-slider-caption" dir="rtl">${escapeHtml(item.caption)}</p>` : ''}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+          ${multi ? `
+            <button type="button" class="spot-slider-btn spot-slider-prev" aria-label="הקודם" disabled>‹</button>
+            <button type="button" class="spot-slider-btn spot-slider-next" aria-label="הבא">›</button>
+            <div class="spot-slider-dots" role="tablist" aria-label="בחירת מדיה">
+              ${spotMedia.map((item, i) => `
+                <button type="button" class="spot-slider-dot${i === 0 ? ' active' : ''}${item.type === 'video' ? ' spot-slider-dot--video' : ''}" role="tab" aria-label="${item.type === 'video' ? 'סרטון' : 'תמונה'} ${i + 1}" aria-selected="${i === 0 ? 'true' : 'false'}"></button>
+              `).join('')}
+            </div>
+          ` : ''}
+        `
+        : emptySpotMediaHtml();
+
+      document.getElementById('spotContent').innerHTML = `
+        <div class="spot-slider${multi ? '' : ' spot-slider--single'}${hasMedia ? '' : ' spot-slider--empty'}" id="spotSlider" tabindex="0" dir="ltr" aria-label="תמונות וסרטונים מהמקום">
+          ${sliderMedia}
+          <div class="spot-hero-overlay">
+            <span class="spot-height-badge large" style="background:${spotColor(spot)}">${heightLabel(spot)}</span>
+            <h1>${spot.name}</h1>
+            <span class="spot-region">${REGION_LABELS[spot.region]}</span>
+            ${spot.location_approx ? '<span class="spot-approx">מיקום משוער</span>' : ''}
+            ${spot.unverified ? '<span class="spot-unverified">לא אומת</span>' : ''}
+          </div>
+        </div>
+
+        ${instagramLink ? `<div class="spot-ig-cta">${instagramLink}</div>` : ''}
+
+        <div class="spot-detail-grid" style="margin-top: 2rem">
+          <div>
+            <div class="spot-safety-notice">
+              <strong>⚠️ לפני שקופצים</strong>
+              <p>אין כאן המלצה לקפוץ — כל אחד אחראי לעצמו. המידע כאן מגיע מהקהילה ועלול להיות שגוי או לא מעודכן. אי אפשר לסמוך עליו. בדקו בעצמכם עומק, סלעים ותנאים לפני כל קפיצה.</p>
+              <a href="safety.html">בטיחות →</a>
+            </div>
+
+            <div class="spot-info-card">
+              ${spotBriefHtml(spot, instagramUrl)}
+
+              <div class="spot-meta-grid">
+                <div class="meta-item">
+                  <label>גובה</label>
+                  <span>${heightLabel(spot)}</span>
+                </div>
+                <div class="meta-item">
+                  <label>נגישות</label>
+                  <span>${ACCESSIBILITY_LABELS[spot.accessibility] || spot.accessibility}</span>
+                </div>
+                <div class="meta-item">
+                  <label>${ROCKS_LABEL}</label>
+                  <span>${escapeHtml(rocksDisplay(spot))}</span>
+                </div>
+                <div class="meta-item">
+                  <label>עומק מים</label>
+                  <span>${spot.water_depth || 'לא ידוע'}</span>
+                </div>
+                <div class="meta-item">
+                  <label>עונה מומלצת</label>
+                  <span>${spot.season || 'כל השנה'}</span>
+                </div>
+              </div>
+              <p class="depth-disclaimer">תמיד בדקו עומק בעצמכם — אל תסמכו על מה שכתוב באתר.</p>
+
+              ${spot.unverified ? `
+                <div class="spot-warnings spot-unverified-note">
+                  <strong>🔍 ספוט אופציונלי — לא אומת</strong><br>עוד לא ביקרנו במקום. הגובה, העומק והאזהרות הם לפי שמועות. אל תקפצו לפי מה שכתוב כאן.
+                </div>
+              ` : ''}
+
+              ${spot.location_approx ? `
+                <div class="spot-warnings spot-approx-note">
+                  <strong>📍 מיקום משוער</strong><br>הסיכה על המפה היא אזור כללי. אל תנווטו בעיניים עצומות — לכו לפי שביל, Waze מדויק או מישהו שמכיר.
+                </div>
+              ` : ''}
+
+              ${spot.warnings ? `
+                <div class="spot-warnings" role="alert">
+                  <strong>⚠️ אזהרות</strong><br>${escapeHtml(spot.warnings).replace(/\n/g, '<br>')}
+                </div>
+              ` : ''}
+
+              <div class="spot-actions">
+                <button type="button" class="btn btn-ghost${isFavorite(spot.id) ? ' is-fav' : ''}" id="favSpotBtn">${isFavorite(spot.id) ? '♥ במועדפים' : '♡ שמירה למועדפים'}</button>
+                ${instagramUrl ? `<a href="${escapeHtml(instagramUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-primary">סרטון באינסטגרם</a>` : ''}
+                <a href="${wazeNavUrl(spot.lat, spot.lng, spot.waze_query)}" target="_blank" rel="noopener" class="btn btn-primary">ניווט ב-Waze</a>
+                <a href="${googleMapsNavUrl(spot.lat, spot.lng)}" target="_blank" rel="noopener" class="btn btn-ghost">Google Maps</a>
+                <button class="btn btn-ghost" id="logJumpBtn">רשמו קפיצה</button>
+                <a href="community.html?tab=meetups&spot=${encodeURIComponent(spot.id)}" class="btn btn-ghost">קבעו מפגש</a>
+                <button type="button" class="btn btn-ghost btn-report" id="reportSpotBtn">דווחו על ספוט</button>
+              </div>
+            </div>
+
+            <div class="field-feed" id="fieldFeed">
+              <h2>מהשטח</h2>
+              <p class="page-desc">מילים ותמונות ממי שהיה כאן — לפי תאריך.</p>
+              <div id="spotPostFormArea">
+                ${session ? `
+                  <form class="experience-form field-post-form" id="spotPostForm">
+                    <div id="spotPostMsg"></div>
+                    <div class="form-group">
+                      <label for="spotPostText">מה ראיתם / מה היה במקום?</label>
+                      <textarea name="text" id="spotPostText" rows="3" placeholder="מצב מים, גישה, טיפ קצר..."></textarea>
+                    </div>
+                    <div class="form-group">
+                      <label for="spotPostPhoto">תמונה (אופציונלי)</label>
+                      <input type="file" name="photo" id="spotPostPhoto" accept="image/*" />
+                      <p class="form-hint">נדחס אוטומטית כדי לא למלא את המכשיר.</p>
+                      <img id="spotPostPreview" class="field-photo-preview" alt="" hidden />
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full" id="spotPostSubmit">פרסום לשטח</button>
+                  </form>
+                ` : `
+                  <div class="login-locked">
+                    <p>רוצים להוסיף תמונה או מילה מהשטח?</p>
+                    <a href="login.html?redirect=${encodeURIComponent('spot.html?id=' + spotId)}">התחברו</a> כדי לשתף. אפשר עדיין לראות מה אחרים כתבו.
+                  </div>
+                `}
+              </div>
+              <div id="spotPostsList" class="community-feed">
+                ${spotPosts.length ? spotPosts.map((post) => {
+                  const photo = safePhotoSrc(post.photo);
+                  return `
+                    <article class="community-card">
+                      <div class="community-card-top">
+                        <span class="community-card-meta">${escapeHtml(post.displayName || 'משתמש')}</span>
+                        <time class="community-card-date">${escapeHtml(formatDate(post.createdAt))}</time>
+                      </div>
+                      ${post.text ? `<p class="community-card-text">${escapeHtml(post.text)}</p>` : ''}
+                      ${photo ? `<img class="community-card-photo" src="${photo}" alt="תמונה מ${escapeHtml(spot.name)}" />` : ''}
+                    </article>
+                  `;
+                }).join('') : '<p class="muted">עדיין אין עדכונים מהשטח. תהיו הראשונים.</p>'}
+              </div>
+            </div>
+
+            <div class="experiences-section">
+              <h2 style="margin-bottom: 1rem">חוויות מהקהילה (${experiences.length})</h2>
+              <div id="experiencesList">
+                ${experiences.length ? experiences.map((exp) => `
+                  <div class="experience-card">
+                    <div class="experience-header">
+                      <div>
+                        <span class="experience-author">${exp.profiles?.display_name || 'משתמש'}</span>
+                        <span class="experience-date">${formatDate(exp.created_at)}</span>
+                      </div>
+                      <span class="experience-rating">${stars(exp.rating || 5)}</span>
+                    </div>
+                    <p class="experience-text">${exp.text}</p>
+                  </div>
+                `).join('') : '<p style="color: var(--text-muted)">עדיין אין חוויות. תהיו הראשונים!</p>'}
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div id="experienceFormArea">
+              ${session ? `
+                <div class="experience-form">
+                  <h3>שתפו את החוויה שלכם</h3>
+                  <form id="expForm">
+                    <div class="form-group">
+                      <label>מה היה במקום?</label>
+                      <textarea name="text" required placeholder="מצב המים, מזג אוויר, טיפים..."></textarea>
+                    </div>
+                    <div class="form-group">
+                      <label>דירוג</label>
+                      <select name="rating">
+                        <option value="5">★★★★★ מעולה</option>
+                        <option value="4">★★★★☆ טוב</option>
+                        <option value="3">★★★☆☆ בסדר</option>
+                        <option value="2">★★☆☆☆ פחות</option>
+                        <option value="1">★☆☆☆☆ גרוע</option>
+                      </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full">פרסום</button>
+                  </form>
+                </div>
+              ` : `
+                <div class="login-locked">
+                  <p>רוצים לשתף חוויה?</p>
+                  <a href="login.html?redirect=spot.html?id=${spotId}">התחברו</a> כדי לכתוב ולרשום קפיצות.
+                </div>
+              `}
+            </div>
+          </div>
+        </div>
+      `;
+
+      initSpotSlider(document.getElementById('spotSlider'));
+
+      document.getElementById('favSpotBtn')?.addEventListener('click', () => {
+        const on = toggleFavorite(spot.id);
+        const btn = document.getElementById('favSpotBtn');
+        btn.classList.toggle('is-fav', on);
+        btn.textContent = on ? '♥ במועדפים' : '♡ שמירה למועדפים';
+      });
+
+      document.getElementById('logJumpBtn')?.addEventListener('click', async () => {
+        const s = await requireAuth();
+        if (!s) return;
+        const height = prompt('באיזה גובה קפצתם? (מטרים)', spot.height_max);
+        if (!height) return;
+        await addJump({ spotId, userId: s.user.id, height: parseInt(height, 10) });
+        alert('הקפיצה נרשמה! 🎉');
+      });
+
+      const reportDialog = document.getElementById('reportDialog');
+      const reportForm = document.getElementById('reportForm');
+
+      document.getElementById('reportSpotBtn')?.addEventListener('click', async () => {
+        const s = await requireAuth();
+        if (!s) return;
+        reportForm.reset();
+        reportDialog.showModal();
+      });
+
+      document.getElementById('reportCancel')?.addEventListener('click', () => reportDialog.close());
+
+      reportForm?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const s = await requireAuth();
+        if (!s) return;
+        const fd = new FormData(reportForm);
+        const reason = fd.get('reason');
+        if (!reason) return;
+        try {
+          await submitSpotReport({
+            spotId,
+            spotName: spot.name,
+            userId: s.user.id,
+            reason,
+            details: fd.get('details') || '',
+          });
+          reportDialog.close();
+          alert('תודה! הדיווח נשלח למנהל.');
+        } catch {
+          alert('שליחת הדיווח נכשלה. נסו שוב.');
+        }
+      });
+
+      document.getElementById('expForm')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const s = await requireAuth();
+        if (!s) return;
+        const fd = new FormData(e.target);
+        await addExperience({
+          spotId,
+          userId: s.user.id,
+          text: fd.get('text'),
+          rating: parseInt(fd.get('rating'), 10),
+        });
+        renderSpot();
+      });
+
+      const postPhotoInput = document.getElementById('spotPostPhoto');
+      const postPreview = document.getElementById('spotPostPreview');
+      postPhotoInput?.addEventListener('change', async () => {
+        const file = postPhotoInput.files?.[0];
+        if (!file || !postPreview) return;
+        try {
+          const dataUrl = await compressImageFile(file);
+          postPreview.src = dataUrl;
+          postPreview.hidden = false;
+          postPreview.dataset.compressed = dataUrl;
+        } catch (err) {
+          postPhotoInput.value = '';
+          postPreview.hidden = true;
+          delete postPreview.dataset.compressed;
+          alert(err.message || 'התמונה גדולה מדי');
+        }
+      });
+
+      document.getElementById('spotPostForm')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const s = await requireAuth();
+        if (!s) return;
+        const submitBtn = document.getElementById('spotPostSubmit');
+        const msg = document.getElementById('spotPostMsg');
+        const fd = new FormData(e.target);
+        const text = String(fd.get('text') || '');
+        let photo = postPreview?.dataset.compressed || '';
+        const file = postPhotoInput?.files?.[0];
+        if (file && !photo) {
+          try {
+            photo = await compressImageFile(file);
+          } catch (err) {
+            if (msg) msg.innerHTML = `<p class="form-error">${escapeHtml(err.message || 'התמונה גדולה מדי')}</p>`;
+            else alert(err.message || 'התמונה גדולה מדי');
+            return;
+          }
+        }
+        try {
+          if (submitBtn) submitBtn.disabled = true;
+          await addSpotPost({ spotId, text, photo });
+          renderSpot();
+        } catch (err) {
+          if (msg) msg.innerHTML = `<p class="form-error">${escapeHtml(err.message || 'הפרסום נכשל')}</p>`;
+          else alert(err.message || 'הפרסום נכשל');
+        } finally {
+          if (submitBtn) submitBtn.disabled = false;
+        }
+      });
+    }
+
+    renderSpot();
+  </script>
+</body>
+</html>

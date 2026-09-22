@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0ea5e9" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+  <meta name="robots" content="noindex, nofollow, noarchive" />
+  <title>התחברות — Senders</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <nav class="nav" id="nav">
+    <a href="index.html" class="nav-logo">SEND<span>ERS</span></a>
+    <button class="nav-toggle" id="navToggle" aria-label="תפריט מידע">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links nav-links-primary" id="navLinksPrimary">
+      <li><a href="index.html">בית</a></li>
+      <li><a href="map.html">מפה</a></li>
+      <li><a href="community.html">קהילה</a></li>
+      <li><a href="add-spot.html">הוספת ספוט</a></li>
+      <li><a href="profile.html">פרופיל</a></li>
+    </ul>
+    <ul class="nav-links nav-links-info" id="navLinks">
+      <li><a href="about.html">קצת עליי</a></li>
+      <li><a href="safety.html">בטיחות</a></li>
+      <li><a href="faq.html">שאלות נפוצות</a></li>
+      <li><a href="terms.html">תנאי שימוש</a></li>
+      <li><a href="privacy.html">מדיניות פרטיות</a></li>
+      <li><a href="contact.html">צור קשר</a></li>
+    </ul>
+    <div class="nav-auth" id="authArea"></div>
+  </nav>
+
+  <main>
+    <section class="section" style="padding-top: calc(var(--content-top) + 3rem)">
+      <div class="container">
+        <div class="auth-card">
+          <div id="authWelcome">
+            <h1 class="page-title" style="text-align: center; margin-bottom: 0.5rem">ברוכים הבאים</h1>
+            <p style="text-align: center; color: var(--text-muted); margin-bottom: 1.5rem">
+              בלי חשבון אפשר לצפות בספוטים. עם חשבון — מוסיפים, כותבים וקופצים.
+            </p>
+          </div>
+
+          <div id="formError" class="form-error" hidden></div>
+          <div id="formInfo" class="form-info" hidden></div>
+
+          <div id="authMain">
+            <button type="button" class="btn btn-google btn-full" id="googleBtn" hidden>
+              <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+              המשך עם Google
+            </button>
+
+            <div class="auth-divider" id="authDivider" hidden><span>או</span></div>
+
+            <div class="auth-tabs">
+              <button class="auth-tab active" data-mode="login">התחברות</button>
+              <button class="auth-tab" data-mode="signup">הרשמה</button>
+            </div>
+
+            <form id="authForm">
+              <div class="form-group" id="nameGroup" hidden>
+                <label>שם תצוגה</label>
+                <input type="text" name="displayName" placeholder="איך לקרוא לך?" />
+              </div>
+              <div class="form-group">
+                <label>אימייל</label>
+                <input type="email" name="email" required placeholder="your@email.com" dir="ltr" />
+              </div>
+              <div class="form-group">
+                <label>סיסמה</label>
+                <div class="password-field">
+                  <input type="password" name="password" required minlength="6" placeholder="לפחות 6 תווים" dir="ltr" />
+                </div>
+                <a href="#forgot" class="auth-forgot-link" id="forgotLink">שכחתי סיסמה?</a>
+              </div>
+              <button type="submit" class="btn btn-primary btn-full" id="submitBtn">התחברות</button>
+            </form>
+          </div>
+
+          <div id="forgotPanel" hidden>
+            <h2 class="auth-panel-title">שכחתי סיסמה</h2>
+            <p class="auth-panel-desc" id="forgotDesc"></p>
+            <form id="forgotForm">
+              <div class="form-group">
+                <label>אימייל</label>
+                <input type="email" name="email" required placeholder="your@email.com" dir="ltr" />
+              </div>
+              <div id="localResetFields" hidden>
+                <div class="form-group">
+                  <label>סיסמה חדשה</label>
+                  <div class="password-field">
+                    <input type="password" name="newPassword" minlength="6" placeholder="לפחות 6 תווים" dir="ltr" />
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label>אימות סיסמה</label>
+                  <div class="password-field">
+                    <input type="password" name="confirmPassword" minlength="6" placeholder="הקלידו שוב" dir="ltr" />
+                  </div>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary btn-full" id="forgotSubmitBtn">שליחת קישור לאיפוס</button>
+            </form>
+            <button type="button" class="auth-back" id="backToLogin">חזרה להתחברות</button>
+          </div>
+
+          <div id="recoveryPanel" hidden>
+            <h2 class="auth-panel-title">הגדר סיסמה חדשה</h2>
+            <p class="auth-panel-desc">בחרו סיסמה חדשה לחשבון.</p>
+            <form id="recoveryForm">
+              <div class="form-group">
+                <label>סיסמה חדשה</label>
+                <div class="password-field">
+                  <input type="password" name="newPassword" required minlength="6" placeholder="לפחות 6 תווים" dir="ltr" />
+                </div>
+              </div>
+              <div class="form-group">
+                <label>אימות סיסמה</label>
+                <div class="password-field">
+                  <input type="password" name="confirmPassword" required minlength="6" placeholder="הקלידו שוב" dir="ltr" />
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary btn-full">שמירת סיסמה</button>
+            </form>
+          </div>
+
+          <p class="auth-legal">
+            בהרשמה או התחברות אתם מסכימים ל<a href="terms.html">תנאי השימוש</a> ול<a href="privacy.html">מדיניות הפרטיות</a>.
+          </p>
+
+          <p style="text-align: center; margin-top: 1.25rem; font-size: 0.85rem; color: var(--text-muted)">
+            <a href="map.html">המשיכו לצפות בלי חשבון →</a>
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script type="module">
+    import { initNav } from './js/ui.js';
+    import {
+      signIn,
+      signUp,
+      getSession,
+      signInWithGoogle,
+      isSupabaseMode,
+      requestPasswordReset,
+      updatePassword,
+      resetLocalPassword,
+      supabase,
+    } from './js/store.js';
+
+    initNav();
+
+    function initPasswordToggles() {
+      const eye = '<svg class="icon-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+      const eyeOff = '<svg class="icon-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3l18 18"/><path d="M10.6 10.6a3 3 0 0 0 4.2 4.2"/><path d="M9.9 5.2A10.4 10.4 0 0 1 12 5c6.4 0 10 7 10 7a18.5 18.5 0 0 1-2.2 3.2"/><path d="M6.7 6.7C4.1 8.4 2 12 2 12s3.6 7 10 7a10.8 10.8 0 0 0 4.3-.9"/></svg>';
+      document.querySelectorAll('.password-field').forEach((wrap) => {
+        if (wrap.querySelector('.password-toggle')) return;
+        const input = wrap.querySelector('input');
+        if (!input) return;
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'password-toggle';
+        btn.setAttribute('aria-label', 'הצג סיסמה');
+        btn.setAttribute('aria-pressed', 'false');
+        btn.innerHTML = eye + eyeOff;
+        wrap.appendChild(btn);
+        btn.addEventListener('click', () => {
+          const show = input.type === 'password';
+          input.type = show ? 'text' : 'password';
+          btn.classList.toggle('is-visible', show);
+          btn.setAttribute('aria-label', show ? 'הסתר סיסמה' : 'הצג סיסמה');
+          btn.setAttribute('aria-pressed', show ? 'true' : 'false');
+        });
+      });
+    }
+
+    initPasswordToggles();
+
+    function formatAuthError(err) {
+      const raw = err?.message || err?.error_description || '';
+      const msg = raw.toLowerCase();
+      const name = String(err?.name || '');
+      if (
+        name === 'AuthRetryableFetchError' ||
+        (name === 'TypeError' && (msg.includes('fetch') || msg.includes('network'))) ||
+        msg.includes('failed to fetch') ||
+        msg.includes('networkerror') ||
+        msg.includes('network request failed') ||
+        msg.includes('load failed') ||
+        msg.includes('err_name_not_resolved') ||
+        msg.includes('err_internet_disconnected')
+      ) {
+        return 'לא מצליחים להתחבר לשרת. נסו שוב או השתמשו במצב מקומי';
+      }
+      if (msg.includes('email logins are disabled')) {
+        return 'התחברות באימייל וסיסמה כבויה ב-Supabase. השתמשו ב-Google, או הפעילו Email ב-Dashboard → Authentication → Providers.';
+      }
+      if (msg.includes('invalid login credentials')) {
+        return 'אימייל או סיסמה שגויים';
+      }
+      if (msg.includes('email not confirmed')) {
+        return 'נא לאמת את כתובת האימייל לפני ההתחברות';
+      }
+      if (msg.includes('user not found') || msg.includes('user_not_found')) {
+        return 'אם האימייל קיים, נשלח קישור לאיפוס';
+      }
+      if (msg.includes('rate limit') || msg.includes('too many requests') || msg.includes('over_email_send_rate_limit')) {
+        return 'נשלחו יותר מדי בקשות. נסו שוב בעוד כמה דקות';
+      }
+      if (msg.includes('same password') || msg.includes('should be different') || msg.includes('same_password')) {
+        return 'הסיסמה החדשה חייבת להיות שונה מהקודמת';
+      }
+      if (msg.includes('password should be') || msg.includes('weak password') || msg.includes('password is known')) {
+        return 'הסיסמה חלשה מדי. בחרו סיסמה ארוכה יותר';
+      }
+      if (msg.includes('expired') || msg.includes('invalid token') || msg.includes('otp_expired') || msg.includes('email link is invalid')) {
+        return 'קישור האיפוס פג או אינו תקין. בקשו קישור חדש';
+      }
+      if (msg.includes('auth session missing') || msg.includes('session missing')) {
+        return 'אין סשן פעיל לאיפוס. בקשו קישור חדש לאימייל';
+      }
+      if (msg.includes('for security purposes')) {
+        return 'מסיבות אבטחה אפשר לבקש קישור חדש רק אחרי כמה שניות';
+      }
+      if (
+        msg.includes('unsupported provider') ||
+        msg.includes('provider is not enabled') ||
+        msg.includes('validation_failed') ||
+        msg.includes('provider not enabled')
+      ) {
+        return 'התחברות עם Google עדיין לא פעילה ב-Supabase. אחרי שמפעילים את Google ב-Providers זה יעבוד.';
+      }
+      if (msg.includes('unable to validate email') || msg.includes('invalid email')) {
+        return 'כתובת האימייל אינה תקינה';
+      }
+      if (/[\u0590-\u05FF]/.test(raw)) return raw;
+      return raw || 'שגיאה, נסו שוב';
+    }
+
+    function getAuthUrlParams() {
+      const search = new URLSearchParams(window.location.search);
+      const hash = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+      return {
+        type: search.get('type') || hash.get('type'),
+        error: search.get('error') || hash.get('error'),
+        errorDescription: search.get('error_description') || hash.get('error_description'),
+      };
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const redirect = params.get('redirect') || 'map.html';
+    let mode = params.get('mode') === 'signup' ? 'signup' : 'login';
+    const supabaseOn = isSupabaseMode();
+    const urlAuth = getAuthUrlParams();
+    let view = urlAuth.type === 'recovery' ? 'recovery' : 'auth';
+
+    const tabs = document.querySelectorAll('.auth-tab');
+    const nameGroup = document.getElementById('nameGroup');
+    const submitBtn = document.getElementById('submitBtn');
+    const formError = document.getElementById('formError');
+    const formInfo = document.getElementById('formInfo');
+    const forgotLink = document.getElementById('forgotLink');
+    const authWelcome = document.getElementById('authWelcome');
+    const authMain = document.getElementById('authMain');
+    const forgotPanel = document.getElementById('forgotPanel');
+    const recoveryPanel = document.getElementById('recoveryPanel');
+    const localResetFields = document.getElementById('localResetFields');
+    const forgotDesc = document.getElementById('forgotDesc');
+    const forgotSubmitBtn = document.getElementById('forgotSubmitBtn');
+
+    function showMessage(el, text) {
+      formError.hidden = true;
+      formInfo.hidden = true;
+      if (!text) return;
+      el.textContent = text;
+      el.hidden = false;
+    }
+
+    function showView(next) {
+      view = next;
+      const isAuth = next === 'auth';
+      const isForgot = next === 'forgot';
+      const isRecovery = next === 'recovery';
+      authWelcome.hidden = !isAuth;
+      authMain.hidden = !isAuth;
+      forgotPanel.hidden = !isForgot;
+      recoveryPanel.hidden = !isRecovery;
+      formError.hidden = true;
+      formInfo.hidden = true;
+    }
+
+    function setMode(m) {
+      mode = m;
+      tabs.forEach((t) => t.classList.toggle('active', t.dataset.mode === m));
+      nameGroup.hidden = m !== 'signup';
+      forgotLink.hidden = m !== 'login';
+      submitBtn.textContent = m === 'signup' ? 'הרשמה' : 'התחברות';
+      formError.hidden = true;
+      formInfo.hidden = m !== 'signup';
+      if (m === 'signup') {
+        formInfo.textContent = 'אחרי הרשמה תופיעו אצל המנהל ברשימת המשתמשים.';
+      }
+    }
+
+    function openForgot() {
+      const email = document.querySelector('#authForm [name="email"]')?.value || '';
+      showView('forgot');
+      const forgotEmail = document.querySelector('#forgotForm [name="email"]');
+      if (forgotEmail) forgotEmail.value = email;
+      if (supabaseOn) {
+        localResetFields.hidden = true;
+        forgotDesc.textContent = 'הזינו את האימייל ונשלח קישור לאיפוס הסיסמה.';
+        forgotSubmitBtn.textContent = 'שליחת קישור לאיפוס';
+        document.querySelector('#forgotForm [name="newPassword"]').required = false;
+        document.querySelector('#forgotForm [name="confirmPassword"]').required = false;
+      } else {
+        localResetFields.hidden = false;
+        forgotDesc.textContent = 'במצב מקומי אפשר לאפס כאן ישירות.';
+        forgotSubmitBtn.textContent = 'איפוס סיסמה';
+        document.querySelector('#forgotForm [name="newPassword"]').required = true;
+        document.querySelector('#forgotForm [name="confirmPassword"]').required = true;
+      }
+    }
+
+    if (supabaseOn) {
+      document.getElementById('googleBtn').hidden = false;
+      document.getElementById('authDivider').hidden = false;
+      supabase.auth.onAuthStateChange((event) => {
+        if (event === 'PASSWORD_RECOVERY') showView('recovery');
+      });
+    }
+
+    if (urlAuth.error || urlAuth.errorDescription) {
+      openForgot();
+      showMessage(formError, formatAuthError({ message: urlAuth.errorDescription || urlAuth.error }));
+    } else if (view === 'recovery') {
+      showView('recovery');
+    }
+
+    const hasAuthCallback =
+      urlAuth.type === 'recovery' ||
+      window.location.hash.includes('access_token') ||
+      params.has('code');
+
+    getSession().then((s) => {
+      if (!s || view === 'recovery') return;
+      if (hasAuthCallback && supabaseOn) {
+        setTimeout(() => {
+          if (view !== 'recovery') window.location.href = redirect;
+        }, 400);
+        return;
+      }
+      window.location.href = redirect;
+    }).catch((err) => {
+      showMessage(formError, formatAuthError(err));
+    });
+
+    if (mode === 'signup') setMode('signup');
+
+    tabs.forEach((t) => t.addEventListener('click', () => setMode(t.dataset.mode)));
+
+    forgotLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      openForgot();
+    });
+
+    document.getElementById('backToLogin').addEventListener('click', () => {
+      showView('auth');
+      setMode('login');
+    });
+
+    document.getElementById('googleBtn')?.addEventListener('click', async () => {
+      formError.hidden = true;
+      try {
+        const loginRedirect = `login.html?redirect=${encodeURIComponent(redirect)}`;
+        await signInWithGoogle(loginRedirect);
+      } catch (err) {
+        showMessage(formError, formatAuthError(err));
+      }
+    });
+
+    document.getElementById('authForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      formError.hidden = true;
+
+      const fd = new FormData(e.target);
+
+      try {
+        if (mode === 'signup') {
+          const name = fd.get('displayName');
+          if (!name) throw new Error('נא להזין שם תצוגה');
+          const result = await signUp(fd.get('email'), fd.get('password'), name);
+          if (!result?.session) {
+            showMessage(formInfo, 'נרשמת! בדקו מייל לאימות, ואז התחברו.');
+            setMode('login');
+            return;
+          }
+        } else {
+          await signIn(fd.get('email'), fd.get('password'));
+        }
+        window.location.href = redirect;
+      } catch (err) {
+        showMessage(formError, formatAuthError(err));
+      }
+    });
+
+    document.getElementById('forgotForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      const email = String(fd.get('email') || '').trim();
+      forgotSubmitBtn.disabled = true;
+      try {
+        if (supabaseOn) {
+          await requestPasswordReset(email);
+          showMessage(formInfo, 'אם האימייל קיים במערכת, שלחנו קישור לאיפוס סיסמה. בדקו את תיבת הדואר.');
+        } else {
+          const password = String(fd.get('newPassword') || '');
+          const confirm = String(fd.get('confirmPassword') || '');
+          if (password !== confirm) throw new Error('הסיסמאות אינן תואמות');
+          await resetLocalPassword(email, password);
+          showMessage(formInfo, 'אם האימייל קיים, הסיסמה עודכנה');
+        }
+      } catch (err) {
+        showMessage(formError, formatAuthError(err));
+      } finally {
+        forgotSubmitBtn.disabled = false;
+      }
+    });
+
+    document.getElementById('recoveryForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      const password = String(fd.get('newPassword') || '');
+      const confirm = String(fd.get('confirmPassword') || '');
+      try {
+        if (password !== confirm) throw new Error('הסיסמאות אינן תואמות');
+        await updatePassword(password);
+        showMessage(formInfo, 'הסיסמה עודכנה. מעבירים אתכם…');
+        window.history.replaceState({}, document.title, window.location.pathname + window.location.search);
+        window.location.href = redirect;
+      } catch (err) {
+        showMessage(formError, formatAuthError(err));
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+<!-- Backup 2026-08-17: home nav + hero markup BEFORE mobile v2 (logo-left / contain slides).
+     Source: index.html. Brand text must stay SENDERS / Senders. -->
+<nav class="nav" id="nav">
+  <a href="index.html" class="nav-logo">SEND<span>ERS</span></a>
+  <button class="nav-toggle" id="navToggle" aria-label="תפריט">
+    <span></span><span></span><span></span>
+  </button>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="index.html" class="active">בית</a></li>
+    <li><a href="map.html">מפה</a></li>
+    <li><a href="add-spot.html">הוספת ספוט</a></li>
+    <li><a href="profile.html">פרופיל</a></li>
+  </ul>
+  <div class="nav-auth" id="authArea"></div>
+</nav>
+
+<section class="hero hero-with-image">
+  <div class="hero-bg-slideshow" aria-hidden="true">
+    <div class="hero-bg-slide hero-bg-slide--landscape" style="--hero-img: url('/images/hero/hero-cliff-landscape.png')">
+      <div class="hero-bg-blur"></div>
+      <div class="hero-bg-sharp"></div>
+    </div>
+    <div class="hero-bg-slide hero-bg-slide--vertical" style="--hero-img: url('/images/hero/hero-cliff-vertical-1.png')">
+      <div class="hero-bg-blur"></div>
+      <div class="hero-bg-sharp"></div>
+    </div>
+    <div class="hero-bg-slide hero-bg-slide--vertical" style="--hero-img: url('/images/hero/hero-cliff-vertical-2.png')">
+      <div class="hero-bg-blur"></div>
+      <div class="hero-bg-sharp"></div>
+    </div>
+  </div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content reveal">
+    <div class="hero-content-grid">
+      <div class="hero-content-right">
+        <p class="hero-eyebrow">ספוטי קפיצה בישראל 🇮🇱</p>
+        <p class="hero-tagline">מצאו את הספוט הבא שלכם</p>
+        <p class="hero-sub">
+          מפה של כל מקומות הקפיצה בארץ — עם חוויות אמיתיות מהקהילה.
+          גלו, קפצו, <span class="send-it">Senders</span>.
+        </p>
+        <div class="hero-actions">
+          <a href="map.html" class="btn btn-primary">פתחו את המפה</a>
+          <a href="add-spot.html" class="btn btn-ghost btn-on-image">הוסיפו ספוט</a>
+        </div>
+      </div>
+      <div class="hero-content-left">
+        <h1 class="hero-title hero-title-en" aria-label="Senders">
+          <span class="hero-brand send-it">SEND<span class="hero-brand-accent">ERS</span></span>
+        </h1>
+      </div>
+    </div>
+  </div>
+</section>

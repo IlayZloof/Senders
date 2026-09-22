@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0ea5e9" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+  <meta name="robots" content="noindex, nofollow, noarchive" />
+  <title>ניהול משתמשים — Senders</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="users-page">
+  <nav class="nav" id="nav">
+    <a href="index.html" class="nav-logo">SEND<span>ERS</span></a>
+    <button class="nav-toggle" id="navToggle" aria-label="תפריט מידע">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links nav-links-primary" id="navLinksPrimary">
+      <li><a href="index.html">בית</a></li>
+      <li><a href="map.html">מפה</a></li>
+      <li><a href="community.html">קהילה</a></li>
+      <li><a href="add-spot.html">הוספת ספוט</a></li>
+      <li><a href="profile.html">פרופיל</a></li>
+    </ul>
+    <ul class="nav-links nav-links-info" id="navLinks">
+      <li><a href="about.html">קצת עליי</a></li>
+      <li><a href="safety.html">בטיחות</a></li>
+      <li><a href="faq.html">שאלות נפוצות</a></li>
+      <li><a href="terms.html">תנאי שימוש</a></li>
+      <li><a href="privacy.html">מדיניות פרטיות</a></li>
+      <li><a href="contact.html">צור קשר</a></li>
+    </ul>
+    <div class="nav-auth" id="authArea"></div>
+  </nav>
+
+  <main>
+    <section class="section" style="padding-top: calc(var(--content-top) + 2rem)">
+      <div class="container">
+        <div class="section-header">
+          <span class="tag">מנהל</span>
+          <h1 class="page-title">ניהול <span class="accent">משתמשים</span></h1>
+          <p class="page-desc">משתמשים, תפקידים וסטטוסים.</p>
+          <a href="admin.html" class="btn btn-ghost btn-sm" style="margin-top: 0.75rem">ספוטים ממתינים לאישור →</a>
+        </div>
+
+        <div id="usersDenied" class="login-locked" hidden>
+          <p>אין לך הרשאות מנהל.</p>
+          <a href="map.html">חזרה למפה</a>
+        </div>
+
+        <div id="usersPanel" hidden>
+          <div class="admin-stats" id="userSummary"></div>
+
+          <div class="admin-section">
+            <h2>👥 משתמשים</h2>
+            <div class="users-toolbar">
+              <input type="search" id="userSearch" placeholder="חיפוש לפי שם או אימייל..." />
+              <select id="roleFilter">
+                <option value="all">כל התפקידים</option>
+                <option value="admin">מנהלים</option>
+                <option value="user">משתמשים</option>
+              </select>
+              <select id="statusFilter">
+                <option value="all">כל הסטטוסים</option>
+                <option value="active">פעילים</option>
+                <option value="disabled">מושבתים</option>
+              </select>
+            </div>
+
+            <div class="users-table-wrap">
+              <table class="users-table" id="usersTable">
+                <thead>
+                  <tr>
+                    <th>שם</th>
+                    <th>אימייל</th>
+                    <th>תפקיד</th>
+                    <th>סטטוס</th>
+                    <th>הצטרפות</th>
+                    <th>כניסה אחרונה</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="usersBody">
+                  <tr><td colspan="7" class="admin-empty">טוען...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="admin-section">
+            <h2>📜 יומן פעולות</h2>
+            <div id="auditList" class="audit-list">
+              <p class="admin-empty">טוען...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script type="module">
+    import { initNav, requireAdmin, formatDate } from './js/ui.js';
+    import {
+      getAllUsers,
+      getAdminUserSummary,
+      updateUserRole,
+      updateUserStatus,
+      getAuditLog,
+      getSession,
+    } from './js/store.js';
+
+    initNav();
+
+    let usersData = [];
+    let currentSession = null;
+
+    function roleLabel(isAdmin) {
+      return isAdmin ? 'מנהל' : 'משתמש';
+    }
+
+    function statusLabel(status) {
+      return status === 'disabled' ? 'מושבת' : 'פעיל';
+    }
+
+    function filteredUsers() {
+      const q = document.getElementById('userSearch').value.trim().toLowerCase();
+      const role = document.getElementById('roleFilter').value;
+      const status = document.getElementById('statusFilter').value;
+
+      return usersData.filter((u) => {
+        const hay = `${u.display_name || ''} ${u.email || ''}`.toLowerCase();
+        if (q && !hay.includes(q)) return false;
+        if (role === 'admin' && !u.is_admin) return false;
+        if (role === 'user' && u.is_admin) return false;
+        if (status !== 'all' && (u.status || 'active') !== status) return false;
+        return true;
+      });
+    }
+
+    function renderUsers() {
+      const tbody = document.getElementById('usersBody');
+      const users = filteredUsers();
+
+      if (!users.length) {
+        tbody.innerHTML = '<tr><td colspan="7" class="admin-empty">אין משתמשים להצגה</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = users.map((u) => {
+        const isSelf = currentSession?.profile?.id === u.id;
+        const status = u.status || 'active';
+        return `
+          <tr class="${status === 'disabled' ? 'row-disabled' : ''}">
+            <td><strong>${u.display_name || 'משתמש'}</strong></td>
+            <td class="users-email" dir="ltr">${u.email || '—'}</td>
+            <td>
+              <select class="role-select" data-id="${u.id}" ${isSelf ? 'disabled' : ''}>
+                <option value="user" ${!u.is_admin ? 'selected' : ''}>משתמש</option>
+                <option value="admin" ${u.is_admin ? 'selected' : ''}>מנהל</option>
+              </select>
+            </td>
+            <td><span class="status-badge ${status === 'disabled' ? 'pending' : 'approved'}">${statusLabel(status)}</span></td>
+            <td>${formatDate(u.created_at)}</td>
+            <td>${u.last_login_at ? formatDate(u.last_login_at) : '—'}</td>
+            <td>
+              ${isSelf ? '' : `
+                <button class="btn btn-ghost btn-sm status-toggle" data-id="${u.id}" data-status="${status}">
+                  ${status === 'disabled' ? 'הפעלה' : 'השבתה'}
+                </button>
+              `}
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      tbody.querySelectorAll('.role-select').forEach((sel) => {
+        sel.addEventListener('change', async (e) => {
+          const id = e.target.dataset.id;
+          const makeAdmin = e.target.value === 'admin';
+          try {
+            await updateUserRole(id, makeAdmin);
+            await loadAll();
+          } catch (err) {
+            alert(err.message);
+            renderUsers();
+          }
+        });
+      });
+
+      tbody.querySelectorAll('.status-toggle').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          const id = btn.dataset.id;
+          const next = btn.dataset.status === 'disabled' ? 'active' : 'disabled';
+          const msg = next === 'disabled' ? 'להשבית משתמש זה?' : 'להפעיל משתמש זה?';
+          if (!confirm(msg)) return;
+          try {
+            await updateUserStatus(id, next);
+            await loadAll();
+          } catch (err) {
+            alert(err.message);
+          }
+        });
+      });
+    }
+
+    async function renderAudit() {
+      const list = document.getElementById('auditList');
+      const entries = await getAuditLog(30);
+      if (!entries.length) {
+        list.innerHTML = '<p class="admin-empty">אין פעולות עדיין</p>';
+        return;
+      }
+
+      list.innerHTML = entries.map((e) => `
+        <div class="audit-item">
+          <strong>${e.action}</strong>
+          <span>${e.details || ''}</span>
+          <time>${formatDate(e.created_at)}</time>
+        </div>
+      `).join('');
+    }
+
+    async function loadAll() {
+      const [summary, users] = await Promise.all([
+        getAdminUserSummary(),
+        getAllUsers(),
+      ]);
+
+      usersData = users;
+
+      document.getElementById('userSummary').innerHTML = `
+        <div class="stat-card"><span class="num">${summary.total}</span><span class="label">סה״כ משתמשים</span></div>
+        <div class="stat-card"><span class="num">${summary.active}</span><span class="label">פעילים</span></div>
+        <div class="stat-card"><span class="num">${summary.disabled}</span><span class="label">מושבתים</span></div>
+        <div class="stat-card"><span class="num">${summary.admins}</span><span class="label">מנהלים</span></div>
+      `;
+
+      renderUsers();
+      await renderAudit();
+    }
+
+    async function init() {
+      currentSession = await requireAdmin();
+      if (!currentSession) {
+        document.getElementById('usersDenied').hidden = false;
+        return;
+      }
+
+      document.getElementById('usersPanel').hidden = false;
+
+      document.getElementById('userSearch').addEventListener('input', renderUsers);
+      document.getElementById('roleFilter').addEventListener('change', renderUsers);
+      document.getElementById('statusFilter').addEventListener('change', renderUsers);
+
+      try {
+        await loadAll();
+      } catch (err) {
+        document.getElementById('usersDenied').hidden = false;
+        document.getElementById('usersPanel').hidden = true;
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>

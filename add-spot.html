@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0ea5e9" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+  <meta name="robots" content="noindex, nofollow, noarchive" />
+  <title>הוספת ספוט — Senders</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <nav class="nav" id="nav">
+    <a href="index.html" class="nav-logo">SEND<span>ERS</span></a>
+    <button class="nav-toggle" id="navToggle" aria-label="תפריט מידע">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links nav-links-primary" id="navLinksPrimary">
+      <li><a href="index.html">בית</a></li>
+      <li><a href="map.html">מפה</a></li>
+      <li><a href="community.html">קהילה</a></li>
+      <li><a href="add-spot.html">הוספת ספוט</a></li>
+      <li><a href="profile.html">פרופיל</a></li>
+    </ul>
+    <ul class="nav-links nav-links-info" id="navLinks">
+      <li><a href="about.html">קצת עליי</a></li>
+      <li><a href="safety.html">בטיחות</a></li>
+      <li><a href="faq.html">שאלות נפוצות</a></li>
+      <li><a href="terms.html">תנאי שימוש</a></li>
+      <li><a href="privacy.html">מדיניות פרטיות</a></li>
+      <li><a href="contact.html">צור קשר</a></li>
+    </ul>
+    <div class="nav-auth" id="authArea"></div>
+  </nav>
+
+  <main>
+    <section class="section" style="padding-top: calc(var(--content-top) + 2rem)">
+      <div class="container" style="max-width: 640px">
+        <div class="section-header">
+          <span class="tag">קהילה</span>
+          <h1 class="page-title">הוספת <span class="accent">ספוט</span></h1>
+          <p class="page-desc">מצאתם מקום חדש? שתפו עם הקהילה. רק שם ומיקום חובה — השאר אפשר להשלים אחר כך. הספוט יופיע במפה אחרי וידוא על ידי המערכת.</p>
+        </div>
+
+        <div id="loginRequired" class="login-locked" hidden>
+          <p>צריך חשבון כדי להוסיף ספוט.</p>
+          <a href="login.html?redirect=add-spot.html">התחברו או הירשמו</a>
+        </div>
+
+        <div id="wizardWrap" hidden>
+          <div class="wizard-steps">
+            <div class="wizard-step active" data-step="1">1. פרטים</div>
+            <div class="wizard-step" data-step="2">2. בטיחות</div>
+            <div class="wizard-step" data-step="3">3. מיקום</div>
+          </div>
+
+          <div id="formError" class="form-error" hidden></div>
+
+          <form id="spotForm">
+            <!-- Step 1 -->
+            <div class="wizard-panel active" data-panel="1">
+              <div class="form-group">
+                <label>שם הספוט (בעברית)</label>
+                <input type="text" name="name" required placeholder="לדוגמה: בריכת צפירה" />
+              </div>
+              <div class="form-group">
+                <label>אזור <span class="optional-label">לא חובה</span></label>
+                <select name="region">
+                  <option value="">בחרו אזור</option>
+                  <option value="north">צפון</option>
+                  <option value="center">מרכז</option>
+                  <option value="south">דרום</option>
+                </select>
+                <p class="form-hint">אם לא בוחרים, יישמר כצפון</p>
+              </div>
+              <div class="form-group">
+                <label>גובה הקפיצה (מ׳) <span class="optional-label">לא חובה</span></label>
+                <input type="number" name="height" min="1" max="50" step="0.5" placeholder="לדוגמה: 8" />
+              </div>
+              <label class="checkbox-group">
+                <input type="checkbox" id="hasSecondary" />
+                <span>יש קפיצות נוספות באותו מקום</span>
+              </label>
+              <div id="secondaryWrap" hidden>
+                <p class="form-hint">הוסיפו את גובה הקפיצות הנוספות</p>
+                <div id="extraHeights">
+                  <div class="extra-height-row">
+                    <input type="number" class="extra-height" min="1" max="50" step="0.5" placeholder="גובה נוסף (מ׳)" />
+                  </div>
+                </div>
+                <button type="button" class="btn btn-ghost btn-sm" id="addHeightBtn">+ עוד גובה</button>
+              </div>
+              <div class="form-group" style="margin-top: 1rem">
+                <label>תיאור קצר <span class="optional-label">לא חובה</span></label>
+                <textarea name="description" placeholder="מה מיוחד במקום? איך מגיעים?"></textarea>
+              </div>
+              <div class="form-group">
+                <label>סרטון באינסטגרם <span class="optional-label">לא חובה</span></label>
+                <input type="text" name="instagram_url" dir="ltr" inputmode="url" autocomplete="url" placeholder="https://www.instagram.com/reel/..." />
+                <p class="form-hint">הדביקו קישור לריל או סרטון. יופיע ככפתור בדף הספוט. חייב להיות קישור מ-instagram.com</p>
+              </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="wizard-panel" data-panel="2">
+              <p class="form-hint" style="margin-bottom: 1rem">הכול כאן לא חובה — אפשר לדלג ולהמשיך.</p>
+              <div class="form-group">
+                <label>רמת נגישות <span class="optional-label">לא חובה</span></label>
+                <select name="accessibility">
+                  <option value="">בחרו</option>
+                  <option value="easy">קל — מגיעים בקלות, מתאים למתחילים</option>
+                  <option value="medium">בינוני — הליכה / טיפוס קל</option>
+                  <option value="hard">קשה — רק למנוסים</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>עומק המים <span class="optional-label">לא חובה</span></label>
+                <select name="water_depth">
+                  <option value="">בחרו</option>
+                  <option value="עמוק">עמוק — בטוח לקפיצה</option>
+                  <option value="בינוני">בינוני — בדקו לפני</option>
+                  <option value="רדוד">רדוד — מסוכן</option>
+                  <option value="משתנה">משתנה לפי עונה</option>
+                  <option value="לא ידוע">לא ידוע</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>עונה מומלצת <span class="optional-label">לא חובה</span></label>
+                <input type="text" name="season" placeholder="לדוגמה: אביב-קיץ, כל השנה" />
+              </div>
+              <div class="form-group">
+                <label>סלעים או עצמים במים</label>
+                <select name="rocks">
+                  <option value="לא ידוע">לא ידוע</option>
+                  <option value="אין">אין</option>
+                </select>
+              </div>
+              <label class="checkbox-group" style="margin-top: 0.5rem">
+                <input type="checkbox" name="depth_known" />
+                <span>בדקתי את עומק המים בעצמי</span>
+              </label>
+              <div class="form-group" style="margin-top: 1rem">
+                <label>אזהרות בטיחות <span class="optional-label">לא חובה</span></label>
+                <textarea name="warnings" placeholder="מה חשוב לדעת לפני שקופצים?"></textarea>
+                <p class="form-hint">לדוגמה: בדקו עומק, אל תקפצו לבד, שימו לב לרוח · <a href="safety.html">בטיחות</a></p>
+              </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="wizard-panel" data-panel="3">
+              <div class="form-group">
+                <label for="mapLinkInput">הדבק קישור מגוגל מפות / ווייז</label>
+                <div class="map-link-row">
+                  <input
+                    type="text"
+                    id="mapLinkInput"
+                    dir="ltr"
+                    inputmode="url"
+                    autocomplete="off"
+                    placeholder="https://maps.app.goo.gl/... או 32.08,34.78"
+                  />
+                  <button type="button" class="btn btn-primary" id="extractMapLinkBtn">חלץ מיקום</button>
+                </div>
+                <p class="form-hint">הדביקו קישור שיתוף מגוגל מפות, ווייז או מפות Apple — המיקום יישלף אוטומטית.</p>
+                <p id="mapLinkStatus" class="map-link-status" hidden></p>
+              </div>
+              <div class="criteria-grid">
+                <div class="form-group">
+                  <label>קו רוחב (Latitude)</label>
+                  <input type="number" name="lat" step="0.001" required placeholder="31.500" dir="ltr" />
+                  <p class="form-hint">אפשר גם להזין ידנית</p>
+                </div>
+                <div class="form-group">
+                  <label>קו אורך (Longitude)</label>
+                  <input type="number" name="lng" step="0.001" required placeholder="34.750" dir="ltr" />
+                </div>
+              </div>
+              <div class="mini-map-wrap" id="pickMap" style="height: 250px; margin-top: 1rem"></div>
+              <p class="form-hint" style="margin-top: 0.5rem">לחצו על המפה לבחירת מיקום, או הזינו קואורדינטות ידנית.</p>
+            </div>
+
+            <div class="wizard-nav">
+              <button type="button" class="btn btn-ghost" id="prevBtn" hidden>→ חזרה</button>
+              <button type="button" class="btn btn-primary" id="nextBtn">המשך ←</button>
+              <button type="submit" class="btn btn-orange" id="submitBtn" hidden>פרסום הספוט 🎉</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script type="module">
+    import L from 'leaflet';
+    import 'leaflet/dist/leaflet.css';
+    import { initNav, requireAuth } from './js/ui.js';
+    import { addSpot, normalizeInstagramUrl } from './js/store.js';
+    import { MAP_LINK_ERRORS, parseMapLink } from './js/map-link.js';
+
+    function parseInstagramUrl(raw) {
+      const value = String(raw || '').trim();
+      if (!value) return '';
+      if (!/instagram\.com/i.test(value)) {
+        throw new Error('הקישור חייב להיות לסרטון באינסטגרם (instagram.com)');
+      }
+      const url = normalizeInstagramUrl(value);
+      if (!url) throw new Error('קישור האינסטגרם לא תקין');
+      return url;
+    }
+
+    initNav();
+
+    let currentStep = 1;
+    let pickMap = null;
+    let pickMarker = null;
+
+    requireAuth().then((session) => {
+      if (!session) {
+        document.getElementById('loginRequired').hidden = false;
+        return;
+      }
+      document.getElementById('wizardWrap').hidden = false;
+      initPickMap();
+    });
+
+    function initPickMap() {
+      pickMap = L.map('pickMap').setView([31.5, 34.9], 8);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OSM',
+      }).addTo(pickMap);
+
+      pickMap.on('click', (e) => {
+        const { lat, lng } = e.latlng;
+        setPickedLocation(lat, lng, { digits: 3 });
+      });
+
+      bindMapLinkField();
+    }
+
+    function setPickedLocation(lat, lng, { digits = 5, zoom } = {}) {
+      const latNum = Number(lat);
+      const lngNum = Number(lng);
+      if (!Number.isFinite(latNum) || !Number.isFinite(lngNum)) return;
+      document.querySelector('[name="lat"]').value = latNum.toFixed(digits);
+      document.querySelector('[name="lng"]').value = lngNum.toFixed(digits);
+      if (!pickMap) return;
+      if (pickMarker) pickMap.removeLayer(pickMarker);
+      pickMarker = L.marker([latNum, lngNum]).addTo(pickMap);
+      const nextZoom = zoom ?? Math.max(pickMap.getZoom() || 8, 15);
+      pickMap.setView([latNum, lngNum], nextZoom);
+    }
+
+    function showMapLinkStatus(kind, message) {
+      const el = document.getElementById('mapLinkStatus');
+      if (!el) return;
+      el.hidden = !message;
+      el.textContent = message || '';
+      el.classList.toggle('is-success', kind === 'success');
+      el.classList.toggle('is-error', kind === 'error');
+    }
+
+    function formatCoords(lat, lng) {
+      return `${Number(lat).toFixed(5)}, ${Number(lng).toFixed(5)}`;
+    }
+
+    async function expandMapUrl(raw) {
+      const res = await fetch('/api/expand-map-url', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ url: raw }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (data?.lat != null && data?.lng != null) return data;
+      const err = new Error(MAP_LINK_ERRORS[data?.error] || MAP_LINK_ERRORS.no_coords);
+      err.code = data?.error || 'no_coords';
+      throw err;
+    }
+
+    async function resolveMapLink(raw) {
+      const first = parseMapLink(raw);
+      if (first.lat != null && first.lng != null) return first;
+      if (first.error === 'empty' || first.error === 'invalid') {
+        const err = new Error(MAP_LINK_ERRORS[first.error]);
+        err.code = first.error;
+        throw err;
+      }
+      return expandMapUrl(raw);
+    }
+
+    let mapLinkBusy = false;
+
+    async function applyMapLink(raw, { silentEmpty = false } = {}) {
+      const value = String(raw || '').trim();
+      const btn = document.getElementById('extractMapLinkBtn');
+      if (!value) {
+        if (!silentEmpty) showMapLinkStatus('error', MAP_LINK_ERRORS.empty);
+        return;
+      }
+      if (mapLinkBusy) return;
+      mapLinkBusy = true;
+      if (btn) btn.disabled = true;
+      showMapLinkStatus('', 'מחלץ מיקום…');
+      try {
+        const result = await resolveMapLink(value);
+        setPickedLocation(result.lat, result.lng);
+        const coords = formatCoords(result.lat, result.lng);
+        const label = result.name ? `${result.name} · ${coords}` : coords;
+        showMapLinkStatus('success', `המיקום נשלף: ${label}`);
+      } catch (err) {
+        showMapLinkStatus('error', err.message || MAP_LINK_ERRORS.no_coords);
+      } finally {
+        mapLinkBusy = false;
+        if (btn) btn.disabled = false;
+      }
+    }
+
+    function bindMapLinkField() {
+      const input = document.getElementById('mapLinkInput');
+      const btn = document.getElementById('extractMapLinkBtn');
+      if (!input || !btn) return;
+
+      btn.addEventListener('click', () => applyMapLink(input.value));
+      input.addEventListener('paste', () => {
+        setTimeout(() => applyMapLink(input.value, { silentEmpty: true }), 0);
+      });
+      input.addEventListener('blur', () => {
+        if (input.value.trim()) applyMapLink(input.value, { silentEmpty: true });
+      });
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          applyMapLink(input.value);
+        }
+      });
+    }
+
+    function updateSteps() {
+      document.querySelectorAll('.wizard-step').forEach((el) => {
+        const s = parseInt(el.dataset.step, 10);
+        el.classList.toggle('active', s === currentStep);
+        el.classList.toggle('done', s < currentStep);
+      });
+      document.querySelectorAll('.wizard-panel').forEach((el) => {
+        el.classList.toggle('active', parseInt(el.dataset.panel, 10) === currentStep);
+      });
+      document.getElementById('prevBtn').hidden = currentStep === 1;
+      document.getElementById('nextBtn').hidden = currentStep === 3;
+      document.getElementById('submitBtn').hidden = currentStep !== 3;
+      if (currentStep === 3) setTimeout(() => pickMap?.invalidateSize(), 100);
+    }
+
+    document.getElementById('hasSecondary')?.addEventListener('change', (e) => {
+      document.getElementById('secondaryWrap').hidden = !e.target.checked;
+    });
+
+    document.getElementById('addHeightBtn')?.addEventListener('click', () => {
+      const wrap = document.getElementById('extraHeights');
+      const row = document.createElement('div');
+      row.className = 'extra-height-row';
+      row.innerHTML = '<input type="number" class="extra-height" min="1" max="50" step="0.5" placeholder="גובה נוסף (מ׳)" />';
+      wrap.appendChild(row);
+    });
+
+    document.getElementById('nextBtn').addEventListener('click', () => {
+      const panel = document.querySelector(`[data-panel="${currentStep}"]`);
+      const inputs = panel.querySelectorAll('input[required], select[required], textarea[required]');
+      for (const input of inputs) {
+        if (!input.value) {
+          input.focus();
+          return;
+        }
+      }
+      if (currentStep === 1) {
+        const igInput = document.querySelector('[name="instagram_url"]');
+        try {
+          parseInstagramUrl(igInput?.value);
+        } catch (err) {
+          igInput?.focus();
+          const formError = document.getElementById('formError');
+          formError.textContent = err.message;
+          formError.hidden = false;
+          return;
+        }
+        document.getElementById('formError').hidden = true;
+      }
+      if (currentStep < 3) {
+        currentStep++;
+        updateSteps();
+      }
+    });
+
+    document.getElementById('prevBtn').addEventListener('click', () => {
+      if (currentStep > 1) {
+        currentStep--;
+        updateSteps();
+      }
+    });
+
+    document.getElementById('spotForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const session = await requireAuth();
+      if (!session) return;
+
+      const fd = new FormData(e.target);
+      const formError = document.getElementById('formError');
+      const lat = parseFloat(fd.get('lat'));
+      const lng = parseFloat(fd.get('lng'));
+      const name = String(fd.get('name') || '').trim();
+
+      try {
+        if (!name) throw new Error('צריך שם לספוט');
+        if (!Number.isFinite(lat) || !Number.isFinite(lng)) throw new Error('צריך לבחור מיקום במפה או להזין קואורדינטות');
+
+        const heights = [];
+        const mainHeight = parseFloat(fd.get('height'));
+        if (mainHeight > 0) heights.push(mainHeight);
+        if (document.getElementById('hasSecondary')?.checked) {
+          document.querySelectorAll('.extra-height').forEach((input) => {
+            const n = parseFloat(input.value);
+            if (n > 0) heights.push(n);
+          });
+        }
+        const uniqueHeights = [...new Set(heights)].sort((a, b) => a - b);
+        const instagram_url = parseInstagramUrl(fd.get('instagram_url'));
+
+        const result = await addSpot({
+          name,
+          region: fd.get('region'),
+          height_min: uniqueHeights[0] || 0,
+          height_max: uniqueHeights[uniqueHeights.length - 1] || 0,
+          jump_heights: uniqueHeights,
+          description: fd.get('description'),
+          accessibility: fd.get('accessibility'),
+          water_depth: fd.get('water_depth'),
+          season: fd.get('season') || '',
+          rocks: fd.get('rocks') === 'אין' ? 'אין' : 'לא ידוע',
+          depth_known: fd.get('depth_known') === 'on',
+          warnings: fd.get('warnings') || '',
+          instagram_url,
+          lat,
+          lng,
+        }, session.user.id, session.profile);
+
+        if (result.pending) {
+          alert('תודה שהוספת ספוט.\nממתין לווידוא על ידי המערכת — יופיע במפה אחרי הבדיקה.');
+          window.location.href = 'map.html';
+        } else {
+          window.location.href = `spot.html?id=${result.spot.id}`;
+        }
+      } catch (err) {
+        formError.textContent = err.message || 'שגיאה בשמירה';
+        formError.hidden = false;
+      }
+    });
+  </script>
+</body>
+</html>

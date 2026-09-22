@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+  <meta name="robots" content="noindex, nofollow, noarchive" />
+  <title>שאלות נפוצות — Senders</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <nav class="nav" id="nav">
+    <a href="index.html" class="nav-logo">SEND<span>ERS</span></a>
+    <button class="nav-toggle" id="navToggle" aria-label="תפריט מידע">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links nav-links-primary" id="navLinksPrimary">
+      <li><a href="index.html">בית</a></li>
+      <li><a href="map.html">מפה</a></li>
+      <li><a href="community.html">קהילה</a></li>
+      <li><a href="add-spot.html">הוספת ספוט</a></li>
+      <li><a href="profile.html">פרופיל</a></li>
+    </ul>
+    <ul class="nav-links nav-links-info" id="navLinks">
+      <li><a href="about.html">קצת עליי</a></li>
+      <li><a href="safety.html">בטיחות</a></li>
+      <li><a href="faq.html">שאלות נפוצות</a></li>
+      <li><a href="terms.html">תנאי שימוש</a></li>
+      <li><a href="privacy.html">מדיניות פרטיות</a></li>
+      <li><a href="contact.html">צור קשר</a></li>
+    </ul>
+    <div class="nav-auth" id="authArea"></div>
+  </nav>
+
+  <main>
+    <section class="section legal-page">
+      <div class="container legal-content">
+        <span class="tag">FAQ</span>
+        <h1 class="page-title">שאלות <span class="accent">נפוצות</span></h1>
+        <p class="legal-lead">תשובות קצרות על בטיחות, שימוש באתר ותוכן קהילתי.</p>
+
+        <h2 class="faq-group-title">בטיחות</h2>
+        <div class="faq-list">
+          <details class="faq-item">
+            <summary>האם Senders מאמתת שהספוטים בטוחים?</summary>
+            <p>לא. המידע מגיע מהקהילה ועובר מודרציה בסיסית — אבל תמיד צריך לבדוק עומק מים, תנאים וחוקים בשטח בעצמכם.</p>
+          </details>
+          <details class="faq-item">
+            <summary>איך בודקים עומק מים?</summary>
+            <p>שחייה עם שנורקל, בדיקה עם מקל או אבן, או מישהו שצולל לפני הקפיצה. אחרי גשם או שינוי עונה — בודקים מחדש.</p>
+          </details>
+          <details class="faq-item">
+            <summary>מה הגובה הבטוח לקפיצה?</summary>
+            <p>תלוי בעומק, כניסה למים, ניסיון ומצב הגוף. אין גובה "בטוח" אוניברסלי — מתחילים נמוך ועולים בהדרגה.</p>
+          </details>
+          <details class="faq-item">
+            <summary>מה עושים במקרה תאונה?</summary>
+            <p>מזעיקים עזרה (101), לא מזיזים פצועים אם יש חשד לפגיעת חוט שדרה, וממתינים לצוות רפואי.</p>
+          </details>
+        </div>
+
+        <h2 class="faq-group-title">האתר</h2>
+        <div class="faq-list">
+          <details class="faq-item">
+            <summary>צריך חשבון כדי לראות ספוטים?</summary>
+            <p>לא. אפשר לגלוש במפה ולקרוא על ספוטים בלי התחברות. חשבון נדרש להוספת ספוט, חוויות ורישום קפיצות.</p>
+          </details>
+          <details class="faq-item">
+            <summary>איך מוסיפים ספוט?</summary>
+            <p>נרשמים, לוחצים "הוספת ספוט", ממלאים פרטים ובטיחות, ושולחים. הספוט יופיע במפה אחרי וידוא על ידי המערכת.</p>
+          </details>
+          <details class="faq-item">
+            <summary>איך מדווחים על מידע שגוי?</summary>
+            <p>בדף הספוט יש כפתור "דווחו על ספוט". אפשר לסמן מידע לא מדויק, מקום מסוכן או תוכן לא הולם.</p>
+          </details>
+          <details class="faq-item">
+            <summary>האם קפיצה חוקית בכל הספוטים?</summary>
+            <p>לא בהכרח. חלק מהמקומות באזורים מוגנים, פרטיים או עם איסור קפיצה. האחריות עליכם לבדוק לפני שיוצאים.</p>
+          </details>
+        </div>
+
+        <h2 class="faq-group-title" id="pwa">אפליקציה בטלפון</h2>
+        <div class="faq-list">
+          <details class="faq-item" open>
+            <summary>איך מוסיפים את Senders למסך הבית?</summary>
+            <p><strong>אייפון:</strong> פותחים את האתר בספארי → כפתור השיתוף → <strong>Add to Home Screen</strong> / הוספה למסך הבית. אחר כך סוגרים את ספארי לגמרי ופותחים את האייקון.</p>
+            <p><strong>אנדרואיד:</strong> בתפריט הדפדפן בוחרים <strong>Add to Home screen</strong> / התקנת אפליקציה.</p>
+            <p>אחרי עדכון באתר: סוגרים את האייקון ופותחים שוב. אם נשארה גרסה ישנה — מחכים כמה שניות ומרעננים.</p>
+          </details>
+          <details class="faq-item">
+            <summary>יש קבוצת וואטסאפ?</summary>
+            <p>נפתחת בקרוב. בינתיים מפגשים מתפרסמים בדף <a href="community.html">הקהילה</a> — ככה המידע נשאר גם אחרי שהצ׳אט זז.</p>
+          </details>
+        </div>
+
+        <p class="legal-note">לא מצאתם תשובה? כתבו באינסטגרם <a class="ig-handle" href="https://www.instagram.com/ilay_zloof/" target="_blank" rel="noopener noreferrer">@ilay_zloof</a></p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer" id="siteFooter"></footer>
+
+  <script type="module">
+    import { initNav } from './js/ui.js';
+    import { initFooter } from './js/footer.js';
+    initNav();
+    initFooter();
+  </script>
+</body>
+</html>

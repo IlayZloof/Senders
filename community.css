@@ -1,0 +1,78 @@
+/* Community extras — kept out of styles.css so parallel nav work is not overwritten. */
+
+.community-connect {
+  padding-top: 0;
+  padding-bottom: 0.25rem;
+}
+
+.community-connect-grid {
+  display: grid;
+  gap: 0.85rem;
+}
+
+@media (min-width: 720px) {
+  .community-connect-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.community-connect-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.15rem 1.2rem;
+  box-shadow: var(--shadow);
+}
+
+.community-connect-card h2 {
+  font-size: 1.05rem;
+  margin: 0 0 0.35rem;
+}
+
+.community-connect-card p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+
+.community-connect-badge {
+  display: inline-flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0.1rem 0.65rem;
+  margin-bottom: 0.45rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  background: var(--accent-soft);
+  color: var(--accent-dark);
+}
+
+.community-connect-badge--soon {
+  background: rgba(249, 115, 22, 0.12);
+  color: #c2410c;
+}
+
+.community-connect-card a {
+  color: var(--accent-dark);
+  font-weight: 600;
+}
+
+.pwa-hint-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.85rem;
+}
+
+.pwa-hint-dismiss {
+  background: transparent;
+  border: 0;
+  color: var(--text-muted);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  min-height: 44px;
+  padding: 0 0.25rem;
+}

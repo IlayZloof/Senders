@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0ea5e9" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+  <meta name="robots" content="noindex, nofollow, noarchive" />
+  <title>קהילה — Senders</title>
+  <meta name="description" content="עדכונים מהשטח וקביעת מפגשים בספוטי קפיצה בישראל." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Rubik:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="community.css" />
+</head>
+<body>
+  <nav class="nav" id="nav">
+    <a href="index.html" class="nav-logo">SEND<span>ERS</span></a>
+    <button class="nav-toggle" id="navToggle" aria-label="תפריט מידע">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links nav-links-primary" id="navLinksPrimary">
+      <li><a href="index.html">בית</a></li>
+      <li><a href="map.html">מפה</a></li>
+      <li><a href="community.html">קהילה</a></li>
+      <li><a href="add-spot.html">הוספת ספוט</a></li>
+      <li><a href="profile.html">פרופיל</a></li>
+    </ul>
+    <ul class="nav-links nav-links-info" id="navLinks">
+      <li><a href="about.html">קצת עליי</a></li>
+      <li><a href="safety.html">בטיחות</a></li>
+      <li><a href="faq.html">שאלות נפוצות</a></li>
+      <li><a href="terms.html">תנאי שימוש</a></li>
+      <li><a href="privacy.html">מדיניות פרטיות</a></li>
+      <li><a href="contact.html">צור קשר</a></li>
+    </ul>
+    <div class="nav-auth" id="authArea"></div>
+  </nav>
+
+  <div class="guest-banner" id="guestBanner" hidden></div>
+
+  <main>
+    <section class="page-hero">
+      <div class="container">
+        <span class="tag">קהילה</span>
+        <h1 class="page-title">עדכונים ומפגשים</h1>
+        <p class="page-desc">מה קורה בספוטים, וקובעים לראות בשטח. סרטונים גוללים במסך הבית.</p>
+      </div>
+    </section>
+
+    <section class="section" style="padding-top: 0">
+      <div class="container">
+        <div class="community-tabs" role="tablist" aria-label="קהילה">
+          <button type="button" class="community-tab active" role="tab" aria-selected="true" data-tab="updates" id="tabUpdates">עדכונים</button>
+          <button type="button" class="community-tab" role="tab" aria-selected="false" data-tab="meetups" id="tabMeetups">מפגשים</button>
+        </div>
+
+        <div class="community-panel" id="panelUpdates" role="tabpanel" aria-labelledby="tabUpdates">
+          <div id="updatesFeed" class="community-feed">
+            <p class="muted">טוען עדכונים...</p>
+          </div>
+        </div>
+
+        <div class="community-panel" id="panelMeetups" role="tabpanel" aria-labelledby="tabMeetups" hidden>
+          <div id="meetupFormArea"></div>
+          <h2 class="community-subhead">מפגשים קרובים</h2>
+          <div id="meetupsList" class="community-feed">
+            <p class="muted">טוען מפגשים...</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer" id="siteFooter"></footer>
+
+  <script type="module" src="./js/community.js"></script>
+</body>
+</html>
