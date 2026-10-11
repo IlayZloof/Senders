@@ -156,7 +156,6 @@ function applyAccessChrome(session) {
     root.classList.add('access-granted');
     removeAccessOverlay();
     ensureTabBar();
-    initTabSwipe();
     initFooter();
     scheduleReelsPrefetch();
     return;
@@ -609,59 +608,6 @@ function goAdjacentTab(delta) {
   paintTabId(next);
   window.location.href = href;
   return true;
-}
-
-function initTabSwipe() {
-  if (initTabSwipe.bound) return;
-  initTabSwipe.bound = true;
-  const EDGE = 28;
-  const MIN_DX = 64;
-  let startX = 0;
-  let startY = 0;
-  let tracking = false;
-  let navigating = false;
-
-  const canSwipe = () => (
-    !navigating
-    && document.documentElement.classList.contains('access-granted')
-    && window.matchMedia('(max-width: 768px)').matches
-    && !!document.getElementById('tabBar')
-    && !!tabIdFromLocation()
-    && !document.body.classList.contains('nav-open')
-    && !document.body.classList.contains('sheet-open')
-  );
-
-  document.addEventListener('touchstart', (e) => {
-    tracking = false;
-    if (!canSwipe() || e.touches.length !== 1) return;
-    const touch = e.touches[0];
-    const x = touch.clientX;
-    if (x < EDGE || x > window.innerWidth - EDGE) return;
-    if (e.target.closest(SWIPE_IGNORE)) return;
-    startX = x;
-    startY = touch.clientY;
-    tracking = true;
-  }, { passive: true });
-
-  document.addEventListener('touchend', (e) => {
-    if (!tracking || navigating) {
-      tracking = false;
-      return;
-    }
-    tracking = false;
-    const touch = e.changedTouches[0];
-    if (!touch) return;
-    const dx = touch.clientX - startX;
-    const dy = touch.clientY - startY;
-    if (Math.abs(dx) < MIN_DX) return;
-    if (Math.abs(dx) < Math.abs(dy) * 1.35) return;
-    const delta = dx < 0 ? 1 : -1;
-    navigating = goAdjacentTab(delta);
-  }, { passive: true });
-
-  document.addEventListener('touchcancel', () => {
-    tracking = false;
-  }, { passive: true });
 }
 
 function updateTabBarMe(admin) {
