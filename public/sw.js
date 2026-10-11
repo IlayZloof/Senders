@@ -1,4 +1,4 @@
-const CACHE_NAME = 'senders-ops-v70';
+const CACHE_NAME = 'senders-ops-v71';
 const REELS_MEDIA_CACHE = 'senders-reels-media';
 
 function collectLocalAssetUrls(html, baseHref) {
@@ -72,6 +72,7 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
   if (request.headers.has('range')) return;
+  if (url.pathname === '/version.json') return; // always fresh from network
   if (/\.(mp4|webm|mov|m4v)(\?|$)/i.test(url.pathname)) return;
 
   const accept = request.headers.get('accept') || '';

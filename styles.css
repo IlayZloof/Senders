@@ -4356,3 +4356,16 @@ html.pwa-standalone .tab-bar {
     min-height: 360px;
   }
 }
+
+/* ─── Site version line ─── */
+.app-version {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  opacity: 0.75;
+  letter-spacing: 0.02em;
+}
+.footer-brand .app-version { margin-top: 0.5rem; }
+.app-version--standalone {
+  text-align: center;
+  padding: 1rem 0 1.25rem;
+}
