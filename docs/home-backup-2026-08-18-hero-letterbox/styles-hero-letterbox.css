@@ -1,0 +1,111 @@
+/* Backup 2026-08-18: hero CSS BEFORE letterbox / blur-strengthen pass.
+   Source: styles.css — .hero, .hero-with-image, .hero-bg-slideshow,
+   .hero-bg-blur, .hero-bg-sharp, mobile hero height.
+   Restore this block if the new blur + shorter mobile hero looks worse. */
+
+/* ─── slideshow / blur / sharp (styles.css ~281–365) ─── */
+
+.hero-bg-slideshow {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background-color: #0c2744;
+}
+
+.hero-bg-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  animation: hero-slide-fade 18s ease-in-out infinite;
+}
+
+.hero-bg-slide:nth-child(1) { animation-delay: 0s; }
+.hero-bg-slide:nth-child(2) { animation-delay: 6s; }
+.hero-bg-slide:nth-child(3) { animation-delay: 12s; }
+
+.hero-bg-blur,
+.hero-bg-sharp {
+  position: absolute;
+  inset: 0;
+  background-image: var(--hero-img);
+  background-repeat: no-repeat;
+}
+
+.hero-bg-blur {
+  background-size: cover;
+  background-position: center center;
+  filter: blur(28px);
+  transform: scale(1.12);
+}
+
+.hero-bg-sharp {
+  background-size: contain;
+  background-position: center center;
+}
+
+/* COMMUNITY-2026-08-17: all slides contain + blur fill (photos are landscape).
+   Previous: landscape used cover (cropped jumper). Backup:
+   docs/home-backup-2026-08-17/styles-hero-before-landscape-unify.css */
+.hero-bg-slide--landscape .hero-bg-sharp,
+.hero-bg-slide--vertical .hero-bg-sharp {
+  background-size: contain;
+  background-position: center center;
+}
+
+@media (max-width: 640px) {
+  .hero-bg-blur {
+    filter: blur(20px);
+    transform: scale(1.08);
+  }
+
+  /* PREVIOUS (cropped jumper on phone — 2026-08-17):
+  .hero-bg-slide--vertical .hero-bg-sharp {
+    background-size: cover;
+    background-position: center 30%;
+  }
+  */
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to top, rgba(15, 23, 42, 0.92) 0%, rgba(15, 23, 42, 0.5) 45%, rgba(15, 23, 42, 0.25) 100%);
+  z-index: 1;
+}
+
+/* ─── hero height (styles.css ~883–897) ─── */
+
+.hero {
+  position: relative;
+  min-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: calc(var(--content-top) + 2rem) clamp(1rem, 4vw, 2.5rem) 3rem;
+  overflow: hidden;
+}
+
+.hero.hero-with-image {
+  justify-content: center;
+  min-height: 92vh;
+  padding: calc(var(--content-top) + 2.5rem) clamp(0.75rem, 3vw, 2rem) 3rem;
+}
+
+/* ─── MOBILE-V2 max-width 768px (styles.css ~2186–2307) ─── */
+
+  .hero-bg-sharp,
+  .hero-bg-slide--landscape .hero-bg-sharp,
+  .hero-bg-slide--vertical .hero-bg-sharp {
+    background-size: contain;
+    background-position: center center;
+  }
+
+  .hero,
+  .hero.hero-with-image {
+    min-height: 100svh;
+    min-height: 100dvh;
+    justify-content: flex-end;
+    padding: calc(var(--content-top) + 1.25rem) max(1rem, var(--safe-right)) calc(1.75rem + var(--safe-bottom)) max(1rem, var(--safe-left));
+  }

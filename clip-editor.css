@@ -1,0 +1,254 @@
+.clip-editor-label {
+  display: block;
+  margin-bottom: 0.55rem;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.clip-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.clip-editor-sources,
+.clip-editor-more {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.clip-editor-pick,
+.clip-editor-add,
+.clip-editor-seq-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  border: 0;
+  border-radius: 18px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.clip-editor-pick {
+  width: 100%;
+  height: 132px;
+  border-radius: 18px;
+  color: var(--accent-ink, #14110b);
+  background: var(--accent);
+  box-shadow: 0 8px 22px rgba(196, 163, 90, 0.22);
+}
+
+.clip-editor-file {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.clip-editor-pick svg {
+  width: 48px;
+  height: 48px;
+  pointer-events: none;
+}
+
+.clip-editor-add svg,
+.clip-editor-seq-btn svg,
+.clip-card-actions svg {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+.clip-editor-add {
+  width: 56px;
+  height: 56px;
+  min-height: 56px;
+  border-radius: 50%;
+  color: var(--accent-ink, #14110b);
+  background: var(--accent);
+  box-shadow: 0 8px 22px rgba(196, 163, 90, 0.22);
+}
+
+.clip-editor-stage {
+  position: relative;
+  overflow: hidden;
+  border-radius: 18px;
+  background: #05070c;
+  border: 1px solid var(--border);
+}
+
+.clip-editor-seq {
+  display: block;
+  width: 100%;
+  height: min(46dvh, 380px);
+  object-fit: contain;
+  object-position: center;
+  background: #000;
+}
+
+.clip-editor-seq-btn {
+  position: absolute;
+  left: 50%;
+  bottom: 0.7rem;
+  transform: translateX(-50%);
+  min-height: 48px;
+  padding: 0 1.15rem;
+  font-size: 0.95rem;
+  gap: 0.4rem;
+  color: var(--accent-ink, #14110b);
+  background: var(--accent);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+  z-index: 1;
+}
+
+.clip-editor-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.clip-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  padding: 0.75rem 0.8rem 0.85rem;
+  border-radius: 16px;
+  background: var(--bg-soft);
+  border: 1px solid var(--border);
+}
+
+.clip-card-top {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.clip-card-index {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: var(--accent-ink, #14110b);
+  background: var(--accent);
+}
+
+.clip-card-meta {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.clip-trim-track {
+  position: relative;
+  height: 14px;
+  margin: 0.1rem 0 0.45rem;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.14);
+  overflow: hidden;
+}
+
+.clip-trim-keep {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: 99px;
+  background: var(--accent);
+}
+
+.clip-trim-row {
+  display: grid;
+  grid-template-columns: 4.2rem 1fr;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.86rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.clip-editor input[type="range"],
+.form-group .clip-editor input[type="range"] {
+  width: 100%;
+  height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  accent-color: var(--accent);
+}
+
+.form-group .clip-editor input[type="range"]:focus {
+  border: 0;
+  box-shadow: none;
+}
+
+.clip-card-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.3rem;
+}
+
+.clip-card-actions button {
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 12px;
+  color: var(--text);
+  background: var(--bg-card, rgba(255, 255, 255, 0.06));
+  cursor: pointer;
+}
+
+.clip-card-actions button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.clip-editor-status {
+  margin: 0;
+  color: var(--danger, #f0b4b4);
+  font-size: 0.9rem;
+}
+
+#uploadSheet.home-sheet {
+  max-height: min(94dvh, 920px);
+}
+
+#uploadSheet #uploadSubmit {
+  min-height: 52px;
+  margin-top: 0.35rem;
+  font-size: 1.05rem;
+}
+
+#uploadSheet.is-uploading .clip-editor-status {
+  display: none;
+}
+
+#uploadSheet.is-uploading #uploadSubmit {
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+html[dir="rtl"] .clip-editor-seq-btn {
+  left: 50%;
+  right: auto;
+}

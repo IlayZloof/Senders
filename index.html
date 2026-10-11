@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-visual" />
+  <meta name="theme-color" content="#0e1318" />
+  <script>
+    (function () {
+      var KEY = 'senders-theme';
+      var mode = localStorage.getItem(KEY) || 'dark';
+      try {
+        var q = new URLSearchParams(location.search).get('theme');
+        if (q === 'light' || q === 'dark' || q === 'auto') {
+          localStorage.setItem(KEY, q);
+          mode = q;
+        }
+      } catch (e) {}
+      if (mode !== 'light' && mode !== 'auto') mode = 'dark';
+      function resolved() {
+        if (mode === 'auto') {
+          return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        return mode;
+      }
+      var theme = resolved();
+      var root = document.documentElement;
+      var lang = 'he';
+      try {
+        lang = localStorage.getItem('senders-lang') === 'en' ? 'en' : 'he';
+      } catch (e2) {}
+      root.setAttribute('lang', lang);
+      root.setAttribute('dir', lang === 'en' ? 'ltr' : 'rtl');
+      root.setAttribute('data-lang', lang);
+      root.setAttribute('data-theme', theme);
+      root.setAttribute('data-theme-mode', mode);
+      root.style.colorScheme = theme;
+      var meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute('content', theme === 'light' ? '#efe6d6' : '#0e1318');
+    })();
+  </script>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+  <meta name="robots" content="noindex, nofollow, noarchive" />
+  <title data-i18n="meta.title.home">Senders — ספוטי קפיצה</title>
+  <meta name="description" data-i18n-content="meta.desc.home" content="מצאו ספוטי קפיצה בישראל. מפה, חוויות וקהילה." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Hebrew:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="home-feed.css" />
+  <link rel="stylesheet" href="ops-theme.css" />
+  <link rel="stylesheet" href="clip-editor.css" />
+</head>
+<body class="home-page">
+  <nav class="nav" id="nav">
+    <a href="index.html" class="nav-logo">SEND<span>ERS</span></a>
+    <button class="nav-toggle" id="navToggle" aria-label="תפריט מידע">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links nav-links-primary" id="navLinksPrimary">
+      <li><a href="index.html">בית</a></li>
+      <li><a href="map.html">מפה</a></li>
+      <li><a href="community.html">קהילה</a></li>
+      <li><a href="add-spot.html">הוספת ספוט</a></li>
+      <li><a href="profile.html">פרופיל</a></li>
+    </ul>
+    <ul class="nav-links nav-links-info" id="navLinks">
+      <li><a href="about.html">קצת עליי</a></li>
+      <li><a href="safety.html">בטיחות</a></li>
+      <li><a href="faq.html">שאלות נפוצות</a></li>
+      <li><a href="terms.html">תנאי שימוש</a></li>
+      <li><a href="privacy.html">מדיניות פרטיות</a></li>
+      <li><a href="contact.html">צור קשר</a></li>
+    </ul>
+    <div class="nav-auth" id="authArea"></div>
+  </nav>
+
+  <main>
+    <div class="home-first-screen">
+    <section class="hero hero-with-image">
+      <div class="hero-bg-slideshow" aria-hidden="true">
+        <div class="hero-bg-slide hero-bg-slide--landscape" style="--hero-img: url('/images/hero/hero-cliff-landscape.png')">
+          <div class="hero-bg-blur"></div>
+          <div class="hero-bg-sharp"></div>
+        </div>
+        <div class="hero-bg-slide hero-bg-slide--landscape" style="--hero-img: url('/images/hero/hero-cliff-vertical-1.png')">
+          <div class="hero-bg-blur"></div>
+          <div class="hero-bg-sharp"></div>
+        </div>
+        <div class="hero-bg-slide hero-bg-slide--landscape" style="--hero-img: url('/images/hero/hero-cliff-vertical-2.png')">
+          <div class="hero-bg-blur"></div>
+          <div class="hero-bg-sharp"></div>
+        </div>
+      </div>
+      <div class="hero-overlay"></div>
+      <div class="hero-content reveal">
+        <div class="hero-content-left">
+          <h1 class="hero-title hero-title-en" aria-label="Senders">
+            <span class="hero-brand send-it">SEND<span class="hero-brand-accent">ERS</span></span>
+          </h1>
+        </div>
+      </div>
+    </section>
+      <section class="home-showcase" aria-label="יכולות האפליקציה" data-i18n-aria="home.showcase">
+        <div class="home-tiles">
+          <a class="home-tile" href="map.html">
+            <span class="home-tile-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.4"/></svg>
+            </span>
+            <span class="home-tile-label" data-i18n="home.tile.map">מציאת ספוטים לקפיצה ברחבי הארץ</span>
+          </a>
+          <a class="home-tile" href="add-spot.html">
+            <span class="home-tile-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="5"/><path d="M12 8v8M8 12h8"/></svg>
+            </span>
+            <span class="home-tile-label" data-i18n="home.tile.add">הוספת מיקומי קפיצות</span>
+          </a>
+          <a class="home-tile" href="community.html">
+            <span class="home-tile-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.4-3.2 2.8-5 5.5-5s5.1 1.8 5.5 5"/><circle cx="17" cy="9" r="2.4"/><path d="M16.2 14.2c2.2.3 4 1.8 4.3 4.8"/></svg>
+            </span>
+            <span class="home-tile-label" data-i18n="home.tile.meet">קביעת מפגשי קהילה</span>
+          </a>
+          <a class="home-tile" href="safety.html">
+            <span class="home-tile-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 5 6.2v6.1c0 4.2 2.9 7.2 7 8.7 4.1-1.5 7-4.5 7-8.7V6.2L12 3z"/><path d="M9.2 12.1 11 13.9l3.8-3.8"/></svg>
+            </span>
+            <span class="home-tile-label" data-i18n="home.tile.safety">הנחיות בטיחותיות</span>
+          </a>
+        </div>
+        <a class="home-scroll-hint" href="#homeFeed">
+          <span data-i18n="home.scroll">גללו להמלצות של ספוטים</span>
+          <svg class="home-scroll-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+        </a>
+      </section>
+    </div>
+    <div id="homeFeed" class="home-feed"></div>
+  </main>
+
+  <div class="home-sheet-backdrop" id="sheetBackdrop" hidden></div>
+
+  <aside class="home-sheet" id="spotSheet" hidden>
+    <div class="home-sheet-top">
+      <h2 data-i18n="home.sheet.spot">הספוט</h2>
+      <button type="button" class="home-sheet-close" id="spotSheetClose" aria-label="סגירה" data-i18n-aria="common.close">×</button>
+    </div>
+    <div id="spotSheetBody"></div>
+  </aside>
+
+  <aside class="home-sheet" id="commentsSheet" hidden>
+    <div class="home-sheet-top">
+      <h2 data-i18n="home.sheet.comments">תגובות</h2>
+      <button type="button" class="home-sheet-close" id="commentsSheetClose" aria-label="סגירה" data-i18n-aria="common.close">×</button>
+    </div>
+    <div id="commentsList"></div>
+    <p class="muted" id="commentsLoginHint" hidden>
+      <a href="login.html?redirect=index.html" data-i18n="home.comments.login">התחברו</a><span data-i18n="home.comments.loginAfter"> כדי להגיב.</span>
+    </p>
+    <div id="commentsFormWrap" hidden>
+      <p id="commentsMsg"></p>
+      <form id="commentsForm">
+        <div class="form-group">
+          <label for="commentText" data-i18n="home.comments.label">שאלה או תגובה</label>
+          <input type="text" id="commentText" name="text" maxlength="240" required placeholder="איך מגיעים / איך המים היום?" data-i18n-placeholder="home.comments.ph" />
+        </div>
+        <button type="submit" class="btn btn-primary btn-full" data-i18n="common.submit">שליחה</button>
+      </form>
+    </div>
+  </aside>
+
+  <aside class="home-sheet" id="uploadSheet" hidden>
+    <div class="home-sheet-top">
+      <h2 data-i18n="home.upload.title">העלאת סרטון</h2>
+      <button type="button" class="home-sheet-close" id="uploadSheetClose" aria-label="סגירה" data-i18n-aria="common.close">×</button>
+    </div>
+    <form id="uploadForm">
+      <div id="uploadProgress" class="upload-progress" hidden>
+        <div class="upload-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div class="upload-progress-fill"></div>
+        </div>
+        <p id="uploadProgressLabel" class="upload-progress-label"></p>
+      </div>
+      <p id="uploadMsg"></p>
+      <div class="form-group">
+        <span class="clip-editor-label" data-i18n="home.upload.video">בחרו סרטונים</span>
+        <div id="clipEditorMount"></div>
+      </div>
+      <div class="form-group">
+        <label for="uploadSpotSearch" data-i18n="home.upload.spot">תיוג ספוט</label>
+        <div class="spot-picker">
+          <input type="hidden" id="uploadSpot" name="spotId" required />
+          <input type="search" id="uploadSpotSearch" class="spot-picker-search" autocomplete="off" enterkeyhint="search" placeholder="חיפוש ספוט…" data-i18n-placeholder="home.upload.searchSpot" aria-autocomplete="list" aria-controls="uploadSpotList" />
+          <ul class="spot-picker-list" id="uploadSpotList" role="listbox" aria-label="בחרו ספוט" data-i18n-aria="home.upload.chooseSpot"></ul>
+          <p class="spot-picker-empty" id="uploadSpotEmpty" hidden data-i18n="home.upload.noSpot">לא נמצא ספוט</p>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="uploadCaption" data-i18n="home.upload.caption">כיתוב (אופציונלי)</label>
+        <input type="text" id="uploadCaption" name="caption" maxlength="200" placeholder="מילה על הקפיצה" data-i18n-placeholder="home.upload.captionPh" />
+      </div>
+      <button type="submit" class="btn btn-primary btn-full" id="uploadSubmit" data-i18n="common.publish">פרסום</button>
+    </form>
+  </aside>
+
+  <footer class="footer" id="siteFooter"></footer>
+
+  <script type="module">
+    import { initNav, initReveal } from './js/ui.js';
+    import { initHomeFeed } from './js/home-feed.js';
+
+    initNav();
+    initReveal();
+    initHomeFeed();
+  </script>
+</body>
+</html>

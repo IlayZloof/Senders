@@ -1,0 +1,20 @@
+{
+  "name": "senders-ops",
+  "version": "2.1.0",
+  "description": "Senders Ops — עיצוב כהה מקצועי לספוטי קפיצה בישראל",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "deploy": "npm run build && mkdir -p .wrangler-tmp && TMPDIR=\"$PWD/.wrangler-tmp\" wrangler deploy --config wrangler.jsonc --no-autoconfig"
+  },
+  "devDependencies": {
+    "vite": "^6.3.5",
+    "wrangler": "^4.123.0"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.110.2",
+    "leaflet": "^1.9.4"
+  }
+}

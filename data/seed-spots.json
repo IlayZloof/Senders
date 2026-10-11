@@ -1,0 +1,1992 @@
+[
+  {
+    "id": "akko-old-city",
+    "name": "חומת עכו העתיקה",
+    "region": "north",
+    "lat": 32.9191211,
+    "lng": 35.0675795,
+    "height_min": 9.5,
+    "height_max": 9.5,
+    "accessibility": "medium",
+    "rocks": "לא ידוע",
+    "depth_known": true,
+    "water_depth": "בינוני",
+    "entry_type": "deep",
+    "season": "כל השנה",
+    "warnings": "הקפיצה מהחומות אסורה — יש שלטים שאוסרים טיפוס על החומה.\nיש סלע שקרוב לחומה — צריך לקפוץ קצת רחוק. יש סלע שנוגעים בו אם מגיעים עמוק בקפיצה.\nכדאי לבדוק תחזית גלים לפני שבאים — מסוכן לקפוץ כשיש גלים גבוהים.",
+    "description": "קפיצה מהחומות של עכו העתיקה. גובה 9.5 מטר. הקפיצה אסורה — יש שלטים שאוסרים טיפוס על החומה. מתאים לרמה בינונית. חונים במגדלור עכו העתיקה, ממשיכים ברגל כ-5 דקות הליכה לקפיצה. עולים חזרה במדרגות אבן שבנויות על החומה. יש סלע שקרוב לחומה — צריך לקפוץ קצת רחוק, וסלע נוסף שנוגעים בו אם מגיעים עמוק בקפיצה. כל השנה, אבל כדאי לבדוק תחזית גלים לפני שבאים — מסוכן לקפוץ כשיש גלים גבוהים.",
+    "image": "/images/spots/akko-old-city.jpg",
+    "images": [
+      "/images/spots/akko-old-city.jpg",
+      "/images/spots/akko-old-city-2.jpg",
+      "/images/spots/akko-old-city-3.jpg",
+      "/images/spots/akko-old-city-4.jpg",
+      "/images/spots/akko-old-city-5.jpg"
+    ],
+    "videos": [
+      "/videos/spots/akko-old-city.mov",
+      "/videos/spots/akko-old-city-2.mov"
+    ],
+    "instagram_url": "https://www.instagram.com/reel/DVy7qWqjWcn/",
+    "waze_query": "מגדלור עכו העתיקה",
+    "location_approx": false
+  },
+  {
+    "id": "zavitan-glasses",
+    "name": "בריכות זוויתן עליון — המשקפיים",
+    "region": "north",
+    "lat": 32.966065,
+    "lng": 35.694781,
+    "height_min": 5,
+    "height_max": 7,
+    "accessibility": "medium",
+    "rocks": "אין",
+    "depth_known": true,
+    "water_depth": "עמוק מאוד",
+    "entry_type": "deep",
+    "season": "אביב-סתיו",
+    "warnings": "הקפיצה אסורה בכל הבריכות בשמורה — גם במפל זוויתן וגם בבריכות. הרבה פעמים יש פקחים שאוסרים על קפיצה.",
+    "description": "שתי בריכות צמודות במסלול נחל זוויתן עליון — לא מפל זוויתן. שתי קפיצות: כ-5 מטר וכ-7 מטר. מתאים למתחילים, ועלייה נוחה חזרה מהקפיצה. המים עמוקים מאוד. ווייז ל«שמורת טבע יהודיה». כניסה בתשלום דרך שמורת יהודיה, או בחינם דרך קצרין; פירוט על המסלול יש בגוגל. מומלץ באביב ובסתיו: בקיץ ההליכה חמה, בחורף המים קרים מאוד.",
+    "waze_query": "שמורת טבע יהודיה",
+    "image": "/images/spots/zavitan-glasses.jpg",
+    "images": [
+      "/images/spots/zavitan-glasses.jpg",
+      "/images/spots/zavitan-glasses-2.jpg"
+    ],
+    "videos": [
+      "/videos/spots/zavitan-glasses.mov",
+      "/videos/spots/zavitan-glasses-2.mov",
+      "/videos/spots/zavitan-glasses-3.mov"
+    ],
+    "instagram_url": "https://www.instagram.com/reel/DRmel5uDFqs/"
+  },
+  {
+    "id": "zavitan-waterfall",
+    "name": "מפל זוויתן",
+    "region": "north",
+    "lat": 32.962168,
+    "lng": 35.690706,
+    "height_min": 7,
+    "height_max": 20,
+    "accessibility": "hard",
+    "rocks": "אין",
+    "depth_known": true,
+    "water_depth": "עמוק",
+    "entry_type": "deep",
+    "season": "כל השנה",
+    "warnings": "הקפיצה אסורה בכל הבריכות בשמורה — גם במפל זוויתן וגם בבריכות. הרבה פעמים יש פקחים שאוסרים על קפיצה.\nמתאים למתקדמים — הטיפוס לנקודות הקפיצה לא פשוט לגמרי.",
+    "description": "בריכת המפל בנחל זוויתן — לא בריכות המשקפיים. מתאים למתקדמים — הטיפוס לנקודות הקפיצה לא פשוט לגמרי. הגובה תלוי כמה מטפסים: כ-7 מטר, כ-12 מטר, כ-15 מטר וכ-20 מטר. ווייז ל«שמורת טבע יהודיה». חונים בחניון יהודיה או בקצרין. כניסה בתשלום דרך שמורת יהודיה, או בחינם אם מתחילים מקצרין; פרטים על המסלול אפשר למצוא בקלות בגוגל. הקפיצה אסורה בכל הבריכות בשמורה, והרבה פעמים יש פקחים.",
+    "waze_query": "שמורת טבע יהודיה",
+    "image": "/images/spots/zavitan-waterfall.jpg",
+    "images": [
+      "/images/spots/zavitan-waterfall.jpg",
+      "/images/spots/zavitan-waterfall-2.jpg"
+    ],
+    "videos": [
+      "/videos/spots/zavitan-waterfall.mov",
+      "/videos/spots/zavitan-waterfall-2.mov",
+      "/videos/spots/zavitan-waterfall-3.mov"
+    ],
+    "instagram_url": "https://www.instagram.com/reel/DTihxTFjS8S/"
+  },
+  {
+    "id": "tiberias-bridge",
+    "name": "גשר טיילת טבריה",
+    "region": "north",
+    "lat": 32.785624,
+    "lng": 35.54473,
+    "height_min": 5,
+    "height_max": 10,
+    "accessibility": "easy",
+    "rocks": "אין",
+    "depth_known": true,
+    "water_depth": "עמוק",
+    "entry_type": "deep",
+    "season": "כל השנה",
+    "warnings": "האזור גודר בגדר בשנתיים האחרונות והכניסה אסורה.\nיש הרבה פקחים שיכולים לחלק קנסות ולהוציא מי שנכנס.\nשימו לב לסירות ולשייט.\nהמים עמוקים, אבל בדקו בעצמכם לפני כל קפיצה.",
+    "description": "קפיצה מהגשר בטיילת טבריה לכנרת. שלוש נקודות נפרדות: כ-5 מטר, כ-6 מטר, וקפיצה גבוהה של 8–10 מטר. מתאים למתחילים ולמתקדמים — יש גבהים מגוונים. ווייז ל«טיילת טבריה»; חונים באזור והולכים ברגל לטיילת, למיקום הסיכה. המים עמוקים, אבל תמיד בדקו בעצמכם. הכניסה אסורה — גודר בשנתיים האחרונות, ויש הרבה פקחים.",
+    "image": "/images/spots/tiberias-bridge.jpg",
+    "images": [
+      "/images/spots/tiberias-bridge.jpg",
+      "/images/spots/tiberias-bridge-2.jpg",
+      "/images/spots/tiberias-bridge-3.jpg",
+      "/images/spots/tiberias-bridge-4.jpg"
+    ],
+    "videos": [
+      "/videos/spots/tiberias-bridge.mov",
+      "/videos/spots/tiberias-bridge-2.mov",
+      "/videos/spots/tiberias-bridge-3.mov"
+    ],
+    "instagram_url": "https://www.instagram.com/reel/DR2kK9RDeXq/"
+  },
+  {
+    "id": "alumot-dam",
+    "name": "סכר אלומות",
+    "region": "north",
+    "lat": 32.702067,
+    "lng": 35.562979,
+    "height_min": 3,
+    "height_max": 4,
+    "accessibility": "easy",
+    "rocks": "לא ידוע",
+    "depth_known": true,
+    "water_depth": "בינוני",
+    "entry_type": "deep",
+    "season": "כל השנה",
+    "warnings": "גובה נמוך. בדקו סלעים בכניסה למים.",
+    "description": "קפיצה מגשר הסכר לבריכות המדורגות מתחת. גשר בטון מעל מפל מדורג — ספוט קלאסי בגובה 3–4 מטר. ספוט יפה מאוד, מתאים למתחילים. מלא כל השנה.",
+    "image": "/images/spots/alumot-dam-3.png",
+    "images": [
+      "/images/spots/alumot-dam-3.png",
+      "/images/spots/alumot-dam-4.webp"
+    ],
+    "videos": [
+      "/videos/spots/alumot-dam.mp4",
+      "/videos/spots/alumot-dam-2.mp4"
+    ]
+  },
+  {
+    "id": "migdal-reading",
+    "name": "גשר טיילת רידינג — תל אביב",
+    "region": "center",
+    "lat": 32.106139,
+    "lng": 34.776444,
+    "height_min": 7,
+    "height_max": 7,
+    "accessibility": "easy",
+    "rocks": "אין",
+    "depth_known": true,
+    "water_depth": "עמוק",
+    "entry_type": "deep",
+    "season": "כל השנה",
+    "warnings": "יש שלטים שאוסרים קפיצה.\nהמשאבות במקום פעילות.\nקשה לחזור ולצאת מהמים כי האזור מגודר.\nמתאים למתקדמים — בגלל הטיפוס חזרה.\nלפעמים יש פקחים שעוברים.",
+    "description": "גשר בטיילת רידינג ליד מגדל בתל אביב. גובה כ-7 מטר. מתאים למתקדמים — בגלל הטיפוס חזרה. לפעמים יש פקחים שעוברים. יש איסור קפיצה. ווייז ל«קפה מגדלור תל אביב». משם ממשיכים צפונה על הטיילת עד הגשר.",
+    "waze_query": "קפה מגדלור תל אביב",
+    "image": "/images/spots/migdal-reading-3.jpg",
+    "images": [
+      "/images/spots/migdal-reading-3.jpg",
+      "/images/spots/migdal-reading-2.webp",
+      "/images/spots/migdal-reading.jpg"
+    ],
+    "videos": [
+      "/videos/spots/migdal-reading.mp4",
+      "/videos/spots/migdal-reading-3.mov",
+      "/videos/spots/migdal-reading-4.mp4"
+    ],
+    "instagram_url": "https://www.instagram.com/reel/DW3zknxjUdU/?utm_source=ig_web_copy_link&igsi=MzRlODBiNWFlZA=="
+  },
+  {
+    "id": "aqua-kef",
+    "name": "וואיפאוט / אקווה כיף — כנרת",
+    "region": "north",
+    "lat": 32.774455,
+    "lng": 35.546811,
+    "height_min": 6,
+    "height_max": 8,
+    "accessibility": "easy",
+    "rocks": "אין",
+    "depth_known": true,
+    "water_depth": "עמוק",
+    "entry_type": "deep",
+    "season": "קיץ",
+    "warnings": "פארק בתשלום. קפיצות רק מהמתקנים המיועדים, לרוב עם אפוד הצלה. פתוח בעיקר בקיץ.",
+    "description": "פארק מים מתנפח על הכנרת ליד טבריה. קפיצות מבוקרות בגובה כ-6–8 מטר. מתאים לרמה בינונית. כניסה בתשלום.",
+    "image": "/images/spots/aqua-kef-4.jpg",
+    "images": [
+      "/images/spots/aqua-kef-4.jpg",
+      "/images/spots/aqua-kef-5.webp",
+      "/images/spots/aqua-kef-6.webp",
+      "/images/spots/aqua-kef.jpg",
+      "/images/spots/aqua-kef-2.jpg",
+      "/images/spots/aqua-kef-3.jpg"
+    ],
+    "videos": [
+      "/videos/spots/aqua-kef.mp4",
+      "/videos/spots/aqua-kef-2.mp4"
+    ],
+    "itm_easting": 251527,
+    "itm_northing": 742246
+  },
+  {
+    "id": "jordan-pipe-bridge",
+    "name": "גשר צינור — ירדנית",
+    "aliases": [
+      "jordan-pipe-bridge",
+      "גשר צינור ירדנית",
+      "צינור ירדנית"
+    ],
+    "region": "north",
+    "lat": 32.702768,
+    "lng": 35.567024,
+    "height_min": 3.5,
+    "height_max": 3.5,
+    "height_estimated": true,
+    "accessibility": "easy",
+    "rocks": "לא ידוע",
+    "depth_known": false,
+    "water_depth": "לא צוין (בינוני לפי תיאור קיים — בלי מספר במטרים)",
+    "entry_type": "deep",
+    "season": "כל השנה",
+    "warnings": "לא אומת. זה צינור שעובר מעל הנהר — לא גשר כביש. גובה נמוך. מבנה חקלאי. בדקו עומק מים ומכשולים לפני קפיצה. עומק במטרים לא צוין.",
+    "description": "צינור שעובר מעל הנהר (לא גשר כביש רגיל) — גשר צינור מברזל מעל הירדן, בתוך מתחם ירדנית. גובה כ־3.5 מטר. עומק מדויק לא צוין. מתאים למתחילים. יש במתחם גם ספוט נפרד של עץ גבוה. ווייז לנקודת הסיכה: https://waze.com/ul?ll=32.702768,35.567024&navigate=yes",
+    "waze_query": "https://waze.com/ul?ll=32.702768,35.567024&navigate=yes",
+    "image": "/images/spots/jordan-pipe-bridge.jpg",
+    "location_approx": false,
+    "unverified": true,
+    "listed": true
+  },
+  {
+    "id": "yardenit-tree",
+    "name": "עץ גבוה — ירדנית",
+    "aliases": [
+      "yardenit-tree",
+      "yardenit",
+      "jordanit-tree",
+      "עץ גבוה ירדנית",
+      "ירדנית"
+    ],
+    "region": "north",
+    "lat": 32.70406,
+    "lng": 35.567461,
+    "height_min": 7,
+    "height_max": 7,
+    "accessibility": "hard",
+    "rocks": "אין",
+    "depth_known": true,
+    "water_depth": "משתנה לפי עונה, בערך 2–3 מטר",
+    "entry_type": "deep",
+    "season": "כל השנה",
+    "warnings": "הטיפוס לעץ מסוכן. עומק המים משתנה לפי עונה (בערך 2–3 מטר) — תמיד בדקו בעצמכם לפני קפיצה.",
+    "description": "קפיצה מעץ איקליפטוס גבוה בירדנית, על הגדה המערבית בין שביל ישראל לירדן. גובה 7 מטר. ממש ליד העץ יש גם טרזן מעולה. עומק מים משתנה לפי עונה, בערך 2–3 מטר. מתאים לרמה בינונית. ווייז לנקודת הסיכה: https://waze.com/ul?ll=32.70406,35.567461&navigate=yes",
+    "waze_query": "https://waze.com/ul?ll=32.70406,35.567461&navigate=yes",
+    "image": "/images/spots/yardenit-tree.jpg",
+    "images": [
+      "/images/spots/yardenit-tree.jpg"
+    ],
+    "videos": [
+      "/videos/spots/yardenit-tree.mov"
+    ],
+    "location_approx": false,
+    "listed": true,
+    "itm_easting": 253495,
+    "itm_northing": 734453
+  },
+  {
+    "id": "eilat-katza",
+    "name": "גשר חוף קצא — אילת",
+    "region": "south",
+    "lat": 29.523774,
+    "lng": 34.934106,
+    "height_min": 3,
+    "height_max": 10,
+    "accessibility": "hard",
+    "rocks": "אין",
+    "depth_known": true,
+    "water_depth": "עמוק",
+    "entry_type": "deep",
+    "season": "כל השנה",
+    "warnings": "לא תמיד נגיש — המזח מגודר ולפעמים סגור.\nלפעמים עוברת משטרה ימית שיכולה להרחיק או לתת קנס.\nאין סלעים במים, אבל בדקו עומק לפני כל קפיצה.",
+    "description": "מזח תעשייתי בחוף קצא\"א באילת. מתאים לרמה בינונית. שלוש קפיצות: 3 מטר, 7 מטר ו-10 מטר. ככל שמתקדמים יותר על הגשר המים יותר עמוקים.",
+    "image": "/images/spots/eilat-katza-8.jpg",
+    "images": [
+      "/images/spots/eilat-katza-8.jpg",
+      "/images/spots/eilat-katza-9.jpg",
+      "/images/spots/eilat-katza-6.webp"
+    ],
+    "videos": [
+      "/videos/spots/eilat-katza-2.mov",
+      "/videos/spots/eilat-katza-5.mov",
+      "/videos/spots/eilat-katza-bridge.mp4"
+    ],
+    "itm_easting": 193242,
+    "itm_northing": 381811,
+    "jump_heights": [
+      3,
+      7,
+      10
+    ]
+  },
+  {
+    "id": "ginosar-beach",
+    "name": "מזח גינוסר",
+    "region": "north",
+    "lat": 32.84872,
+    "lng": 35.52743,
+    "height_min": 2,
+    "height_max": 8,
+    "accessibility": "medium",
+    "rocks": "לא ידוע",
+    "depth_known": false,
+    "water_depth": "תלוי במפלס הכנרת",
+    "entry_type": "unknown",
+    "season": "כל השנה",
+    "warnings": "הכניסה לגשר מגודרת ואסורה.\nהטיפוס לקפיצה של 8 מ׳ מסוכן.\nעומק המים תלוי במפלס הכנרת — אי אפשר להתחייב שהמים עמוקים. בדקו עומק לפני כל קפיצה.\nשימו לב לסירות.",
+    "description": "במזח 3 נקודות קפיצה, כ־2 מטר מהגשר עצמו, כ־6 מטר ממוטות הברזל וכ־8 מטר מהעמוד הגבוה. הטיפוס לשתי נקודות הקפיצה הגבוהות מסוכן. מתאים למתקדמים בלבד.",
+    "jump_heights": [
+      2,
+      6,
+      8
+    ],
+    "image": "/images/spots/ginosar-pier.jpg",
+    "images": [
+      "/images/spots/ginosar-pier.jpg",
+      "/images/spots/ginosar-pier-2.jpg",
+      "/images/spots/ginosar-pier-3.jpg"
+    ],
+    "videos": [
+      "/videos/spots/ginosar-pier.mov",
+      "/videos/spots/ginosar-pier-2.mov",
+      "/videos/spots/ginosar-pier-3.mov"
+    ]
+  },
+  {
+    "id": "tel-dor",
+    "name": "שמורת תל דור",
+    "region": "center",
+    "lat": 32.61633,
+    "lng": 34.915183,
+    "height_min": 3,
+    "height_max": 3,
+    "accessibility": "easy",
+    "rocks": "נקודת קפיצה ספציפית עמוקה — מסביב סלעים.",
+    "depth_known": true,
+    "water_depth": "עמוק",
+    "entry_type": "deep",
+    "season": "כשהים שקט",
+    "warnings": "כשיש גלים גבוהים הספוט מסוכן מאוד — הגלים מכים בחזקה בסלעים. עומק המים עמוק בנקודה ספציפית שחובה לקפוץ רק אליה, מסביב סלעים.",
+    "description": "קפיצה מסלע בשמורת תל דור לבריכה טבעית יפה. אפשר להגיע דרך שמורת תל דור או נחשולים. מתאים למתחילים. עמוק רק בנקודה ספציפית וצריך לכוון אליה, לכן הקפיצה פחות נוחה ופחות מתאימה לסלטות.",
+    "image": "/images/spots/tel-dor.jpg",
+    "images": [
+      "/images/spots/tel-dor.jpg",
+      "/images/spots/tel-dor-2.jpg",
+      "/images/spots/tel-dor-3.jpg",
+      "/images/spots/tel-dor-4.jpg"
+    ],
+    "videos": [
+      "/videos/spots/tel-dor-warning.mov",
+      "/videos/spots/tel-dor.mov"
+    ],
+    "itm_easting": 192301,
+    "itm_northing": 724695
+  },
+  {
+    "id": "meshushim",
+    "name": "בריכת המשושים",
+    "region": "north",
+    "lat": 32.93971,
+    "lng": 35.665385,
+    "height_min": 7,
+    "height_max": 10,
+    "height_estimated": true,
+    "accessibility": "medium",
+    "rocks": "לא ידוע",
+    "depth_known": false,
+    "water_depth": "לא ידוע",
+    "entry_type": "unknown",
+    "season": "כל השנה",
+    "warnings": "הספוט עדיין לא אומת — גובה משוער ועומק לא ידוע. אל תקפצו בלי בדיקה מעמיקה.",
+    "description": "בריכת בזלת בנחל המשושים ברמת הגולן. הפרטים עדיין צריכים אימות בשטח. מתאים לרמה בינונית.",
+    "waze_query": "בריכת המשושים",
+    "image": "/images/spots/meshushim-2.webp",
+    "images": [
+      "/images/spots/meshushim-2.webp",
+      "/images/spots/meshushim.jpg",
+      "/images/spots/meshushim-3.jpg"
+    ],
+    "unverified": true,
+    "listed": true
+  },
+  {
+    "id": "ein-sataf",
+    "name": "עין סטף",
+    "region": "center",
+    "lat": 31.771934,
+    "lng": 35.127623,
+    "height_min": 4,
+    "height_max": 4,
+    "jump_heights": [
+      4
+    ],
+    "height_label": "כ־4 מטרים",
+    "accessibility": "easy",
+    "rocks": "אין",
+    "depth_known": true,
+    "water_depth": "עמוק",
+    "entry_type": "unknown",
+    "season": "כל השנה",
+    "warnings": "",
+    "description": "מעיין ליד ירושלים. קפיצה של כ־4 מטרים למים עמוקים.",
+    "listed": true,
+    "image": "/images/spots/ein-sataf-3.webp",
+    "images": [
+      "/images/spots/ein-sataf-3.webp",
+      "/images/spots/ein-sataf-4.jpg",
+      "/images/spots/ein-sataf-2.jpg"
+    ]
+  },
+  {
+    "id": "ein-akev",
+    "name": "עין עקב",
+    "region": "south",
+    "lat": 30.814635,
+    "lng": 34.813528,
+    "height_min": 7,
+    "height_max": 18,
+    "accessibility": "hard",
+    "rocks": "אין",
+    "depth_known": true,
+    "water_depth": "עמוק — אותו עומק לשתי הקפיצות",
+    "entry_type": "deep",
+    "season": "כל השנה",
+    "warnings": "יש פקחים לפעמים.\nקפיצת 7 מטר מתאימה למתחילים — הטיפוס אליה קצת מחליק.\nקפיצת 18 מטר מתאים למתקדמים — לא מומלצת בכלל בלי ניסיון קודם.\nאותו עומק לשתי הקפיצות. מים קרים. הליכה במדבר.",
+    "description": "מעיין במדבר ליד מדרשת בן-גוריון. שתי קפיצות לאותה בריכה — כ-7 מטר מתאים למתחילים, כ-18 מטר מתאים למתקדמים. אותו עומק לשתי הקפיצות. מלא כל השנה. ווייז ל«חניון סרפנטינות». מהחניון הרגיל הליכה של כשעה וחצי; יש אפשרות עם 4x4 להגיע עד כ-400 מטר מהמעיין. מים קרים.",
+    "waze_query": "חניון סרפנטינות",
+    "image": "/images/spots/ein-akev.jpg",
+    "images": [
+      "/images/spots/ein-akev.jpg",
+      "/images/spots/ein-akev-2.jpg",
+      "/images/spots/ein-akev-3.jpg"
+    ],
+    "videos": [
+      "/videos/spots/ein-akev.mov",
+      "/videos/spots/ein-akev-2.mov",
+      "/videos/spots/ein-akev-3.mov",
+      "/videos/spots/ein-akev-4.mov"
+    ],
+    "instagram_url": "https://www.instagram.com/reel/DUaE8TZDRiY/"
+  },
+  {
+    "id": "kishon-bridge",
+    "name": "⚠️ גשר נחל קישון",
+    "region": "north",
+    "lat": 32.798599,
+    "lng": 35.048058,
+    "height_min": 5.5,
+    "height_max": 5.5,
+    "accessibility": "easy",
+    "rocks": "אין",
+    "depth_known": true,
+    "water_depth": "בינוני",
+    "entry_type": "unknown",
+    "season": "כל השנה",
+    "warnings": "לא מומלץ לקפוץ — המים מזוהמים מאוד.\nעומק כ-2–2.5 מטר (משתנה אחרי גשמים). קפיצה מהמעקה של גשר הכביש.",
+    "description": "גשר הכביש מעל נחל הקישון, כ-5.5 מטר. עומק כ-2 מטר. לא מומלץ לקפוץ — המים מזוהמים מאוד.",
+    "image": "/images/spots/kishon-bridge.jpg",
+    "images": [
+      "/images/spots/kishon-bridge.jpg"
+    ],
+    "videos": [
+      "/videos/spots/kishon-bridge.mov",
+      "/videos/spots/kishon-bridge-2.mov"
+    ]
+  },
+  {
+    "id": "dafna-raz",
+    "name": "מאגר דפנה / דולב",
+    "region": "north",
+    "lat": 33.23755,
+    "lng": 35.630948,
+    "height_min": 2,
+    "height_max": 7,
+    "jump_heights": [
+      2,
+      3,
+      6,
+      7
+    ],
+    "height_label": "2–3מ׳ / 6–7מ׳ מהעמודים הכחולים",
+    "accessibility": "medium",
+    "rocks": "אין",
+    "depth_known": true,
+    "water_depth": "משתנה לפי עונה, בערך 2–4 מטר",
+    "entry_type": "unknown",
+    "season": "אחרי הגשמים",
+    "warnings": "",
+    "description": "מאגר דפנה, ידוע גם כמאגר דולב. שתי קפיצות: 2–3 מטר בקפיצה הנמוכה, ו-6–7 מטר מהעמודים הכחולים. עומק המים משתנה לפי עונה, בערך 2–4 מטר, והמאגר ריק בקיץ. מתאים למתחילים.",
+    "waze_query": "מאגר דפנה",
+    "listed": true,
+    "unverified": false,
+    "image": "/images/spots/dafna-dolev.jpg",
+    "images": [
+      "/images/spots/dafna-dolev.jpg",
+      "/images/spots/dafna-dolev-2.jpg"
+    ],
+    "videos": [
+      "/videos/spots/dafna-raz.mov",
+      "/videos/spots/dafna-raz-2.mov"
+    ]
+  },
+  {
+    "id": "gilad-reservoir",
+    "name": "מאגר גלעד",
+    "region": "north",
+    "lat": 32.566167,
+    "lng": 35.065944,
+    "height_min": 3,
+    "height_max": 3,
+    "accessibility": "medium",
+    "rocks": "אין",
+    "depth_known": false,
+    "water_depth": "עמוק",
+    "entry_type": "unknown",
+    "season": "כל השנה",
+    "warnings": "מאגר מים. בדקו עומק ואיסור כניסה לפני קפיצה.",
+    "description": "מאגר גלעד ברמות מנשה. קפיצה של כ-3 מטר מהגדה. מתאים למתחילים.",
+    "image": "/images/spots/gilad-reservoir-2.jpg",
+    "images": [
+      "/images/spots/gilad-reservoir-2.jpg",
+      "/images/spots/gilad-reservoir-3.jpg",
+      "/images/spots/gilad-reservoir.jpg"
+    ]
+  },
+  {
+    "id": "rosh-hanikra",
+    "name": "ראש הנקרה",
+    "region": "north",
+    "lat": 33.0915,
+    "lng": 35.105722,
+    "height_min": 5,
+    "height_max": 5,
+    "accessibility": "hard",
+    "rocks": "קיימים סלעים צריך להיזהר.",
+    "depth_known": true,
+    "water_depth": "עמוק — להיזהר מסלעים",
+    "entry_type": "unknown",
+    "season": "כל השנה",
+    "warnings": "מסוכן — יש סלע למטה.\nקפיצה מאבנים לים, ממש על הרכס מתחת לבסיס הצבאי ולתצפית. גלים וזרמים.",
+    "description": "קפיצה של כ-5 מטר מאבנים לים בראש הנקרה, על הרכס מתחת לתצפית ולבסיס. מתאים למתחילים.",
+    "image": "/images/spots/rosh-hanikra.jpg",
+    "images": [
+      "/images/spots/rosh-hanikra.jpg"
+    ],
+    "videos": [
+      "/videos/spots/rosh-hanikra.mov",
+      "/videos/spots/rosh-hanikra-2.mov",
+      "/videos/spots/rosh-hanikra-3.mov"
+    ]
+  },
+  {
+    "id": "barak-vered",
+    "name": "נחל ברק / נחל ורדית",
+    "region": "south",
+    "lat": 30.412,
+    "lng": 35.158,
+    "height_min": 0,
+    "height_max": 0,
+    "accessibility": "hard",
+    "rocks": "לא ידוע",
+    "depth_known": false,
+    "water_depth": "לא ידוע",
+    "entry_type": "unknown",
+    "season": "חורף-אביב",
+    "warnings": "לא אומת — לא ביקרנו במקום.\nלא בטוח שיש כאן קפיצה.\nגבים אחרי שיטפונות בלבד. יבש בקיץ.",
+    "description": "גבים בנחל ברק ונחל ורדית. לא בטוח שיש כאן קפיצה. טרם אומת בשטח.",
+    "location_approx": true,
+    "unverified": true
+  },
+  {
+    "id": "tzalmon-bridge",
+    "name": "גשר נחל צלמון",
+    "region": "north",
+    "lat": 32.8585035,
+    "lng": 35.486404,
+    "height_min": 4,
+    "height_max": 4,
+    "jump_heights": [
+      4
+    ],
+    "accessibility": "medium",
+    "rocks": "אין",
+    "depth_known": true,
+    "water_depth": "כמטר וחצי (רדוד)",
+    "entry_type": "unknown",
+    "season": "כל השנה",
+    "warnings": "בקיץ המים רדודים, הנחל צר וצריך לכוון טוב את הקפיצה.",
+    "description": "קפיצה מגשר מעל נחל צלמון, כ־4 מטר. פחות מתאים לסלטות. כשנכנסים לישוב פונים בכיכר ימינה, ובפנייה הראשונה שוב ימינה, ממשיכים עד שמגיעים לדרך עפר. חונים בחניית עפר ומשם ירידה תלולה של 5–10 דקות הליכה ומגיעים לגשר.",
+    "image": "/images/spots/tzalmon-bridge.jpg",
+    "images": [
+      "/images/spots/tzalmon-bridge.jpg",
+      "/images/spots/tzalmon-bridge-2.webp"
+    ],
+    "videos": [
+      "/videos/spots/tzalmon-bridge-2.mp4",
+      "/videos/spots/tzalmon-bridge.mp4"
+    ],
+    "waze_query": "לבנים",
+    "location_approx": false
+  },
+  {
+    "id": "prat-canyon",
+    "name": "בריכת הנקיק / עין שחרית — נחל פרת",
+    "region": "center",
+    "lat": 31.8312138,
+    "lng": 35.3190602,
+    "height_min": 3,
+    "height_max": 6.5,
+    "accessibility": "medium",
+    "rocks": "לא ידוע",
+    "depth_known": true,
+    "water_depth": "עמוק בנקודות ספציפיות",
+    "entry_type": "deep",
+    "season": "כל השנה",
+    "warnings": "שתי קפיצות: 3 מטר ו-6.5 מטר. הקפיצה של 3 מטר קלילה. הקפיצה של 6.5 מטר מסוכנת — יש סלע שצריך לעבור, חייבים לקפוץ רחוק, אבל לא רחוק מדי כי יש סלע נוסף. הנקיק צר מאוד. עמוק בנקודות ספציפיות — חובה לבדוק עומק לפני קפיצה. לא טוב לסלטות. ירידה מנופי פרת / מצפה שחרית.",
+    "description": "בריכת הנקיק בנחל פרת (ואדי קלט), ליד עין שחרית. מקום יפה וכיפי. שתי קפיצות לנקיק צר מאוד: 3 מטר (קלילה) ו-6.5 מטר (מסוכנת). בקפיצה הגבוהה יש סלע שצריך לעבור — לקפוץ רחוק, אבל לא רחוק מדי כי יש סלע נוסף. עמוק בנקודות ספציפיות, לבדוק עומק. לא טוב לסלטות.",
+    "location_approx": false,
+    "image": "/images/spots/prat-canyon.jpg",
+    "images": [
+      "/images/spots/prat-canyon.jpg",
+      "/images/spots/prat-canyon-2.jpg"
+    ],
+    "videos": [
+      "/videos/spots/prat-canyon.mov",
+      "/videos/spots/prat-canyon-2.mov",
+      "/videos/spots/prat-canyon-3.mov"
+    ],
+    "instagram_url": "https://www.instagram.com/reel/DaxkmHFtwst/"
+  },
+  {
+    "id": "white-waterfall",
+    "name": "המפל הלבן",
+    "region": "north",
+    "lat": 32.822036,
+    "lng": 35.747399,
+    "height_min": 6,
+    "height_max": 18,
+    "accessibility": "medium",
+    "rocks": "אין",
+    "depth_known": true,
+    "water_depth": "אותו עומק לשתי הקפיצות — מירבי פחות מ-3 מטר",
+    "entry_type": "unknown",
+    "season": "כל השנה",
+    "warnings": "קפיצת 18 מטר מסוכנת מאוד — חייבים לקפוץ לאיזור ספציפי מאוד שבו העומק המירבי פחות מ-3 מטר. לא ממליצים לאף אחד לקפוץ משם.\nקפיצת 6 מטר: הטיפוס אליה על הקיר לא פשוט.\nאותו עומק לשתי הקפיצות. בדקו עומק לפני כל קפיצה.",
+    "description": "המפל הלבן — מפל שהוא חלק ממסלול נחל אל על. שתי קפיצות: כ-6 מטר וכ-18 מטר, עם אותו עומק. הקפיצה של 18 מטר מסוכנת מאוד ולא ממליצים — חייבים לקפוץ לאיזור ספציפי מאוד שבו העומק המירבי פחות מ-3 מטר. הטיפוס לקפיצת 6 המטר על הקיר לא פשוט. המפל מלא גם בקיץ. לאורך הנחל יש עוד בריכות קטנות עם קפיצות קטנות. ווייז ל«חניון נחל אל על המפל הלבן אליעד».",
+    "waze_query": "חניון נחל אל על המפל הלבן אליעד",
+    "image": "/images/spots/white-waterfall.jpg",
+    "images": [
+      "/images/spots/white-waterfall.jpg",
+      "/images/spots/white-waterfall-2.jpg"
+    ],
+    "videos": [
+      "/videos/spots/white-waterfall.mov",
+      "/videos/spots/white-waterfall-2.mp4"
+    ],
+    "location_approx": false,
+    "instagram_url": "https://www.instagram.com/reel/Dbs_JBBtX2i/",
+    "itm_easting": 270300,
+    "itm_northing": 747609,
+    "jump_heights": [
+      6,
+      18
+    ]
+  },
+  {
+    "id": "devora-fall",
+    "name": "מפל דבורה",
+    "region": "north",
+    "lat": 33.043435,
+    "lng": 35.66768,
+    "height_min": 3,
+    "height_max": 19,
+    "accessibility": "hard",
+    "rocks": "לא ידוע",
+    "depth_known": false,
+    "water_depth": "חלק עמוק, חלק סלעים — צריך לבדוק",
+    "entry_type": "unknown",
+    "season": "כל השנה",
+    "warnings": "שלוש קפיצות: 19 מטר, 15 מטר ו-3 מטר.\nשמורה, סלעים חלקלקים. חלק מהבריכה עמוקה ובחלק יש סלעים — צריך לבדוק. בדקו עומק לפני כל קפיצה.",
+    "description": "מפל דבורה בנחל גילבון, בדרך למפל גילבון. שלוש קפיצות: 19 מטר, 15 מטר ו-3 מטר. מתאים למתקדמים. מלא כל השנה. ווייז ל«חניון נחל גילבון». משם כ-15 דקות הליכה למפל. חלק מהבריכה עמוקה ובחלק יש סלעים — צריך לבדוק.",
+    "waze_query": "חניון נחל גילבון",
+    "location_approx": false,
+    "jump_heights": [
+      3,
+      15,
+      19
+    ],
+    "instagram_url": "https://www.instagram.com/reel/DYfGMkStVQr/"
+  },
+  {
+    "id": "nahal-shokh",
+    "name": "מפלי נחל שוח",
+    "region": "north",
+    "lat": 32.7585,
+    "lng": 35.0182,
+    "height_min": 0,
+    "height_max": 0,
+    "accessibility": "medium",
+    "rocks": "אין",
+    "depth_known": false,
+    "water_depth": "לא ידוע",
+    "entry_type": "unknown",
+    "season": "חורף-אביב",
+    "warnings": "לא אומת — לא ביקרנו במקום.\nלא בטוח שיש כאן קפיצה. אל תקפצו לפי מה שכתוב כאן.",
+    "description": "מפלי נחל שוח. לא ידוע אם יש שם קפיצה. טרם אומת בשטח.",
+    "location_approx": true,
+    "unverified": true
+  },
+  {
+    "id": "sonsal",
+    "name": "גב סונסאל / סוסנאל — מצפה דני",
+    "region": "center",
+    "lat": 31.9602,
+    "lng": 35.3655,
+    "height_min": 0,
+    "height_max": 0,
+    "accessibility": "medium",
+    "rocks": "לא ידוע",
+    "depth_known": false,
+    "water_depth": "לא ידוע",
+    "entry_type": "unknown",
+    "season": "חורף-אביב",
+    "warnings": "לא אומת — לא ביקרנו במקום.\nלא בטוח שיש כאן קפיצה. אל תקפצו לפי מה שכתוב כאן.",
+    "description": "גב סונסאל (גם סוסנאל) באזור מצפה דני. טרם אומת בשטח.",
+    "location_approx": true,
+    "unverified": true
+  },
+  {
+    "id": "saar-fall",
+    "name": "מפל סער",
+    "region": "north",
+    "lat": 33.239906,
+    "lng": 35.703681,
+    "height_min": 12,
+    "height_max": 15,
+    "height_estimated": true,
+    "height_label": "גובה משוער כ־12–15 מטר",
+    "accessibility": "medium",
+    "rocks": "לא ידוע",
+    "depth_known": false,
+    "water_depth": "לא ידוע",
+    "entry_type": "unknown",
+    "season": "אחרי שיטפונות",
+    "warnings": "הקפיצה טרם אומתה — עומק וגובה עדיין לא ידועים. המפל זורם רק אחרי גשמים ושיטפונות.",
+    "description": "מפל סער בצפון הגולן. קפיצה גבוהה מאוד. מתאים למתקדמים. המפל זורם רק בחורף אחרי גשם ושיטפונות. טרם אומת בשטח.",
+    "waze_query": "מפל סער",
+    "image": "/images/spots/saar-fall-2.jpeg",
+    "images": [
+      "/images/spots/saar-fall-2.jpeg",
+      "/images/spots/saar-fall-3.jpg",
+      "/images/spots/saar-fall.jpg"
+    ],
+    "image_captions": {
+      "/images/spots/saar-fall.jpg": "* המפל ריק בקיץ"
+    },
+    "location_approx": false,
+    "jump_heights": [
+      12,
+      15
+    ],
+    "listed": true,
+    "unverified": false
+  },
+  {
+    "id": "ein-ayit",
+    "name": "בריכת אניעם",
+    "region": "north",
+    "lat": 32.952746,
+    "lng": 35.740111,
+    "height_min": 3,
+    "height_max": 4,
+    "height_label": "כ־3–4 מטרים",
+    "accessibility": "medium",
+    "rocks": "אין",
+    "depth_known": true,
+    "water_depth": "כ־2–3 מטר, יש חלקים בבריכה שעמוקים יותר",
+    "entry_type": "unknown",
+    "season": "כל השנה",
+    "warnings": "",
+    "description": "בריכת אניעם בנחל עיט. מלאה כל השנה. מתאים למתחילים.",
+    "waze_query": "עין אניעם",
+    "image": "/images/spots/ein-ayit-2.jpg",
+    "images": [
+      "/images/spots/ein-ayit-2.jpg",
+      "/images/spots/ein-ayit.jpg"
+    ],
+    "videos": [
+      "/videos/spots/ein-ayit-2.mp4",
+      "/videos/spots/ein-ayit-3.mp4",
+      "/videos/spots/ein-ayit.mp4"
+    ],
+    "location_approx": false,
+    "listed": true,
+    "aliases": [
+      "aniam",
+      "ein-it",
+      "עין עיט",
+      "נחל עיט",
+      "עין אניעם"
+    ],
+    "jump_heights": [
+      3,
+      4
+    ],
+    "unverified": false
+  },
+  {
+    "id": "beit-zayit-dam",
+    "name": "סכר בית זית",
+    "region": "center",
+    "lat": 31.7834,
+    "lng": 35.1482,
+    "height_min": 0,
+    "height_max": 0,
+    "accessibility": "easy",
+    "rocks": "לא ידוע",
+    "depth_known": false,
+    "water_depth": "לא ידוע",
+    "entry_type": "unknown",
+    "season": "חורף-אביב",
+    "warnings": "לא אומת — לא ביקרנו במקום.\nלא בטוח שיש כאן קפיצה. אל תקפצו לפי מה שכתוב כאן.",
+    "description": "סכר ומאגר בית זית ליד ירושלים. לא בטוח שיש כאן קפיצה. טרם אומת בשטח.",
+    "image": "/images/spots/beit-zayit-dam.jpg",
+    "images": [
+      "/images/spots/beit-zayit-dam.jpg",
+      "/images/spots/beit-zayit-dam-2.jpeg",
+      "/images/spots/beit-zayit-dam-3.jpg",
+      "/images/spots/beit-zayit-dam-4.jpg"
+    ],
+    "unverified": true
+  },
+  {
+    "id": "zin-reservoir",
+    "name": "מאגר צין",
+    "region": "south",
+    "lat": 30.848,
+    "lng": 34.782,
+    "height_min": 0,
+    "height_max": 0,
+    "accessibility": "medium",
+    "rocks": "אין",
+    "depth_known": false,
+    "water_depth": "לא ידוע",
+    "entry_type": "unknown",
+    "season": "חורף-אביב",
+    "warnings": "לא אומת — לא ביקרנו במקום.\nלא בטוח שיש כאן קפיצה. אל תקפצו לפי מה שכתוב כאן.",
+    "description": "מאגר צין בנגב. ייתכן שיש קפיצה. טרם אומת בשטח.",
+    "location_approx": true,
+    "unverified": true
+  },
+  {
+    "id": "eilat-obs-roof",
+    "name": "גג מצפה התת ימי",
+    "aliases": [
+      "eilat-obs-roof",
+      "eilat-observatory",
+      "mitspe-tat-yami-roof",
+      "גג מצפה התת ימי",
+      "גג המצפה התת-ימי",
+      "מצפה התת ימי אילת"
+    ],
+    "region": "south",
+    "lat": 29.504,
+    "lng": 34.918,
+    "height_min": 0,
+    "height_max": 0,
+    "jump_heights": [],
+    "accessibility": "unknown",
+    "rocks": "לא ידוע",
+    "depth_known": false,
+    "water_depth": "",
+    "entry_type": "unknown",
+    "season": "",
+    "warnings": "",
+    "description": "ספוט שעדיין ממלאים בו פרטים.",
+    "waze_query": "פארק המצפה התת ימי אילת",
+    "images": [],
+    "videos": [],
+    "location_approx": true,
+    "unverified": true,
+    "listed": false
+  },
+  {
+    "id": "zerchan",
+    "name": "גב זרחן",
+    "region": "south",
+    "lat": 31.5862,
+    "lng": 35.3941,
+    "height_min": 0,
+    "height_max": 0,
+    "accessibility": "hard",
+    "rocks": "לא ידוע",
+    "depth_known": false,
+    "water_depth": "לא ידוע",
+    "entry_type": "unknown",
+    "season": "חורף-אביב",
+    "warnings": "לא אומת — לא ביקרנו במקום.\nלא בטוח שיש כאן קפיצה. אל תקפצו לפי מה שכתוב כאן.",
+    "description": "גב זרחן במדבר יהודה. טרם אומת בשטח.",
+    "location_approx": true,
+    "unverified": true
+  },
+  {
+    "id": "tzafira",
+    "name": "בריכת צפירה",
+    "region": "south",
+    "lat": 31.3373,
+    "lng": 35.277561,
+    "height_min": 6,
+    "height_max": 8,
+    "accessibility": "hard",
+    "rocks": "אין",
+    "depth_known": true,
+    "water_depth": "עמוק",
+    "entry_type": "deep",
+    "season": "כל השנה",
+    "warnings": "גב עמוק בראש מפל גבוה מאוד (המפל עצמו לא לקפיצה). ירידה ביתדות. קצה המצוק מסוכן. מים בעיקר אחרי שיטפונות.",
+    "description": "בריכת צפירה בנחל צאלים — גב עמוק על שפת מפל. קפיצות של כ-6 ו-8 מטר לפי הקהילה. מתאים למתחילים. מלא לרוב כל השנה — בעיקר אחרי שיטפונות, אבל לא רק בחורף–אביב. ווייז ל«חניון לילה בריכת צפירה». מהחניון הליכה של כ-3.5 ק״מ למעיין.",
+    "waze_query": "חניון לילה בריכת צפירה",
+    "image": "/images/spots/tzafira.webp",
+    "images": [
+      "/images/spots/tzafira.webp",
+      "/images/spots/tzafira-2.jpg",
+      "/images/spots/tzafira-3.jpg"
+    ],
+    "videos": [
+      "/videos/spots/tzafira.mp4",
+      "/videos/spots/tzafira-2.mp4"
+    ],
+    "location_approx": false,
+    "itm_easting": 226415,
+    "itm_northing": 582839
+  },
+  {
+    "id": "bor-haela",
+    "name": "בור האלה",
+    "region": "center",
+    "lat": 31.6872,
+    "lng": 34.9754,
+    "height_min": 0,
+    "height_max": 0,
+    "accessibility": "medium",
+    "rocks": "לא ידוע",
+    "depth_known": false,
+    "water_depth": "לא ידוע",
+    "entry_type": "unknown",
+    "season": "חורף-אביב",
+    "warnings": "לא אומת — לא ביקרנו במקום.\nלא בטוח שיש כאן קפיצה. אל תקפצו לפי מה שכתוב כאן.",
+    "description": "בור האלה באזור בית שמש / עמק האלה. טרם אומת בשטח.",
+    "location_approx": true,
+    "unverified": true
+  },
+  {
+    "id": "geve-atak",
+    "name": "גבי עתק",
+    "region": "south",
+    "lat": 31.5924,
+    "lng": 35.3912,
+    "height_min": 0,
+    "height_max": 0,
+    "accessibility": "hard",
+    "rocks": "לא ידוע",
+    "depth_known": false,
+    "water_depth": "לא ידוע",
+    "entry_type": "unknown",
+    "season": "חורף-אביב",
+    "warnings": "לא אומת — לא ביקרנו במקום.\nלא בטוח שיש כאן קפיצה. אל תקפצו לפי מה שכתוב כאן.",
+    "description": "גבי עתק במדבר יהודה. לא ברור אם יש קפיצה ומה הגובה. טרם אומת בשטח.",
+    "location_approx": true,
+    "unverified": true
+  },
+  {
+    "id": "baptist-village",
+    "name": "כפר הבפטיסטים — הירקון",
+    "region": "center",
+    "lat": 32.11614589272823,
+    "lng": 34.91334721486211,
+    "height_min": 3,
+    "height_max": 6,
+    "jump_heights": [
+      3,
+      4,
+      6
+    ],
+    "accessibility": "easy",
+    "rocks": "אין",
+    "depth_known": true,
+    "water_depth": "3–4 מטר",
+    "entry_type": "unknown",
+    "season": "כל השנה",
+    "warnings": "הטיפוס לקפיצה של 6 מ׳ קשה — היא בחלק הגבוה יותר של העץ.",
+    "description": "ספוט בכפר הבפטיסטים בירקון, כ־5 דקות הליכה מהחניה. במקום 3 קפיצות מהעץ — 3 מטר, 4 מטר ו־6 מטר. הקפיצה של 6 מטר קשה לטיפוס — היא בחלק הגבוה יותר של העץ. קיים גם טרזן נחמד. מתאים למתחילים.",
+    "image": "/images/spots/baptist-village.jpg",
+    "images": [
+      "/images/spots/baptist-village.jpg",
+      "/images/spots/baptist-village-2.jpg"
+    ],
+    "videos": [
+      "/videos/spots/baptist-village.mov"
+    ],
+    "waze_query": "כפר הבפטיסטים",
+    "location_approx": false,
+    "unverified": false
+  },
+  {
+    "id": "iris-pool",
+    "name": "בריכת האירוסים — רמת הגולן",
+    "region": "north",
+    "lat": 32.9994835,
+    "lng": 35.7393419,
+    "height_min": 12,
+    "height_max": 12,
+    "height_estimated": true,
+    "accessibility": "medium",
+    "rocks": "לא ידוע",
+    "depth_known": false,
+    "water_depth": "לא ידוע",
+    "entry_type": "unknown",
+    "season": "חורף–אביב",
+    "warnings": "שטח אש — הכניסה רק בסופי שבוע.\nעומק וסלעים במים לא ידועים — חשוב לבדוק בצורה יסודית.",
+    "description": "בריכת האירוסים ברמת הגולן, המפל זורם רק בחורף ובאביב אך הבריכה מלאה כל השנה. הבריכה נמצאת בשטח אש ולכן ניתן להיכנס אליה רק בימי שבת. ההליכה לבריכה כ־2 ק״מ וכוללת ירידה אתגרית.",
+    "waze_query": "מפל האירוסים",
+    "image": "/images/spots/iris-pool.jpg",
+    "images": [
+      "/images/spots/iris-pool.jpg",
+      "/images/spots/iris-pool-2.webp"
+    ],
+    "location_approx": false
+  },
+  {
+    "id": "solomon-pools",
+    "name": "בריכות שלמה — בית לחם",
+    "region": "center",
+    "lat": 31.6894,
+    "lng": 35.1681,
+    "height_min": 0,
+    "height_max": 0,
+    "accessibility": "medium",
+    "rocks": "לא ידוע",
+    "depth_known": false,
+    "water_depth": "לא ידוע",
+    "entry_type": "unknown",
+    "season": "כל השנה",
+    "warnings": "לא אומת — לא ביקרנו במקום.\nלא בטוח שיש כאן קפיצה.\nאזור רגיש ביטחונית. בדקו מצב בטחון לפני יציאה.",
+    "description": "בריכות שלמה ליד בית לחם. טרם אומת בשטח.",
+    "location_approx": true,
+    "unverified": true
+  },
+  {
+    "id": "kfar-blum-bridge",
+    "name": "גשר הירדן — כפר בלום",
+    "region": "north",
+    "lat": 33.1724,
+    "lng": 35.6082,
+    "height_min": 0,
+    "height_max": 0,
+    "accessibility": "easy",
+    "rocks": "אין",
+    "depth_known": false,
+    "water_depth": "לא ידוע",
+    "entry_type": "unknown",
+    "season": "כל השנה",
+    "warnings": "לא אומת — לא ביקרנו במקום.\nלא בטוח שיש כאן קפיצה. אל תקפצו לפי מה שכתוב כאן.",
+    "description": "גשר על הירדן באזור כפר בלום. לא בטוח שיש כאן קפיצה. טרם אומת בשטח.",
+    "image": "/images/spots/kfar-blum-bridge.jpg",
+    "images": [
+      "/images/spots/kfar-blum-bridge.jpg"
+    ],
+    "location_approx": true,
+    "unverified": true
+  },
+  {
+    "id": "beit-hashita-quarry",
+    "name": "מחצבת בזלת בית השיטה",
+    "region": "north",
+    "lat": 32.5434038608512,
+    "lng": 35.467145641725956,
+    "height_min": 5,
+    "height_max": 7.5,
+    "accessibility": "easy",
+    "rocks": "אין",
+    "depth_known": true,
+    "water_depth": "עמוק מאוד",
+    "entry_type": "deep",
+    "season": "כל השנה",
+    "warnings": "מחצבה פעילה — אסור להיכנס.\nהשביל עובר באזור העבודה של המחצבה הפעילה.\nיכולה להיות עבודה במקום.\nלפעמים שואבים את המים.\nאין הבטחה שהמים לא מזוהמים.\nהמים עמוקים מאוד, אבל תמיד בדקו עומק בעצמכם לפני כל קפיצה.",
+    "description": "מחצבת בזלת ליד בית השיטה. בריכה יפה ומעיין יפה, מתאים למתחילים. אפשר לקפוץ לאורך כל הבריכה — שתי גבהים: 5 מטר ו-7.5 מטר. הטיפוס בחזרה אחרי הקפיצה קל. המים עמוקים מאוד, אבל תמיד בדקו עומק בעצמכם. מלאה כל השנה אלא אם שואבים; עדיף בקיץ. ווייז ל«מחצבת בזלת בית השיטה», חניה שם, הליכה של כ-5 דקות לכיוון המחצבה.",
+    "image": "/images/spots/beit-hashita-quarry.jpg",
+    "images": [
+      "/images/spots/beit-hashita-quarry.jpg",
+      "/images/spots/beit-hashita-quarry-2.jpg"
+    ],
+    "videos": [
+      "/videos/spots/beit-hashita-quarry.mov",
+      "/videos/spots/beit-hashita-quarry-2.mp4"
+    ],
+    "location_approx": false,
+    "jump_heights": [
+      5,
+      7.5
+    ]
+  },
+  {
+    "id": "fasael-pool",
+    "name": "בריכת פצאל (בריכת הורדוס)",
+    "aliases": [
+      "fasael-pool",
+      "בריכת פצאל",
+      "בריכת הורדוס",
+      "פצאל",
+      "הורדוס"
+    ],
+    "region": "center",
+    "lat": 32.046266,
+    "lng": 35.429548,
+    "height_min": 4,
+    "height_max": 4,
+    "jump_heights": [
+      4
+    ],
+    "accessibility": "medium",
+    "rocks": "אין",
+    "depth_known": true,
+    "water_depth": "2.5 מטר",
+    "entry_type": "unknown",
+    "season": "כל השנה",
+    "warnings": "נמצאת בשטח C.\nלבדוק עומק לפני כל כניסה למים.",
+    "description": "בריכה בבקעת הירדן, נקראת גם בריכת הורדוס. בריכה גדולה כ־40×40 מטר. קפיצה 4 מטר. עומק כ־2.5 מטר — לבדוק עומק לפני. יש טרזן ופינות ישיבה בצל. נמצאת בשטח C. ווייז ל«בריכת הורדוס».",
+    "image": "/images/spots/fasael-herod-1.jpg",
+    "images": [
+      "/images/spots/fasael-herod-1.jpg",
+      "/images/spots/fasael-herod-2.jpg",
+      "/images/spots/fasael-herod-3.jpg"
+    ],
+    "image_captions": {
+      "/images/spots/fasael-herod-1.jpg": "מרחפן — ויקישיתוף, ענבל למברגר, CC BY-SA 4.0",
+      "/images/spots/fasael-herod-2.jpg": "ויקישיתוף — ענבל למברגר, CC BY-SA 4.0",
+      "/images/spots/fasael-herod-3.jpg": "זריחה — ויקישיתוף, ענבל למברגר, CC BY-SA 4.0"
+    },
+    "waze_query": "בריכת הורדוס",
+    "location_approx": false,
+    "unverified": false
+  },
+  {
+    "id": "arik-bridge",
+    "name": "גשר אריק",
+    "region": "north",
+    "lat": 32.9108,
+    "lng": 35.6247,
+    "height_min": 0,
+    "height_max": 0,
+    "accessibility": "easy",
+    "rocks": "אין",
+    "depth_known": false,
+    "water_depth": "לא ידוע",
+    "entry_type": "unknown",
+    "season": "כל השנה",
+    "warnings": "לא אומת — לא ביקרנו במקום. חבר שלח, כמעט אין מידע. אל תקפצו לפי מה שכתוב כאן.",
+    "description": "גשר אריק על הירדן מצפון לכנרת. מידע מועט, מחבר. טרם אומת בשטח.",
+    "image": "/images/spots/arik-bridge.jpg",
+    "images": [
+      "/images/spots/arik-bridge.jpg"
+    ],
+    "location_approx": true,
+    "unverified": true
+  },
+  {
+    "id": "ein-al-fuqa",
+    "name": "עין אל פוקא",
+    "region": "center",
+    "lat": 32.218,
+    "lng": 35.261,
+    "height_min": 0,
+    "height_max": 0,
+    "accessibility": "hard",
+    "rocks": "אין",
+    "depth_known": false,
+    "water_depth": "לא ידוע",
+    "entry_type": "unknown",
+    "season": "כל השנה",
+    "warnings": "לא אומת — לא ביקרנו במקום.\nשומרון — אזור רגיש. להגיע רק בקבוצה ועם היערכות בטחונית מתאימה.",
+    "description": "עין אל פוקא בשומרון. לא ידוע אם יש קפיצה. טרם אומת בשטח.",
+    "image": "/images/spots/ein-al-fuqa.jpeg",
+    "images": [
+      "/images/spots/ein-al-fuqa.jpeg"
+    ],
+    "location_approx": true,
+    "unverified": true
+  },
+  {
+    "id": "ein-yorkeam",
+    "name": "עין ירקעם",
+    "region": "south",
+    "lat": 30.938137,
+    "lng": 35.04135,
+    "height_min": 3,
+    "height_max": 6,
+    "jump_heights": [
+      3,
+      6
+    ],
+    "accessibility": "medium",
+    "rocks": "אין",
+    "depth_known": true,
+    "water_depth": "משתנה בין חלקי הבריכה — פחות עמוק משמעותית בקיץ",
+    "entry_type": "unknown",
+    "season": "כל השנה",
+    "warnings": "עומק משתנה בין חלקי הבריכה, ובקיץ המים פחות עמוקים משמעותית. בדקו עומק לפני קפיצה.",
+    "description": "עין ירקעם בנגב, ליד כביש 25 בין דימונה לים המלח. מתאים למתחילים. מקום מעולה לסלטות. יש 2 נקודות לקפיצה, אחת של 3 מטר ואחת של 6 מטר. העומק משתנה בין חלקי הבריכה, ובקיץ פחות עמוק משמעותית.",
+    "waze_query": "חניון עין ירקעם",
+    "image": "/images/spots/ein-yorkeam.webp",
+    "images": [
+      "/images/spots/ein-yorkeam.webp"
+    ],
+    "videos": [
+      "/videos/spots/ein-yorkeam.mov"
+    ],
+    "location_approx": false
+  },
+  {
+    "id": "yarkon-tree",
+    "name": "עץ בנחל הירקון",
+    "aliases": [
+      "yarkon-tree",
+      "עץ ירקון"
+    ],
+    "region": "center",
+    "lat": 32.125814,
+    "lng": 34.897937,
+    "height_min": 4,
+    "height_max": 8,
+    "jump_heights": [
+      4,
+      8
+    ],
+    "accessibility": "easy",
+    "rocks": "אין",
+    "depth_known": false,
+    "water_depth": "לא ידוע",
+    "entry_type": "unknown",
+    "season": "כל השנה",
+    "warnings": "שתי קפיצות מהעץ: 4 מטר באמצע ו-8 מטר מלמעלה. יש גם טרזן. זה לא כפר הבפטיסטים.",
+    "description": "עץ בנחל הירקון — לא כפר הבפטיסטים. שתי קפיצות: 4 מטר באמצע ו-8 מטר מלמעלה של העץ, ויש טרזן. מתאים לרמה בינונית. ממש קרוב למחלף ירקון. גישה קלה. כל השנה, בלי סלעים מתחת.",
+    "waze_query": "32.1227037, 34.8985128",
+    "location_approx": false,
+    "instagram_url": "https://www.instagram.com/reel/DU8nA1xjYwE/",
+    "itm_easting": 190533,
+    "itm_northing": 670311
+  },
+  {
+    "id": "ein-ankor",
+    "name": "מחצבת עין אנקור",
+    "aliases": [
+      "ein-ankor",
+      "עין אנקור"
+    ],
+    "region": "north",
+    "lat": 32.664,
+    "lng": 35.555,
+    "height_min": 0,
+    "height_max": 0,
+    "accessibility": "medium",
+    "rocks": "אין",
+    "depth_known": false,
+    "water_depth": "לא ידוע",
+    "entry_type": "unknown",
+    "season": "כל השנה",
+    "warnings": "מחצבה ליד מנחמיה. פרטי קפיצה לא ידועים.",
+    "description": "מחצבת עין אנקור ליד מנחמיה. טרם אומת בשטח.",
+    "location_approx": true,
+    "unverified": false,
+    "instagram_url": "https://www.instagram.com/reel/DXublNvjalA/"
+  },
+  {
+    "id": "ein-gav",
+    "name": "עין גב",
+    "aliases": [
+      "ein-gav"
+    ],
+    "region": "north",
+    "lat": 32.78401874258805,
+    "lng": 35.63553131804164,
+    "height_min": 1,
+    "height_max": 8,
+    "accessibility": "medium",
+    "rocks": "אין",
+    "depth_known": false,
+    "water_depth": "תלוי במפלס הכנרת",
+    "entry_type": "unknown",
+    "season": "כל השנה",
+    "warnings": "הקפיצה אסורה.\nהטיפוס לעמוד של 8 מ׳ מסוכן.\nככל שממשיכים יותר על המזח — יותר עמוק. בדקו עומק לפני כל קפיצה.",
+    "description": "עין גב בכנרת. שלוש קפיצות: 1–2 מ׳ מהמזח, 5 מטר מסירות שעוגנות שם, ו-8 מטר מהעמוד. מתאים לרמה בינונית. הטיפוס לעמוד מסוכן. ככל שממשיכים יותר על המזח — יותר עמוק. הקפיצה אסורה.",
+    "waze_query": "חוף עין גב כנרת",
+    "image": "/images/spots/ein-gav.jpeg",
+    "images": [
+      "/images/spots/ein-gav.jpeg"
+    ],
+    "videos": [
+      "/videos/spots/ein-gav.mp4",
+      "/videos/spots/ein-gav-2.mp4",
+      "/videos/spots/ein-gav-3.mp4"
+    ],
+    "location_approx": false,
+    "unverified": false,
+    "jump_heights": [
+      2,
+      5,
+      8
+    ],
+    "instagram_url": "https://www.instagram.com/reel/DbBbmVfNpe1/"
+  },
+  {
+    "id": "dubdevan-pool",
+    "name": "בריכת הדובדבן",
+    "aliases": [
+      "cherry-pool-nimrod",
+      "בריכת הדובדבן",
+      "נימרוד"
+    ],
+    "region": "north",
+    "lat": 33.2397629,
+    "lng": 35.7465332,
+    "height_min": 3,
+    "height_max": 4,
+    "accessibility": "medium",
+    "rocks": "אין",
+    "depth_known": false,
+    "water_depth": "עמוק",
+    "entry_type": "deep",
+    "season": "כל השנה",
+    "warnings": "שטח פרטי. הכניסה לא רשמית ובאחריות המבקר בלבד. הבריכה עמוקה אך יכולים להיות עצמים במים והמפלס עלול להשתנות — חובה לבדוק בעצמכם לפני הקפיצה.",
+    "description": "בריכת הדובדבן ברמת הגולן, ליד היישוב נימרוד. בריכה יפה עם קפיצה של כ-3–4 מטר. מתאים למתחילים. שטח פרטי; הכניסה לא רשמית ובאחריות המבקרים. נוסעים ליישוב נמרוד, משם ממשיכים ישר עם הרכב עד המיקום המדויק. צריך לטפס על גדר כדי להגיע לבריכה.",
+    "waze_query": "נמרוד",
+    "image": "/images/spots/dubdevan-pool.jpg",
+    "images": [
+      "/images/spots/dubdevan-pool.jpg"
+    ],
+    "videos": [
+      "/videos/spots/dubdevan-pool.mp4",
+      "/videos/spots/dubdevan-pool-2.mp4"
+    ],
+    "location_approx": false,
+    "itm_easting": 269980,
+    "itm_northing": 793938
+  },
+  {
+    "id": "yehudiya-waterfall",
+    "name": "מפל יהודיה",
+    "aliases": [
+      "yehudiya-waterfall",
+      "מפל יהודיה"
+    ],
+    "region": "north",
+    "lat": 32.95995101480364,
+    "lng": 35.72294884846109,
+    "height_min": 3,
+    "height_max": 6,
+    "jump_heights": [
+      3,
+      6
+    ],
+    "accessibility": "medium",
+    "rocks": "אין",
+    "depth_known": true,
+    "water_depth": "עמוק",
+    "entry_type": "unknown",
+    "season": "כל השנה",
+    "description": "כניסה דרך שמורת יהודיה (בתשלום), כ־45 דקות הליכה למפל. קפיצה מתאימה למתחילים. לפעמים יש פקחים מטעם השמורה שאוסרים על קפיצה במקום.",
+    "waze_query": "חניון יהודיה",
+    "image": "/images/spots/yehudiya-waterfall.jpg",
+    "images": [
+      "/images/spots/yehudiya-waterfall.jpg",
+      "/images/spots/yehudiya-waterfall-2.jpg"
+    ],
+    "location_approx": false,
+    "unverified": false
+  },
+  {
+    "id": "ein-mokesh",
+    "name": "עין מוקש",
+    "aliases": [
+      "ein-mokesh",
+      "עין מוקש"
+    ],
+    "region": "north",
+    "lat": 33.097874648382145,
+    "lng": 35.81727747229224,
+    "height_min": 2,
+    "height_max": 5,
+    "jump_heights": [
+      2,
+      5
+    ],
+    "accessibility": "medium",
+    "rocks": "אין",
+    "depth_known": true,
+    "water_depth": "עמוק",
+    "entry_type": "unknown",
+    "season": "כל השנה",
+    "description": "עין מוקש. גובה הקפיצה משתנה לפי מפלס המים, בין 2 ל־5 מטר, תלוי במפלס המים. מתאים למתחילים.",
+    "waze_query": "עין מוקש",
+    "image": "/images/spots/ein-mokesh.jpg",
+    "images": [
+      "/images/spots/ein-mokesh.jpg",
+      "/images/spots/ein-mokesh-2.jpg"
+    ],
+    "videos": [
+      "/videos/spots/ein-mokesh.mov"
+    ],
+    "location_approx": false,
+    "unverified": false
+  },
+  {
+    "id": "ein-mokeshon",
+    "name": "עין מוקשון",
+    "aliases": [
+      "ein-mokeshon",
+      "עין מוקשון"
+    ],
+    "region": "north",
+    "lat": 33.098599430852566,
+    "lng": 35.81581866875155,
+    "height_min": 0.5,
+    "height_max": 3,
+    "jump_heights": [
+      0.5,
+      3
+    ],
+    "accessibility": "medium",
+    "rocks": "לא ידוע",
+    "depth_known": true,
+    "water_depth": "עמוק",
+    "entry_type": "unknown",
+    "season": "כל השנה",
+    "warnings": "השטח סביב הבריכה ובשולי הדרך המובילה אליה עבר פינוי וניקוי מוקשים. אין לרדת מהשבילים הברורים המובילים אל הבריכה.",
+    "description": "עין מוקשון, בריכה נסתרת כ־2 דקות מבריכת עין מוקש המוכרת.",
+    "waze_query": "עין מוקש",
+    "image": "/images/spots/ein-mokeshon.jpg",
+    "images": [
+      "/images/spots/ein-mokeshon.jpg",
+      "/images/spots/ein-mokeshon-2.jpg"
+    ],
+    "location_approx": false,
+    "unverified": false
+  },
+  {
+    "id": "jordan-river-bridge",
+    "name": "גשר בנהר הירדן",
+    "aliases": [
+      "jordan-river-bridge",
+      "גשר בנהר הירדן"
+    ],
+    "region": "north",
+    "lat": 33.101485,
+    "lng": 35.624993,
+    "height_min": 7,
+    "height_max": 9,
+    "jump_heights": [
+      7,
+      9
+    ],
+    "accessibility": "medium",
+    "rocks": "לא ידוע",
+    "depth_known": true,
+    "water_depth": "2.5 מטר בקיץ",
+    "entry_type": "unknown",
+    "season": "כל השנה",
+    "warnings": "כדי לעלות על הגשר נדרש לטפס על גדר — לא בטיחותי.\nעומק כ-2.5 מטר בקיץ — בדקו עומק בעצמכם לפני כל קפיצה. העומק משתנה לפי עונה.",
+    "description": "גשר על נהר הירדן. שתי קפיצות: כ-7 מטר וכ-9 מטר. עומק כ-2.5 מטר בקיץ. החנייה והסיכה הן אותו מיקום. ווייז: https://waze.com/ul/hsvck69vq4. כדי לעלות על הגשר נדרש לטפס על גדר — לא בטיחותי.",
+    "waze_query": "https://waze.com/ul/hsvck69vq4",
+    "videos": [
+      "/videos/spots/jordan-river-bridge.mp4"
+    ],
+    "location_approx": false,
+    "unverified": false
+  },
+  {
+    "id": "ein-ria",
+    "name": "עין ריא",
+    "aliases": [
+      "ein-ria",
+      "עין ריא",
+      "עין ריא נוה צוף"
+    ],
+    "region": "center",
+    "lat": 32.00853576142612,
+    "lng": 35.11759658876103,
+    "height_min": 2,
+    "height_max": 5,
+    "jump_heights": [
+      2,
+      5
+    ],
+    "accessibility": "easy",
+    "rocks": "לא ידוע",
+    "depth_known": true,
+    "water_depth": "כ-4 מטר",
+    "entry_type": "deep",
+    "season": "כל השנה",
+    "description": "מעיין בשומרון. עומק כ־4 מטר. מקומיים בנו פלטפורמה מעץ שאפשר לקפוץ ממנה — גובה כ־2 מטר. אפשר גם מהסככה בגובה כ־5 מטר, אבל צריך לקפוץ רחוק יחסית. ווייז ל«עין ריא נוה צוף».",
+    "waze_query": "עין ריא נוה צוף",
+    "images": [],
+    "videos": [],
+    "location_approx": false,
+    "unverified": false
+  },
+  {
+    "id": "katzabiya-pool",
+    "name": "בריכת קצביה",
+    "aliases": [
+      "katzabiya-pool",
+      "breichat-katzabiya",
+      "בריכת קצביה",
+      "קצביה"
+    ],
+    "region": "north",
+    "lat": 32.96894981153591,
+    "lng": 35.72920256044326,
+    "height_min": 5,
+    "height_max": 11,
+    "jump_heights": [
+      5,
+      6,
+      10,
+      11
+    ],
+    "accessibility": "hard",
+    "rocks": "לא ידוע",
+    "depth_known": false,
+    "water_depth": "עמוק",
+    "entry_type": "deep",
+    "season": "כל השנה",
+    "description": "הבריכה מלאה כל השנה. שתי קפיצות: 5–6 מטר ו־10–11 מטר. עומק המים עמוק. יש הליכה של כקילומטר מצומת קצביה עד הבריכה. הירידה לבריכה קשה. ווייז ל«צומת קצביה»: https://waze.com/ul?q=%D7%A6%D7%95%D7%9E%D7%AA%20%D7%A7%D7%A6%D7%91%D7%99%D7%94",
+    "waze_query": "https://waze.com/ul?q=%D7%A6%D7%95%D7%9E%D7%AA%20%D7%A7%D7%A6%D7%91%D7%99%D7%94",
+    "image": "/images/spots/katzabiya-pool.jpg",
+    "images": [
+      "/images/spots/katzabiya-pool.jpg",
+      "/images/spots/katzabiya-pool-2.jpg"
+    ],
+    "videos": [],
+    "location_approx": false,
+    "unverified": false,
+    "itm_easting": 268515,
+    "itm_northing": 763894
+  },
+  {
+    "id": "neelam-lake",
+    "name": "האגם הנעלם",
+    "aliases": [
+      "neelam-lake",
+      "haagam-haneelam",
+      "האגם הנעלם"
+    ],
+    "region": "south",
+    "lat": 29.76661517999637,
+    "lng": 35.00028438857883,
+    "height_min": 4,
+    "height_max": 8,
+    "height_estimated": true,
+    "jump_heights": [
+      4,
+      8
+    ],
+    "accessibility": "medium",
+    "rocks": "לא ידוע",
+    "depth_known": false,
+    "water_depth": "עמוק (משוער); יכול להיות סלעים בנקודות מסוימות",
+    "entry_type": "deep",
+    "season": "כל השנה",
+    "description": "בריכה גדולה. עומק משוער — עמוק; יכול להיות סלעים בנקודות מסוימות בבריכה. גובה קפיצות משוער 4–8 מטר. המים מלוחים.",
+    "images": [],
+    "videos": [],
+    "location_approx": false,
+    "unverified": false,
+    "itm_easting": 199712,
+    "itm_northing": 408723
+  },
+  {
+    "id": "hidden-fall-arugot",
+    "name": "המפל הנסתר — נחל ערוגות",
+    "aliases": [
+      "hidden-fall-arugot",
+      "arugot-hidden-fall",
+      "המפל הנסתר",
+      "נחל ערוגות",
+      "המפל הנסתר נחל ערוגות"
+    ],
+    "region": "south",
+    "lat": 31.457913701716283,
+    "lng": 35.363602074646636,
+    "height_min": 3,
+    "height_max": 4,
+    "jump_heights": [
+      3,
+      4
+    ],
+    "accessibility": "medium",
+    "rocks": "לא ידוע",
+    "depth_known": true,
+    "water_depth": "עומק משוער 4 מטר",
+    "entry_type": "deep",
+    "season": "כל השנה",
+    "description": "נמצא בשמורת עין גדי. עומק משוער 4 מטר. קפיצה 3–4 מטר. ווייז ל«נחל ערוגות עין גדי».",
+    "waze_query": "נחל ערוגות עין גדי",
+    "images": [],
+    "videos": [],
+    "location_approx": false,
+    "unverified": false,
+    "itm_easting": 234584,
+    "itm_northing": 596221
+  },
+  {
+    "id": "dudim-cave",
+    "name": "מערת דודים",
+    "aliases": [
+      "dudim-cave",
+      "מערת דודים"
+    ],
+    "region": "south",
+    "lat": 31.47134546173986,
+    "lng": 35.388489950528495,
+    "height_min": 3,
+    "height_max": 5,
+    "jump_heights": [
+      3,
+      5
+    ],
+    "accessibility": "medium",
+    "rocks": "לא ידוע",
+    "depth_known": false,
+    "water_depth": "משתנה לפי עונה; הבריכה עמוקה בעיקר אחרי שיטפונות",
+    "entry_type": "unknown",
+    "season": "תלוי בעונה",
+    "description": "מפל בגובה 5 מטר. הבריכה עמוקה בעיקר אחרי שיטפונות — תלוי בעונה. קפיצה של 3 מטר וקפיצה של 5 מטר. עומק משתנה. באזור עין גדי / נחל דוד. ווייז ל«מערת דודים».",
+    "waze_query": "מערת דודים",
+    "images": [],
+    "videos": [],
+    "location_approx": false,
+    "unverified": false,
+    "itm_easting": 236947,
+    "itm_northing": 597714
+  },
+  {
+    "id": "geve-menachem",
+    "name": "גב מנחם — נחל עקב",
+    "aliases": [
+      "geve-menachem",
+      "menachem-akev",
+      "גב מנחם",
+      "נחל עקב",
+      "גב מנחם נחל עקב"
+    ],
+    "region": "south",
+    "lat": 30.807559211940646,
+    "lng": 34.815156070689945,
+    "height_min": 2,
+    "height_max": 3,
+    "jump_heights": [
+      2,
+      3
+    ],
+    "accessibility": "hard",
+    "rocks": "לא ידוע",
+    "depth_known": false,
+    "water_depth": "עומק תלוי בעונה — מלא בעיקר אחרי גשמים, לא מלא בקיץ",
+    "entry_type": "unknown",
+    "season": "תלוי בעונה",
+    "description": "נמצא מעל עין עקב (ספוט נפרד), כקילומטר הליכה ממנו. קפיצה של 2–3 מטר. עומק תלוי בעונה — מלא בעיקר אחרי גשמים, לא מלא בקיץ.",
+    "images": [],
+    "videos": [],
+    "location_approx": false,
+    "unverified": false,
+    "itm_easting": 182203,
+    "itm_northing": 524168
+  },
+  {
+    "id": "ein-arnon",
+    "name": "עין ארנון",
+    "aliases": [
+      "ein-arnon",
+      "עין ארנון",
+      "עין א-דיר",
+      "ארץ המעיינות"
+    ],
+    "region": "north",
+    "lat": 32.3872304657,
+    "lng": 35.5206917913,
+    "height_min": 1.5,
+    "height_max": 1.5,
+    "jump_heights": [
+      1.5
+    ],
+    "accessibility": "easy",
+    "rocks": "לא ידוע",
+    "depth_known": true,
+    "water_depth": "כ-2–2.5 מ׳",
+    "entry_type": "deep",
+    "season": "כל השנה",
+    "warnings": "תמיד בדקו עומק בעצמכם לפני כל קפיצה — אל תסמכו על מה שכתוב באתר.\nהמקפצה והדק עלולים להיות רטובים וחלקים.",
+    "description": "מעיין מאורגן בארץ המעיינות (בקעת הירדן, אזור בית שאן / מחולה). יש צל, מדרגות כניסה למים ומקפצה. קפיצה של 1.5 מ׳ מהמקפצה. עומק המים כ־2–2.5 מ׳ — תמיד בדקו בעצמכם. ווייז ל«עין ארנון»: https://waze.com/ul?q=%D7%A2%D7%99%D7%9F%20%D7%90%D7%A8%D7%A0%D7%95%D7%9F&ll=32.3872304657,35.5206917913&navigate=yes",
+    "waze_query": "https://waze.com/ul?q=%D7%A2%D7%99%D7%9F%20%D7%90%D7%A8%D7%A0%D7%95%D7%9F&ll=32.3872304657,35.5206917913&navigate=yes",
+    "images": [],
+    "videos": [],
+    "location_approx": false,
+    "unverified": false,
+    "itm_easting": 249214,
+    "itm_northing": 699303
+  },
+  {
+    "id": "ein-yarmouk",
+    "name": "עין ירמוך",
+    "aliases": [
+      "ein-yarmouk",
+      "ein-yarmuch",
+      "עין ירמוך",
+      "ארץ המעיינות"
+    ],
+    "region": "north",
+    "lat": 32.3846547772,
+    "lng": 35.5265065141,
+    "height_min": 1.5,
+    "height_max": 1.5,
+    "jump_heights": [
+      1.5
+    ],
+    "accessibility": "easy",
+    "rocks": "לא ידוע",
+    "depth_known": true,
+    "water_depth": "כ-2–2.5 מ׳",
+    "entry_type": "deep",
+    "season": "כל השנה",
+    "warnings": "תמיד בדקו עומק בעצמכם לפני כל קפיצה — אל תסמכו על מה שכתוב באתר.\nהמקפצה והמשטחים עלולים להיות רטובים וחלקים.",
+    "description": "מעיין בארץ המעיינות (בקעת הירדן, אזור בית שאן / מחולה). קפיצה של 1.5 מ׳ ממקפצה לתוך המעיין. עומק המים כ־2–2.5 מ׳ — תמיד בדקו בעצמכם. ווייז ל«עין ירמוך»: https://waze.com/ul?q=%D7%A2%D7%99%D7%9F%20%D7%99%D7%A8%D7%9E%D7%95%D7%9A&ll=32.3846547772,35.5265065141&navigate=yes",
+    "waze_query": "https://waze.com/ul?q=%D7%A2%D7%99%D7%9F%20%D7%99%D7%A8%D7%9E%D7%95%D7%9A&ll=32.3846547772,35.5265065141&navigate=yes",
+    "images": [],
+    "videos": [],
+    "location_approx": false,
+    "unverified": false,
+    "itm_easting": 249762,
+    "itm_northing": 699019
+  },
+  {
+    "id": "ein-gerar",
+    "name": "עין גרר",
+    "aliases": [
+      "ein-gerar",
+      "עין גרר",
+      "ארץ המעיינות"
+    ],
+    "region": "north",
+    "lat": 32.3881936951,
+    "lng": 35.5319285207,
+    "height_min": 1,
+    "height_max": 2,
+    "jump_heights": [
+      1,
+      2
+    ],
+    "accessibility": "easy",
+    "rocks": "לא ידוע",
+    "depth_known": false,
+    "water_depth": "לא ידוע",
+    "entry_type": "unknown",
+    "season": "כל השנה",
+    "warnings": "תמיד בדקו עומק בעצמכם לפני כל קפיצה — אל תסמכו על מה שכתוב באתר.\nמשטחים רטובים עלולים להיות חלקים.",
+    "description": "מעיין בארץ המעיינות (בקעת הירדן, אזור בית שאן / מחולה). קפיצה של 1–2 מ׳. ווייז ל«עין גרר»: https://waze.com/ul?q=%D7%A2%D7%99%D7%9F%20%D7%92%D7%A8%D7%A8&ll=32.3881936951,35.5319285207&navigate=yes",
+    "waze_query": "https://waze.com/ul?q=%D7%A2%D7%99%D7%9F%20%D7%92%D7%A8%D7%A8&ll=32.3881936951,35.5319285207&navigate=yes",
+    "images": [],
+    "videos": [],
+    "location_approx": false,
+    "unverified": false,
+    "itm_easting": 250271,
+    "itm_northing": 699413
+  },
+  {
+    "id": "ein-sukkot",
+    "name": "עין סוכות",
+    "aliases": [
+      "ein-sukkot",
+      "עין סוכות",
+      "ארץ המעיינות"
+    ],
+    "region": "north",
+    "lat": 32.3649066183,
+    "lng": 35.546974343,
+    "height_min": 0,
+    "height_max": 0,
+    "accessibility": "easy",
+    "rocks": "לא ידוע",
+    "depth_known": false,
+    "water_depth": "עמוק — אין מספר מדויק",
+    "entry_type": "deep",
+    "season": "כל השנה",
+    "warnings": "תמיד בדקו עומק בעצמכם לפני כל קפיצה — אל תסמכו על מה שכתוב באתר.\nהדק והמשטחים עלולים להיות רטובים וחלקים.",
+    "description": "מעיין עם מים עמוקים ודק לקפיצה, בארץ המעיינות (בקעת הירדן, אזור בית שאן / מחולה). גובה הקפיצה לא צוין. ווייז ל«עין סוכות»: https://waze.com/ul?q=%D7%A2%D7%99%D7%9F%20%D7%A1%D7%95%D7%9B%D7%95%D7%AA&ll=32.3649066183,35.5469743430&navigate=yes",
+    "waze_query": "https://waze.com/ul?q=%D7%A2%D7%99%D7%9F%20%D7%A1%D7%95%D7%9B%D7%95%D7%AA&ll=32.3649066183,35.5469743430&navigate=yes",
+    "images": [],
+    "videos": [],
+    "location_approx": false,
+    "unverified": false,
+    "itm_easting": 251695,
+    "itm_northing": 696835
+  },
+  {
+    "id": "einot-fasael",
+    "name": "עיינות פצאל",
+    "aliases": [
+      "einot-fasael",
+      "ayenot-fasael",
+      "עיינות פצאל",
+      "עינות פצאל"
+    ],
+    "region": "center",
+    "lat": 32.05083,
+    "lng": 35.40539,
+    "height_min": 3,
+    "height_max": 3,
+    "jump_heights": [
+      3
+    ],
+    "accessibility": "easy",
+    "rocks": "לא ידוע",
+    "depth_known": true,
+    "water_depth": "1.5 מטר — רדוד",
+    "entry_type": "unknown",
+    "season": "כל השנה",
+    "warnings": "המים רדודים — עומק כ־1.5 מטר בלבד. אפשר לקפוץ מגובה כ־3 מטר, אבל זו קפיצה למים רדודים ומסוכנת.\nאל תקפצו בלי לבדוק עומק בעצמכם. זה לא ספוט עמוק.\nשמורת טבע — לשמור על המקום.",
+    "description": "בריכה גדולה בנחל פצאל — לא בריכת הורדוס / בריכת פצאל. עומק המים כ־1.5 מטר (רדוד). המקום שמורה, הכניסה חינם. אפשר לקפוץ מ־3 מטר, אבל המים רדודים — קפיצה מ־3 מטר ל־1.5 מטר מסוכנת. ווייז ל«עיינות פצאל».",
+    "image": "/images/spots/einot-fasael.jpg",
+    "images": [
+      "/images/spots/einot-fasael.jpg"
+    ],
+    "image_captions": {
+      "/images/spots/einot-fasael.jpg": "בריכה בנחל פצאל — מסלולים, צילום ישי רוזנצוויג"
+    },
+    "waze_query": "עיינות פצאל",
+    "location_approx": true,
+    "unverified": false
+  },
+  {
+    "id": "ein-gev-pillars",
+    "name": "עמודים ישנים במים",
+    "aliases": [
+      "ein-gev-pillars",
+      "amudim-yeshinim",
+      "עמודים ישנים במים",
+      "עמודים ישנים"
+    ],
+    "region": "north",
+    "lat": 32.784583,
+    "lng": 35.6355,
+    "height_min": 4,
+    "height_max": 4,
+    "jump_heights": [
+      4
+    ],
+    "height_estimated": true,
+    "height_label": "כ־4 מטר",
+    "accessibility": "medium",
+    "rocks": "לא ידוע",
+    "depth_known": false,
+    "water_depth": "מים עמוקים — תלוי במפלס הכנרת",
+    "entry_type": "deep",
+    "season": "כל השנה",
+    "warnings": "העמודים ישנים והטיפוס עלול להיות מסובך. מסוכן לקפוץ כשיש גלים חזקים.",
+    "description": "עמודים ישנים שיוצאים מהמים בחוף עין גב. ההגעה אליהם בשחייה קצרה. דורש טיפוס. מתאים למתחילים.",
+    "waze_query": "חוף עין גב כנרת",
+    "image": "/images/spots/ein-gev-pillars.jpg",
+    "images": [
+      "/images/spots/ein-gev-pillars.jpg"
+    ],
+    "videos": [
+      "/videos/spots/ein-gev-pillars.mp4"
+    ],
+    "location_approx": false,
+    "unverified": false,
+    "listed": true
+  },
+  {
+    "id": "ein-rashesh",
+    "name": "עין ראשש",
+    "aliases": [
+      "ein-rashesh",
+      "עין ראשש"
+    ],
+    "region": "center",
+    "lat": 32.04080038133854,
+    "lng": 35.37206672098457,
+    "height_min": 1,
+    "height_max": 2,
+    "jump_heights": [
+      1,
+      2
+    ],
+    "accessibility": "easy",
+    "rocks": "לא ידוע",
+    "depth_known": true,
+    "water_depth": "כ־2 מטר, משתנה",
+    "entry_type": "unknown",
+    "season": "כל השנה",
+    "description": "מעיין קטן ויפה בשטחים בין השומרון לבקעת הירדן. יש הליכה קצרה למעיין עם שלטים שמכווינים. יש דק שאפשר לקפוץ ממנו. מתאים למתחילים.",
+    "waze_query": "עין ראשש",
+    "image": "/images/spots/ein-rashesh.jpeg",
+    "images": [
+      "/images/spots/ein-rashesh.jpeg"
+    ],
+    "location_approx": false,
+    "unverified": false,
+    "itm_easting": 235289,
+    "itm_northing": 660855
+  },
+  {
+    "id": "deir-samean",
+    "name": "דיר סמען",
+    "aliases": [
+      "deir-samean",
+      "dir-samean",
+      "דיר סמען",
+      "חורבת דיר סמען"
+    ],
+    "region": "center",
+    "lat": 32.06868455298419,
+    "lng": 35.05138287772371,
+    "height_min": 3,
+    "height_max": 6,
+    "jump_heights": [
+      3,
+      6
+    ],
+    "rocks": "לא ידוע",
+    "depth_known": true,
+    "water_depth": "עמוק",
+    "entry_type": "unknown",
+    "description": "דיר סמען. שתי קפיצות: 3 מטר ו־6 מטר. מתאים למתחילים.",
+    "waze_query": "חורבת דיר סמען",
+    "image": "/images/spots/deir-samean.jpg",
+    "images": [
+      "/images/spots/deir-samean.jpg",
+      "/images/spots/deir-samean-2.png"
+    ],
+    "location_approx": false,
+    "unverified": false,
+    "itm_easting": 205004,
+    "itm_northing": 663945
+  },
+  {
+    "id": "ein-samia",
+    "name": "עין סמיה",
+    "aliases": [
+      "ein-samia",
+      "ein-samiya",
+      "ain-samia",
+      "עין סמיה"
+    ],
+    "region": "center",
+    "lat": 31.9905432,
+    "lng": 35.3313094,
+    "height_min": 3,
+    "height_max": 3,
+    "jump_heights": [
+      3
+    ],
+    "rocks": "לא ידוע",
+    "depth_known": true,
+    "water_depth": "כ־2 מטר",
+    "entry_type": "unknown",
+    "description": "עין סמיה. קפיצה של 3 מטר. עומק מים כ־2 מטר. מתאים למתחילים. ווייז ל«עין סמיה».",
+    "waze_query": "עין סמיה",
+    "images": [],
+    "videos": [],
+    "location_approx": true,
+    "unverified": false,
+    "itm_easting": 231446,
+    "itm_northing": 655277
+  }
+]

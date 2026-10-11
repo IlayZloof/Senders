@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-visual" />
+  <meta name="theme-color" content="#0e1318" />
+  <script>
+    (function () {
+      var KEY = 'senders-theme';
+      var mode = localStorage.getItem(KEY) || 'dark';
+      try {
+        var q = new URLSearchParams(location.search).get('theme');
+        if (q === 'light' || q === 'dark' || q === 'auto') {
+          localStorage.setItem(KEY, q);
+          mode = q;
+        }
+      } catch (e) {}
+      if (mode !== 'light' && mode !== 'auto') mode = 'dark';
+      function resolved() {
+        if (mode === 'auto') {
+          return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        return mode;
+      }
+      var theme = resolved();
+      var root = document.documentElement;
+      var lang = 'he';
+      try {
+        lang = localStorage.getItem('senders-lang') === 'en' ? 'en' : 'he';
+      } catch (e2) {}
+      root.setAttribute('lang', lang);
+      root.setAttribute('dir', lang === 'en' ? 'ltr' : 'rtl');
+      root.setAttribute('data-lang', lang);
+      root.setAttribute('data-theme', theme);
+      root.setAttribute('data-theme-mode', mode);
+      root.style.colorScheme = theme;
+      var meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute('content', theme === 'light' ? '#efe6d6' : '#0e1318');
+    })();
+  </script>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+  <meta name="robots" content="noindex, nofollow, noarchive" />
+  <title data-i18n="meta.title.map">מפה — Senders</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Hebrew:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="ops-theme.css" />
+</head>
+<body class="map-page">
+  <nav class="nav" id="nav">
+    <a href="index.html" class="nav-logo">SEND<span>ERS</span></a>
+    <button class="nav-toggle" id="navToggle" aria-label="תפריט מידע">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links nav-links-primary" id="navLinksPrimary">
+      <li><a href="index.html">בית</a></li>
+      <li><a href="map.html">מפה</a></li>
+      <li><a href="community.html">קהילה</a></li>
+      <li><a href="add-spot.html">הוספת ספוט</a></li>
+      <li><a href="profile.html">פרופיל</a></li>
+    </ul>
+    <ul class="nav-links nav-links-info" id="navLinks">
+      <li><a href="about.html">קצת עליי</a></li>
+      <li><a href="safety.html">בטיחות</a></li>
+      <li><a href="faq.html">שאלות נפוצות</a></li>
+      <li><a href="terms.html">תנאי שימוש</a></li>
+      <li><a href="privacy.html">מדיניות פרטיות</a></li>
+      <li><a href="contact.html">צור קשר</a></li>
+    </ul>
+    <div class="nav-auth" id="authArea"></div>
+  </nav>
+
+  <div class="guest-banner" id="guestBanner" hidden></div>
+
+  <main>
+    <section class="page-hero map-page-hero">
+      <div class="container">
+        <h1 class="page-title map-page-title" data-i18n="map.title">מפת הקפיצות של ישראל</h1>
+        <div class="map-legend">
+          <span><i style="background:#3d8b8b"></i> <span data-i18n="map.legend.8">עד 8מ׳</span></span>
+          <span><i style="background:#c4a35a"></i> <span data-i18n="map.legend.10">10–15מ׳</span></span>
+          <span><i style="background:#c45c4a"></i> <span data-i18n="map.legend.15">מעל 15מ׳</span></span>
+          <span><i style="background:#8b9cb3"></i> <span data-i18n="map.legend.20">מעל 20מ׳</span></span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" style="padding-top: 0">
+      <div class="container">
+        <div class="map-layout">
+          <div class="map-container" id="mainMap"></div>
+          <div class="map-sidebar">
+            <div class="map-search-wrap">
+              <input type="search" id="mapSearch" class="map-search" placeholder="חיפוש לפי שם..." data-i18n-placeholder="map.searchPh" dir="rtl" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="search" />
+              <ul id="mapSearchSuggest" class="map-search-suggest" role="listbox" aria-label="הצעות חיפוש" data-i18n-aria="map.searchSuggest"></ul>
+            </div>
+            <div class="filter-bar" id="mapFilters">
+              <button class="filter-btn active" data-filter="all" data-i18n="map.filter.all">הכל</button>
+              <button class="filter-btn" data-filter="north" data-i18n="map.filter.north">צפון</button>
+              <button class="filter-btn" data-filter="center" data-i18n="map.filter.center">מרכז</button>
+              <button class="filter-btn" data-filter="south" data-i18n="map.filter.south">דרום</button>
+            </div>
+            <div class="filter-bar" id="heightFilters">
+              <button class="filter-btn active" data-height="all" data-i18n="map.height.all">כל הגבהים</button>
+              <button class="filter-btn" data-height="0-5" data-i18n="map.height.0-5">עד 5מ׳</button>
+              <button class="filter-btn" data-height="5-10" data-i18n="map.height.5-10">5–10מ׳</button>
+              <button class="filter-btn" data-height="10-15" data-i18n="map.height.10-15">10–15מ׳</button>
+              <button class="filter-btn" data-height="15+" data-i18n="map.height.15+">15מ׳+</button>
+            </div>
+            <div class="filter-bar">
+              <button type="button" class="filter-btn" id="favFilterBtn" data-i18n="map.fav">♥ מועדפים</button>
+            </div>
+            <div class="map-spot-list" id="mapSpotList"></div>
+            <a href="add-spot.html" class="btn btn-primary btn-full" data-i18n="map.add">+ הוספת ספוט</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer" id="siteFooter"></footer>
+
+  <script type="module">
+    import { initNav, showGuestBanner } from './js/ui.js';
+    import { initMap } from './js/map.js';
+
+    initNav();
+    showGuestBanner();
+
+    initMap('mainMap', {
+      showList: true,
+      listContainerId: 'mapSpotList',
+      filterContainerId: 'mapFilters',
+      heightFilterContainerId: 'heightFilters',
+      searchInputId: 'mapSearch',
+      favFilterId: 'favFilterBtn',
+    });
+  </script>
+</body>
+</html>

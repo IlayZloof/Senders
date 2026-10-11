@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-visual" />
+  <meta name="theme-color" content="#0e1318" />
+  <script>
+    (function () {
+      var KEY = 'senders-theme';
+      var mode = localStorage.getItem(KEY) || 'dark';
+      try {
+        var q = new URLSearchParams(location.search).get('theme');
+        if (q === 'light' || q === 'dark' || q === 'auto') {
+          localStorage.setItem(KEY, q);
+          mode = q;
+        }
+      } catch (e) {}
+      if (mode !== 'light' && mode !== 'auto') mode = 'dark';
+      function resolved() {
+        if (mode === 'auto') {
+          return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        return mode;
+      }
+      var theme = resolved();
+      var root = document.documentElement;
+      var lang = 'he';
+      try {
+        lang = localStorage.getItem('senders-lang') === 'en' ? 'en' : 'he';
+      } catch (e2) {}
+      root.setAttribute('lang', lang);
+      root.setAttribute('dir', lang === 'en' ? 'ltr' : 'rtl');
+      root.setAttribute('data-lang', lang);
+      root.setAttribute('data-theme', theme);
+      root.setAttribute('data-theme-mode', mode);
+      root.style.colorScheme = theme;
+      var meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute('content', theme === 'light' ? '#efe6d6' : '#0e1318');
+    })();
+  </script>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+  <meta name="robots" content="noindex, nofollow, noarchive" />
+  <title data-i18n="meta.title.reels">רילס — Senders</title>
+  <meta name="description" content="סרטוני קפיצות מהשטח." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Hebrew:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="home-feed.css" />
+  <link rel="stylesheet" href="ops-theme.css" />
+  <link rel="stylesheet" href="reels.css" />
+  <link rel="stylesheet" href="clip-editor.css" />
+</head>
+<body class="reels-page">
+  <nav class="nav" id="nav">
+    <a href="index.html" class="nav-logo">SEND<span>ERS</span></a>
+    <button class="nav-toggle" id="navToggle" aria-label="תפריט מידע">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links nav-links-primary" id="navLinksPrimary">
+      <li><a href="index.html">בית</a></li>
+      <li><a href="map.html">מפה</a></li>
+      <li><a href="community.html">קהילה</a></li>
+      <li><a href="add-spot.html">הוספת ספוט</a></li>
+      <li><a href="reels.html">רילס</a></li>
+      <li><a href="profile.html">פרופיל</a></li>
+    </ul>
+    <ul class="nav-links nav-links-info" id="navLinks">
+      <li><a href="about.html">קצת עליי</a></li>
+      <li><a href="safety.html">בטיחות</a></li>
+      <li><a href="faq.html">שאלות נפוצות</a></li>
+      <li><a href="terms.html">תנאי שימוש</a></li>
+      <li><a href="privacy.html">מדיניות פרטיות</a></li>
+      <li><a href="contact.html">צור קשר</a></li>
+    </ul>
+    <div class="nav-auth" id="authArea"></div>
+  </nav>
+
+  <main class="reels-shell">
+    <div id="reelsLoading" class="reels-loading" role="status" aria-live="polite" hidden>
+      <span class="reels-loading-dot" aria-hidden="true"></span>
+      <span class="reels-sr-only" data-i18n="common.loading">טוען...</span>
+    </div>
+    <div id="reelsFeed" class="reels-feed" aria-label="פיד רילס" data-i18n-aria="reels.feed"></div>
+  </main>
+  <script>
+    (function () {
+      try {
+        var raw = localStorage.getItem('senders-reels-playlist-v1') || sessionStorage.getItem('senders-reels-playlist-v1');
+        if (!raw) return;
+        var data = JSON.parse(raw);
+        var list = (data && data.videos) || data;
+        if (!list || !list.length) return;
+        document.documentElement.classList.add('reels-cached');
+      } catch (e) {}
+    })();
+  </script>
+
+  <button type="button" class="home-plus" id="reelsPlus" aria-label="העלאת סרטון" data-i18n-aria="home.plus"></button>
+  <p class="reels-toast" id="reelsToast" hidden></p>
+
+  <div class="home-sheet-backdrop" id="sheetBackdrop" hidden></div>
+
+  <aside class="home-sheet" id="spotSheet" hidden>
+    <div class="home-sheet-top">
+      <h2 data-i18n="home.sheet.spot">הספוט</h2>
+      <button type="button" class="home-sheet-close" id="spotSheetClose" aria-label="סגירה" data-i18n-aria="common.close">×</button>
+    </div>
+    <div id="spotSheetBody"></div>
+  </aside>
+
+  <aside class="home-sheet reels-comments-sheet" id="commentsSheet" hidden>
+    <div class="reels-comments-grab" id="commentsSheetGrab">
+      <span class="reels-comments-handle" aria-hidden="true"></span>
+    </div>
+    <div class="reels-comments-header">
+      <h2 id="commentsSheetTitle"><span data-i18n="home.sheet.comments">תגובות</span> <span class="reels-comments-count" id="commentsCount"></span></h2>
+      <button type="button" class="reels-comments-close" id="commentsSheetClose" aria-label="סגירה" data-i18n-aria="common.close">×</button>
+    </div>
+    <div class="reels-comments-list" id="commentsList"></div>
+    <p class="reels-comments-msg" id="commentsMsg" hidden></p>
+    <form class="reels-comments-composer" id="commentsForm">
+      <img class="reels-comments-me" id="commentsComposerAvatar" src="/icons/avatar-default.svg" alt="" />
+      <label class="reels-comments-sr" for="commentText" data-i18n="reels.addCmt">הוסף תגובה</label>
+      <div class="reels-comments-field">
+        <input type="text" id="commentText" name="text" maxlength="240" autocomplete="off" enterkeyhint="send" placeholder="הוסף תגובה…" data-i18n-placeholder="reels.addCmtPh" />
+        <button type="submit" class="reels-comments-post" id="commentsSend" hidden data-i18n="reels.post">פרסם</button>
+      </div>
+    </form>
+    <a id="commentsLoginLink" href="login.html?redirect=reels.html" hidden data-i18n="nav.login">התחברות</a>
+  </aside>
+
+  <div class="reels-center-overlay" id="reelMenuOverlay" hidden>
+    <div class="reels-center-dialog" role="dialog" aria-modal="true" aria-labelledby="reelMenuTitle">
+      <h2 id="reelMenuTitle" data-i18n="reels.more">אפשרויות</h2>
+      <button type="button" class="reels-center-btn" id="reelMenuEdit" data-i18n="reels.edit">עריכה</button>
+      <button type="button" class="reels-center-btn reels-center-btn-danger" id="reelMenuDelete" data-i18n="reels.delete">מחיקה</button>
+      <button type="button" class="reels-center-btn reels-center-btn-ghost" id="reelMenuClose" data-i18n="reels.menuCancel">ביטול</button>
+    </div>
+  </div>
+
+  <div class="reels-center-overlay" id="reelDeleteOverlay" hidden>
+    <div class="reels-center-dialog" role="dialog" aria-modal="true" aria-labelledby="reelDeleteTitle">
+      <h2 id="reelDeleteTitle" data-i18n="reels.deleteTitle">מחיקת רילס</h2>
+      <p id="reelDeleteBody" data-i18n="reels.deleteConfirm">למחוק את הרילס הזה? הוא יימחק מכל האפליקציה — פיד, דפי ספוט, פרופיל והקובץ. אי אפשר לבטל.</p>
+      <button type="button" class="reels-center-btn reels-center-btn-danger" id="reelDeleteConfirm" data-i18n="reels.delete">מחיקה</button>
+      <button type="button" class="reels-center-btn reels-center-btn-ghost" id="reelDeleteCancel" data-i18n="reels.menuCancel">ביטול</button>
+    </div>
+  </div>
+
+  <aside class="home-sheet" id="uploadSheet" hidden>
+    <div class="home-sheet-top">
+      <h2 id="uploadSheetTitle" data-i18n="home.upload.title">העלאת סרטון</h2>
+      <button type="button" class="home-sheet-close" id="uploadSheetClose" aria-label="סגירה" data-i18n-aria="common.close">×</button>
+    </div>
+    <form id="uploadForm">
+      <p id="uploadMsg"></p>
+      <p id="uploadEditNote" class="reels-edit-note" hidden></p>
+      <div class="form-group" id="uploadClipGroup">
+        <span class="clip-editor-label" data-i18n="home.upload.video">בחרו סרטונים</span>
+        <div id="clipEditorMount"></div>
+      </div>
+      <div class="form-group">
+        <label for="uploadSpotSearch" data-i18n="home.upload.spot">תיוג ספוט</label>
+        <div class="spot-picker">
+          <input type="hidden" id="uploadSpot" name="spotId" />
+          <input type="search" id="uploadSpotSearch" class="spot-picker-search" autocomplete="off" enterkeyhint="done" placeholder="שם ספוט או חיפוש מהרשימה…" data-i18n-placeholder="home.upload.searchSpot" aria-autocomplete="list" aria-controls="uploadSpotList" />
+          <ul class="spot-picker-list" id="uploadSpotList" role="listbox" aria-label="בחרו ספוט" data-i18n-aria="home.upload.chooseSpot"></ul>
+          <p class="spot-picker-empty" id="uploadSpotEmpty" hidden data-i18n="home.upload.noSpot">אפשר לכתוב שם ספוט ידנית</p>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="uploadCaption" data-i18n="home.upload.caption">כיתוב (אופציונלי)</label>
+        <input type="text" id="uploadCaption" name="caption" maxlength="200" placeholder="מילה על הקפיצה" data-i18n-placeholder="home.upload.captionPh" />
+      </div>
+      <div id="uploadProgress" class="upload-progress upload-progress--above-submit" hidden>
+        <div class="upload-progress-row">
+          <div class="upload-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <div class="upload-progress-fill"></div>
+          </div>
+          <button type="button" class="upload-cancel-btn" id="uploadCancel" hidden data-i18n="reels.cancelUpload">בטל העלאה</button>
+        </div>
+        <p id="uploadProgressLabel" class="upload-progress-label"></p>
+      </div>
+      <button type="submit" class="btn btn-primary btn-full" id="uploadSubmit" data-i18n="common.publish">פרסום</button>
+    </form>
+  </aside>
+
+  <script type="module">
+    import { initNav } from './js/ui.js';
+    import { initReels } from './js/reels.js';
+
+    initNav();
+    initReels();
+  </script>
+</body>
+</html>

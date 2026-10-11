@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-visual" />
+  <meta name="theme-color" content="#0e1318" />
+  <script>
+    (function () {
+      var KEY = 'senders-theme';
+      var mode = localStorage.getItem(KEY) || 'dark';
+      try {
+        var q = new URLSearchParams(location.search).get('theme');
+        if (q === 'light' || q === 'dark' || q === 'auto') {
+          localStorage.setItem(KEY, q);
+          mode = q;
+        }
+      } catch (e) {}
+      if (mode !== 'light' && mode !== 'auto') mode = 'dark';
+      function resolved() {
+        if (mode === 'auto') {
+          return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        return mode;
+      }
+      var theme = resolved();
+      var root = document.documentElement;
+      var lang = 'he';
+      try {
+        lang = localStorage.getItem('senders-lang') === 'en' ? 'en' : 'he';
+      } catch (e2) {}
+      root.setAttribute('lang', lang);
+      root.setAttribute('dir', lang === 'en' ? 'ltr' : 'rtl');
+      root.setAttribute('data-lang', lang);
+      root.setAttribute('data-theme', theme);
+      root.setAttribute('data-theme-mode', mode);
+      root.style.colorScheme = theme;
+      var meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute('content', theme === 'light' ? '#efe6d6' : '#0e1318');
+    })();
+  </script>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+  <meta name="robots" content="noindex, nofollow, noarchive" />
+  <title data-i18n="meta.title.about">קצת עליי — Senders</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Hebrew:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="ops-theme.css" />
+</head>
+<body>
+  <nav class="nav" id="nav">
+    <a href="index.html" class="nav-logo">SEND<span>ERS</span></a>
+    <button class="nav-toggle" id="navToggle" aria-label="תפריט מידע">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links nav-links-primary" id="navLinksPrimary">
+      <li><a href="index.html">בית</a></li>
+      <li><a href="map.html">מפה</a></li>
+      <li><a href="community.html">קהילה</a></li>
+      <li><a href="add-spot.html">הוספת ספוט</a></li>
+      <li><a href="profile.html">פרופיל</a></li>
+    </ul>
+    <ul class="nav-links nav-links-info" id="navLinks">
+      <li><a href="about.html">קצת עליי</a></li>
+      <li><a href="safety.html">בטיחות</a></li>
+      <li><a href="faq.html">שאלות נפוצות</a></li>
+      <li><a href="terms.html">תנאי שימוש</a></li>
+      <li><a href="privacy.html">מדיניות פרטיות</a></li>
+      <li><a href="contact.html">צור קשר</a></li>
+    </ul>
+    <div class="nav-auth" id="authArea"></div>
+  </nav>
+
+  <main>
+    <section class="section legal-page">
+      <div class="container legal-content">
+        <span class="tag" data-i18n="about.tag">קצת עליי</span>
+        <h1 class="page-title" data-i18n-html="about.title">קצת <span class="accent">עליי</span></h1>
+
+        <div class="about-block">
+          <h2 data-i18n="about.h1">איך הגעתי לתחום</h2>
+          <p data-i18n="about.p1">מגיל צעיר אני מטייל ואוהב את הטבע. אחרי 4–5 שנים של טריקינג — סלטות, ברגים ותרגילים על הקרקע — התחלתי לשלב בין השניים. תמיד לאורך השנים בכל מעיין שהגעתי אליו הייתי קופץ ועושה סלטות למים ופשוט נהנה מזה. משם נכנסתי לתחום קפיצות הצוקים, ובשנים האחרונות זה נהיה התחביב והספורט המרכזי שלי.</p>
+        </div>
+
+        <div class="about-block">
+          <h2 data-i18n="about.h2">למה דווקא לקפוץ מצוקים</h2>
+          <p data-i18n="about.p2">השילוב של טבע, אדרנלין, סלטות באוויר והרגע של אחרי קפיצה מוצלחת — זו תחושה מטורפת שקשה להסביר במילים.</p>
+          <p data-i18n="about.p3">אבל מעבר לאדרנלין, אני אוהב את כל מה שמסביב: להגיע למקומות חדשים, לטייל, להכיר אנשים ולחזור אחרי שהשגתי מטרה או הישג חדש.</p>
+        </div>
+
+        <div class="about-block">
+          <h2 data-i18n="about.h3">למה פתחתי את Senders?</h2>
+          <p data-i18n="about.p4">תחום הקליף ג’אמפינג בארץ עדיין לא מספיק מפותח. רציתי ליצור מקום וקהילה שבה קופצים יכולים להכיר אחד את השני, לצאת יחד לטיולים וסשנים, למצוא ספוטים בקלות ולשתף את החוויות שלהם.</p>
+          <p data-i18n="about.p5">מעבר לזה, חשוב לי להעלות מודעות גם על הסיכונים שבתחום וללמוד איך לעשות את זה בצורה בטוחה יותר.</p>
+        </div>
+
+        <div class="about-block">
+          <h2 data-i18n="about.h4">מטרת האתר והקהילה</h2>
+          <p data-i18n="about.p6">לחבר בין קופצים מכל הארץ, ליצור קהילה חזקה ולהפוך את התחום לגדול, מוכר ובטוח יותר בישראל.</p>
+        </div>
+
+        <p class="legal-note">
+          <span data-i18n="about.ig">לטיפים, שאלות, או סתם לדבר- תפנו באינסטגרם:</span>
+          <a class="ig-handle" href="https://www.instagram.com/ilay_zloof/" target="_blank" rel="noopener noreferrer">@ilay_zloof</a>
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer" id="siteFooter"></footer>
+
+  <script type="module">
+    import { initNav } from './js/ui.js';
+    initNav();
+  </script>
+</body>
+</html>

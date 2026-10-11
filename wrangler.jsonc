@@ -1,0 +1,16 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "senders-ops",
+  "account_id": "83c5a33a4c7060584bb5f76d1d234dab",
+  "compatibility_date": "2026-09-19",
+  "main": "worker.js",
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*"]
+  }
+}

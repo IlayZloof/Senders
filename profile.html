@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-visual" />
+  <meta name="theme-color" content="#0e1318" />
+  <script>
+    (function () {
+      var KEY = 'senders-theme';
+      var mode = localStorage.getItem(KEY) || 'dark';
+      try {
+        var q = new URLSearchParams(location.search).get('theme');
+        if (q === 'light' || q === 'dark' || q === 'auto') {
+          localStorage.setItem(KEY, q);
+          mode = q;
+        }
+      } catch (e) {}
+      if (mode !== 'light' && mode !== 'auto') mode = 'dark';
+      function resolved() {
+        if (mode === 'auto') {
+          return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        return mode;
+      }
+      var theme = resolved();
+      var root = document.documentElement;
+      var lang = 'he';
+      try {
+        lang = localStorage.getItem('senders-lang') === 'en' ? 'en' : 'he';
+      } catch (e2) {}
+      root.setAttribute('lang', lang);
+      root.setAttribute('dir', lang === 'en' ? 'ltr' : 'rtl');
+      root.setAttribute('data-lang', lang);
+      root.setAttribute('data-theme', theme);
+      root.setAttribute('data-theme-mode', mode);
+      root.style.colorScheme = theme;
+      var meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute('content', theme === 'light' ? '#efe6d6' : '#0e1318');
+    })();
+  </script>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+  <meta name="robots" content="noindex, nofollow, noarchive" />
+  <title data-i18n="meta.title.profile">פרופיל — Senders</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Hebrew:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="ops-theme.css" />
+</head>
+<body class="profile-page">
+  <nav class="nav" id="nav">
+    <a href="index.html" class="nav-logo">SEND<span>ERS</span></a>
+    <button class="nav-toggle" id="navToggle" aria-label="תפריט מידע">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links nav-links-primary" id="navLinksPrimary">
+      <li><a href="index.html">בית</a></li>
+      <li><a href="map.html">מפה</a></li>
+      <li><a href="community.html">קהילה</a></li>
+      <li><a href="add-spot.html">הוספת ספוט</a></li>
+      <li><a href="profile.html">פרופיל</a></li>
+    </ul>
+    <ul class="nav-links nav-links-info" id="navLinks">
+      <li><a href="about.html">קצת עליי</a></li>
+      <li><a href="safety.html">בטיחות</a></li>
+      <li><a href="faq.html">שאלות נפוצות</a></li>
+      <li><a href="terms.html">תנאי שימוש</a></li>
+      <li><a href="privacy.html">מדיניות פרטיות</a></li>
+      <li><a href="contact.html">צור קשר</a></li>
+    </ul>
+    <div class="nav-auth" id="authArea"></div>
+  </nav>
+
+  <main>
+    <section class="section">
+      <div class="container" id="profileContent">
+        <p data-i18n="common.loading">טוען...</p>
+      </div>
+    </section>
+  </main>
+
+  <script type="module">
+    import { initNav, formatDate, heightLabel, escapeHtml, profileAvatarSrc } from './js/ui.js';
+    import { t } from './js/i18n.js';
+    import { displaySpotName } from './js/spot-locale.js';
+    import { bindAvatarCrop } from './js/avatar-crop.js';
+    import {
+      getSession,
+      isAdmin,
+      getFavoriteSpots,
+      getJumpVideosByUser,
+      getMySavedJumpVideos,
+      signOut,
+      updateProfileAvatar,
+      clearProfileAvatar,
+    } from './js/store.js';
+
+    initNav();
+
+    const DEFAULT_AVATAR = '/icons/avatar-default.svg';
+    const params = new URLSearchParams(window.location.search);
+    const viewUserId = params.get('user');
+    let activeCropper = null;
+
+    function statCell(num, label) {
+      return `<div class="ig-stat"><span class="num">${num}</span><span class="label">${label}</span></div>`;
+    }
+
+    function reelThumbSrc(url) {
+      if (!url) return '';
+      return url.includes('#') ? url : `${url}#t=0.15`;
+    }
+
+    function reelGrid(videos, aria) {
+      if (!videos.length) return '';
+      return `
+        <div class="profile-reels-grid">
+          ${videos.map((v) => `
+            <a class="profile-reel-cell" href="reels.html?v=${encodeURIComponent(v.id)}" aria-label="${aria}">
+              <video src="${escapeHtml(reelThumbSrc(v.videoUrl))}" muted playsinline webkit-playsinline preload="auto"></video>
+            </a>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    function placeCountFromReels(videos) {
+      return new Set(
+        (videos || [])
+          .map((v) => v.spotId)
+          .filter((id) => id != null && String(id).trim() !== '')
+          .map((id) => String(id))
+      ).size;
+    }
+
+    function favsListHtml(favorites) {
+      if (!favorites.length) return `<p class="empty-state">${t('profile.noFavs')}</p>`;
+      return favorites.map((v) => `
+        <a href="spot.html?id=${v.id}" class="visit-item">
+          <div>
+            <strong>${escapeHtml(displaySpotName(v))}</strong>
+            <span>${heightLabel(v)}</span>
+          </div>
+          <span>→</span>
+        </a>
+      `).join('');
+    }
+
+    function primeReelThumbs(root) {
+      const videos = [...(root || document).querySelectorAll('.profile-reel-cell video')];
+      videos.forEach((video, index) => {
+        video.muted = true;
+        video.defaultMuted = true;
+        video.playsInline = true;
+        video.setAttribute('playsinline', '');
+        video.setAttribute('webkit-playsinline', '');
+        video.preload = index < 9 ? 'auto' : 'metadata';
+        const paint = () => {
+          try {
+            const duration = Number.isFinite(video.duration) ? video.duration : 0;
+            const t = duration > 0 ? Math.min(0.15, duration * 0.04) : 0.15;
+            if (video.currentTime < 0.05) video.currentTime = t;
+          } catch {
+            /* ignore seek errors */
+          }
+          const play = video.play();
+          if (play && typeof play.then === 'function') {
+            play.then(() => {
+              video.pause();
+            }).catch(() => {});
+          }
+        };
+        if (video.readyState >= 2) paint();
+        else video.addEventListener('loadeddata', paint, { once: true });
+        video.addEventListener('loadedmetadata', paint, { once: true });
+      });
+    }
+
+    async function renderProfile() {
+      const session = await getSession();
+      const userId = viewUserId || session?.user?.id;
+
+      const favorites = await getFavoriteSpots();
+
+      if (!userId) {
+        document.getElementById('profileContent').innerHTML = `
+          <div class="login-locked" style="max-width: 400px; margin: 2rem auto">
+            <p>${t('profile.login')}</p>
+            <a href="login.html?redirect=profile.html">${t('nav.login')}</a>
+            <p style="margin-top: 1rem">
+              <button type="button" class="btn btn-ghost btn-sm" id="profileFavsBtn">${t('profile.favs')} (${favorites.length})</button>
+            </p>
+          </div>
+          ${favsSheetHtml(favorites)}
+        `;
+        bindFavsSheet();
+        return;
+      }
+
+      const profile = session?.profile && session?.user?.id === userId
+        ? session.profile
+        : (await import('./js/store.js').then((m) => m.getProfile(userId)));
+      const reelVideos = await getJumpVideosByUser(userId);
+      const jumpsCount = reelVideos.length;
+      const reelsCount = reelVideos.length;
+      const placesCount = placeCountFromReels(reelVideos);
+      const isOwn = session?.user?.id === userId;
+      let savedVideos = [];
+      let savedError = '';
+      if (isOwn) {
+        try {
+          savedVideos = await getMySavedJumpVideos();
+        } catch (err) {
+          savedError = err.message || t('reels.savesOff');
+        }
+      }
+      const openSavedTab = isOwn && (params.get('tab') === 'saved' || window.location.hash === '#saved');
+      const displayName = profile?.display_name || t('common.user');
+      const photo = profileAvatarSrc(profile);
+      const avatarSrc = photo || DEFAULT_AVATAR;
+
+      document.title = `${displayName} — Senders`;
+
+      document.getElementById('profileContent').innerHTML = `
+        <div class="ig-profile">
+          <header class="ig-profile-top">
+            <h1 class="ig-profile-username">${escapeHtml(displayName)}</h1>
+          </header>
+
+          <div class="ig-profile-idrow">
+            <button type="button" class="ig-profile-avatar" id="profileAvatarBtn" aria-label="${t('profile.viewPhoto')}">
+              <img src="${escapeHtml(avatarSrc)}" alt="" id="profileAvatarImg">
+            </button>
+            <div class="ig-profile-stats">
+              ${statCell(placesCount, t('profile.places'))}
+              ${statCell(jumpsCount, t('profile.jumps'))}
+              ${statCell(reelsCount, t('profile.posts'))}
+            </div>
+          </div>
+
+          <div class="ig-profile-bio">
+            <div class="ig-profile-name">
+              ${escapeHtml(displayName)}
+              ${isAdmin(profile) ? `<span class="admin-badge">${t('profile.adminBadge')}</span>` : ''}
+            </div>
+            <div class="ig-profile-meta">
+              ${t('profile.memberSince')} ${profile?.created_at ? formatDate(profile.created_at) : t('common.today')}
+            </div>
+            ${profile?.bio ? `<p class="ig-profile-about">${escapeHtml(profile.bio)}</p>` : ''}
+          </div>
+
+          ${isOwn ? `
+          <div class="ig-profile-actions">
+            <a href="edit-profile.html" class="btn btn-ghost btn-sm">${t('profile.edit')}</a>
+            <button type="button" class="btn btn-ghost btn-sm" id="profileFavsBtn">${t('profile.favs')} (${favorites.length})</button>
+            ${isAdmin(profile, session?.user) ? `<a href="admin.html" class="btn btn-ghost btn-sm">${t('nav.admin')}</a>` : ''}
+            <button type="button" class="btn btn-ghost btn-sm" id="profileLogoutBtn">${t('nav.logout')}</button>
+          </div>
+          ` : ''}
+
+          <div class="profile-section" style="margin-bottom: 1.25rem">
+            ${isOwn ? `
+            <div class="profile-media-tabs" role="tablist">
+              <button type="button" class="profile-media-tab${!openSavedTab ? ' is-on' : ''}" data-profile-tab="reels" role="tab" aria-selected="${!openSavedTab}">${t('profile.reels')}</button>
+              <button type="button" class="profile-media-tab${openSavedTab ? ' is-on' : ''}" data-profile-tab="saved" role="tab" aria-selected="${openSavedTab}">${t('profile.saved')}</button>
+            </div>
+            ` : ''}
+            <div data-profile-panel="reels" ${isOwn && openSavedTab ? 'hidden' : ''}>
+              ${reelVideos.length ? reelGrid(reelVideos, t('nav.reels')) : `<p class="empty-state">${t('profile.noVids')}</p>`}
+            </div>
+            ${isOwn ? `
+            <div data-profile-panel="saved" ${openSavedTab ? '' : 'hidden'}>
+              <p class="profile-saved-hint">${t('profile.savedHint')}</p>
+              ${savedError ? `<p class="empty-state">${escapeHtml(savedError)}</p>` : savedVideos.length ? reelGrid(savedVideos, t('profile.saved')) : `<p class="empty-state">${t('profile.noSaved')}</p>`}
+            </div>
+            ` : ''}
+          </div>
+
+        </div>
+
+        ${isOwn ? favsSheetHtml(favorites) : ''}
+
+        <div class="ig-avatar-modal" id="avatarModal" hidden>
+          <div class="ig-avatar-modal-card" role="dialog" aria-modal="true" aria-label="${t('profile.viewPhoto')}">
+            <button type="button" class="ig-avatar-modal-close" id="avatarModalClose" aria-label="${t('profile.closePhoto')}">×</button>
+            <div class="ig-avatar-modal-img">
+              <img src="${escapeHtml(avatarSrc)}" alt="" id="avatarModalImg">
+            </div>
+            <p class="ig-avatar-modal-status" id="avatarModalStatus" hidden></p>
+            ${isOwn ? `
+            <div class="ig-avatar-modal-actions">
+              <button type="button" class="btn btn-ghost" id="avatarPickBtn">${photo ? t('profile.replacePhoto') : t('profile.addPhoto')}</button>
+              ${photo ? `<button type="button" class="btn btn-ghost" id="avatarRemoveBtn">${t('profile.removePhoto')}</button>` : ''}
+              <input type="file" id="avatarFileInput" accept="image/*" hidden>
+            </div>
+            ` : ''}
+          </div>
+        </div>
+
+        ${isOwn ? `
+        <div class="ig-avatar-crop" id="avatarCrop" hidden>
+          <div class="ig-avatar-crop-card" role="dialog" aria-modal="true" aria-label="${t('profile.cropHint')}">
+            <p class="ig-avatar-crop-hint">${t('profile.cropHint')}</p>
+            <div class="ig-avatar-crop-stage" id="avatarCropStage">
+              <div class="ig-avatar-crop-circle" id="avatarCropCircle">
+                <img alt="" id="avatarCropImg" draggable="false">
+              </div>
+            </div>
+            <p class="ig-avatar-modal-status" id="avatarCropStatus" hidden></p>
+            <div class="ig-avatar-crop-actions">
+              <button type="button" class="btn btn-ghost" id="avatarCropCancel">${t('common.cancel')}</button>
+              <button type="button" class="btn btn-primary" id="avatarCropSave">${t('profile.cropSave')}</button>
+            </div>
+          </div>
+        </div>
+        ` : ''}
+      `;
+
+      bindProfileChrome({ isOwn });
+      primeReelThumbs(document.getElementById('profileContent'));
+    }
+
+    function favsSheetHtml(favorites) {
+      return `
+        <div class="profile-favs-sheet" id="favsSheet" hidden>
+          <div class="profile-favs-card" role="dialog" aria-modal="true" aria-label="${t('profile.favs')}">
+            <div class="profile-favs-head">
+              <h2>${t('profile.favs')}</h2>
+              <button type="button" class="btn btn-ghost btn-sm" id="favsSheetClose" aria-label="${t('profile.closeFavs')}">×</button>
+            </div>
+            ${favsListHtml(favorites)}
+          </div>
+        </div>
+      `;
+    }
+
+    function bindFavsSheet() {
+      const sheet = document.getElementById('favsSheet');
+      const open = () => {
+        if (sheet) sheet.hidden = false;
+      };
+      const close = () => {
+        if (sheet) sheet.hidden = true;
+      };
+      document.getElementById('profileFavsBtn')?.addEventListener('click', open);
+      document.getElementById('favsSheetClose')?.addEventListener('click', close);
+      sheet?.addEventListener('click', (event) => {
+        if (event.target === sheet) close();
+      });
+    }
+
+    function bindProfileTabs() {
+      const tabs = [...document.querySelectorAll('[data-profile-tab]')];
+      const panels = [...document.querySelectorAll('[data-profile-panel]')];
+      if (!tabs.length) return;
+      tabs.forEach((tab) => {
+        tab.addEventListener('click', () => {
+          const id = tab.getAttribute('data-profile-tab');
+          tabs.forEach((el) => {
+            const on = el === tab;
+            el.classList.toggle('is-on', on);
+            el.setAttribute('aria-selected', on ? 'true' : 'false');
+          });
+          panels.forEach((panel) => {
+            panel.hidden = panel.getAttribute('data-profile-panel') !== id;
+          });
+          primeReelThumbs(document.getElementById('profileContent'));
+        });
+      });
+    }
+
+    function bindProfileChrome({ isOwn }) {
+      bindProfileTabs();
+      bindFavsSheet();
+
+      document.getElementById('profileLogoutBtn')?.addEventListener('click', async () => {
+        await signOut();
+        window.location.href = 'index.html';
+      });
+
+      const modal = document.getElementById('avatarModal');
+      activeCropper = isOwn ? bindAvatarCrop(document.getElementById('profileContent')) : null;
+      const openModal = () => {
+        if (modal) modal.hidden = false;
+      };
+      const closeModal = () => {
+        if (modal) modal.hidden = true;
+      };
+
+      document.getElementById('profileAvatarBtn')?.addEventListener('click', openModal);
+      document.getElementById('avatarModalClose')?.addEventListener('click', closeModal);
+      modal?.addEventListener('click', (event) => {
+        if (event.target === modal) closeModal();
+      });
+
+      if (!isOwn) return;
+
+      const fileInput = document.getElementById('avatarFileInput');
+      const statusEl = document.getElementById('avatarModalStatus');
+      document.getElementById('avatarPickBtn')?.addEventListener('click', () => fileInput?.click());
+      document.getElementById('avatarRemoveBtn')?.addEventListener('click', async () => {
+        if (statusEl) {
+          statusEl.hidden = false;
+          statusEl.classList.remove('is-err');
+          statusEl.textContent = t('profile.photoUploading');
+        }
+        try {
+          await clearProfileAvatar();
+          const nav = document.getElementById('navAvatar');
+          if (nav) {
+            nav.classList.remove('has-photo');
+            nav.innerHTML = `<img src="${DEFAULT_AVATAR}" alt="" class="nav-avatar-dummy">`;
+          }
+          await renderProfile();
+        } catch (err) {
+          if (statusEl) {
+            statusEl.hidden = false;
+            statusEl.classList.add('is-err');
+            statusEl.textContent = err?.message || t('profile.photoRemoveErr');
+          }
+        }
+      });
+      fileInput?.addEventListener('change', async () => {
+        const file = fileInput.files?.[0];
+        fileInput.value = '';
+        if (!file) return;
+        if (statusEl) {
+          statusEl.hidden = true;
+          statusEl.classList.remove('is-err');
+          statusEl.textContent = '';
+        }
+        try {
+          await activeCropper.open(file, async (dataUrl) => {
+            if (statusEl) {
+              statusEl.hidden = false;
+              statusEl.classList.remove('is-err');
+              statusEl.textContent = t('profile.photoUploading');
+            }
+            await updateProfileAvatar(dataUrl);
+            const navImg = document.querySelector('#navAvatar img');
+            if (navImg) navImg.src = dataUrl;
+            await renderProfile();
+          });
+        } catch (err) {
+          if (statusEl) {
+            statusEl.hidden = false;
+            statusEl.classList.add('is-err');
+            statusEl.textContent = err?.message || t('profile.photoErr');
+          }
+        }
+      });
+
+    }
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape') return;
+      if (activeCropper?.isOpen()) {
+        activeCropper.close();
+        return;
+      }
+      const modal = document.getElementById('avatarModal');
+      if (modal && !modal.hidden) modal.hidden = true;
+      const favs = document.getElementById('favsSheet');
+      if (favs && !favs.hidden) favs.hidden = true;
+    });
+
+    renderProfile();
+  </script>
+</body>
+</html>

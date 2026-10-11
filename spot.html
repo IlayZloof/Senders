@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-visual" />
+  <meta name="theme-color" content="#0e1318" />
+  <script>
+    (function () {
+      var KEY = 'senders-theme';
+      var mode = localStorage.getItem(KEY) || 'dark';
+      try {
+        var q = new URLSearchParams(location.search).get('theme');
+        if (q === 'light' || q === 'dark' || q === 'auto') {
+          localStorage.setItem(KEY, q);
+          mode = q;
+        }
+      } catch (e) {}
+      if (mode !== 'light' && mode !== 'auto') mode = 'dark';
+      function resolved() {
+        if (mode === 'auto') {
+          return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        return mode;
+      }
+      var theme = resolved();
+      var root = document.documentElement;
+      var lang = 'he';
+      try {
+        lang = localStorage.getItem('senders-lang') === 'en' ? 'en' : 'he';
+      } catch (e2) {}
+      root.setAttribute('lang', lang);
+      root.setAttribute('dir', lang === 'en' ? 'ltr' : 'rtl');
+      root.setAttribute('data-lang', lang);
+      root.setAttribute('data-theme', theme);
+      root.setAttribute('data-theme-mode', mode);
+      root.style.colorScheme = theme;
+      var meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute('content', theme === 'light' ? '#efe6d6' : '#0e1318');
+    })();
+  </script>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+  <meta name="robots" content="noindex, nofollow, noarchive" />
+  <title data-i18n="meta.title.spot">ספוט — Senders</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Hebrew:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="ops-theme.css" />
+</head>
+<body class="spot-page">
+  <nav class="nav" id="nav">
+    <a href="index.html" class="nav-logo">SEND<span>ERS</span></a>
+    <button class="nav-toggle" id="navToggle" aria-label="תפריט מידע">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links nav-links-primary" id="navLinksPrimary">
+      <li><a href="index.html">בית</a></li>
+      <li><a href="map.html">מפה</a></li>
+      <li><a href="community.html">קהילה</a></li>
+      <li><a href="add-spot.html">הוספת ספוט</a></li>
+      <li><a href="profile.html">פרופיל</a></li>
+    </ul>
+    <ul class="nav-links nav-links-info" id="navLinks">
+      <li><a href="about.html">קצת עליי</a></li>
+      <li><a href="safety.html">בטיחות</a></li>
+      <li><a href="faq.html">שאלות נפוצות</a></li>
+      <li><a href="terms.html">תנאי שימוש</a></li>
+      <li><a href="privacy.html">מדיניות פרטיות</a></li>
+      <li><a href="contact.html">צור קשר</a></li>
+    </ul>
+    <div class="nav-auth" id="authArea"></div>
+  </nav>
+
+  <div class="guest-banner" id="guestBanner" hidden></div>
+
+  <main>
+    <section class="section" style="padding-top: calc(var(--content-top) + 2rem)">
+      <div class="container" id="spotContent">
+        <p data-i18n="common.loading">טוען...</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer" id="siteFooter"></footer>
+
+  <dialog class="report-dialog" id="reportDialog">
+    <form id="reportForm">
+      <h3 data-i18n="spot.reportTitle">דיווח על ספוט</h3>
+      <p class="report-dialog-desc" data-i18n="spot.reportDesc">עזרו לנו לשמור על מידע מדויק ובטוח.</p>
+      <div class="form-group">
+        <label for="reportReason" data-i18n="spot.reportReason">סיבת הדיווח</label>
+        <select name="reason" id="reportReason" required>
+          <option value="" data-i18n="common.choose">בחרו</option>
+          <option value="מידע לא מדויק" data-i18n="spot.report.inaccurate">מידע לא מדויק</option>
+          <option value="ספוט מסוכן / סגור" data-i18n="spot.report.danger">ספוט מסוכן / סגור</option>
+          <option value="תוכן לא הולם" data-i18n="spot.report.bad">תוכן לא הולם</option>
+          <option value="אחר" data-i18n="spot.report.other">אחר</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="reportDetails" data-i18n="spot.report.details">פרטים (אופציונלי)</label>
+        <textarea name="details" id="reportDetails" rows="3" placeholder="מה לא בסדר?" data-i18n-placeholder="spot.report.ph"></textarea>
+      </div>
+      <div class="report-dialog-actions">
+        <button type="button" class="btn btn-ghost" id="reportCancel" data-i18n="common.cancel">ביטול</button>
+        <button type="submit" class="btn btn-primary" data-i18n="spot.report.send">שליחת דיווח</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script type="module">
+    import { initNav, showGuestBanner, requireAuth, formatDate, heightLabel, stars, wazeNavUrl, googleMapsNavUrl, escapeHtml, safePhotoSrc, spotBriefHtml } from './js/ui.js';
+    import { accessibilityLabel, regionLabel, t, waterDepthLabel } from './js/i18n.js';
+    import { displaySpotName, displaySpotRocks, displaySpotSeason, displaySpotWarnings } from './js/spot-locale.js';
+    import {
+      getSpot, getExperiences, addExperience, addJump, submitSpotReport,
+      REGION_LABELS, ACCESSIBILITY_LABELS, isFavorite, toggleFavorite,
+      getSpotPosts, addSpotPost, getJumpVideos, normalizeInstagramUrl,
+    } from './js/store.js';
+    import { compressImageFile } from './js/media.js';
+    import { emptySpotMediaHtml, getSpotMedia } from './js/spots-util.js';
+    import { initSpotSlider } from './js/spot-slider.js';
+
+    initNav();
+    showGuestBanner();
+
+    const params = new URLSearchParams(window.location.search);
+    const spotId = params.get('id');
+
+    if (!spotId) {
+      window.location.href = 'map.html';
+    }
+
+    async function renderSpot() {
+      const spot = await getSpot(spotId);
+      if (!spot) {
+        document.getElementById('spotContent').innerHTML = `
+          <div class="login-locked">
+            <p>${t('spot.missing')}</p>
+            <a href="map.html">${t('common.backMap')}</a>
+          </div>
+        `;
+        return;
+      }
+
+      const experiences = await getExperiences(spotId);
+      const spotPosts = await getSpotPosts(spotId);
+      const session = await import('./js/store.js').then((m) => m.getSession());
+
+      document.title = `${displaySpotName(spot)} — Senders`;
+
+      const spotMedia = getSpotMedia(spot);
+      const feedVideos = (await getJumpVideos(80)).filter((v) => String(v.spotId) === String(spot.id));
+      const seen = new Set(spotMedia.map((item) => item.src));
+      for (const video of feedVideos) {
+        if (!video.videoUrl || seen.has(video.videoUrl)) continue;
+        seen.add(video.videoUrl);
+        spotMedia.push({ type: 'video', src: video.videoUrl });
+      }
+
+      const hasMedia = spotMedia.length > 0;
+      const multi = spotMedia.length > 1;
+      const instagramUrl = normalizeInstagramUrl(spot.instagram_url || spot.instagram_video);
+      const instagramLink = instagramUrl
+        ? `<a href="${escapeHtml(instagramUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-primary">${t('spot.igWatch')}</a>`
+        : '';
+
+      const sliderMedia = hasMedia
+        ? `
+          <div class="spot-slider-viewport">
+            <div class="spot-slider-track" style="--slide-count: ${spotMedia.length}">
+              ${spotMedia.map((item, i) => `
+                <div class="spot-slider-slide">
+                  ${item.type === 'video' ? `
+                    <video class="spot-slider-video" src="${escapeHtml(item.src)}" playsinline webkit-playsinline muted defaultMuted loop preload="${i === 0 ? 'auto' : 'metadata'}"></video>
+                    <span class="spot-media-badge">${t('common.video')}</span>
+                  ` : `
+                    <img src="${escapeHtml(item.src)}" alt="${escapeHtml(displaySpotName(spot))}${item.caption ? ` — ${escapeHtml(item.caption)}` : (multi ? ` — ${i + 1}` : '')}" class="spot-slider-img" ${i === 0 ? '' : 'loading="lazy"'} />
+                  `}
+                  ${item.caption ? `<p class="spot-slider-caption">${escapeHtml(item.caption)}</p>` : ''}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+          ${multi ? `
+            <button type="button" class="spot-slider-btn spot-slider-prev" aria-label="${t('common.prev')}" disabled>‹</button>
+            <button type="button" class="spot-slider-btn spot-slider-next" aria-label="${t('common.next')}">›</button>
+            <div class="spot-slider-dots" role="tablist" aria-label="${t('spot.mediaPick')}">
+              ${spotMedia.map((item, i) => `
+                <button type="button" class="spot-slider-dot${i === 0 ? ' active' : ''}${item.type === 'video' ? ' spot-slider-dot--video' : ''}" role="tab" aria-label="${item.type === 'video' ? t('common.video') : t('common.photo')} ${i + 1}" aria-selected="${i === 0 ? 'true' : 'false'}"></button>
+              `).join('')}
+            </div>
+          ` : ''}
+        `
+        : emptySpotMediaHtml();
+
+      document.getElementById('spotContent').innerHTML = `
+        <div class="spot-slider${multi ? '' : ' spot-slider--single'}${hasMedia ? '' : ' spot-slider--empty'}" id="spotSlider" tabindex="0" dir="ltr" aria-label="${t('spot.mediaAria')}">
+          ${sliderMedia}
+          <div class="spot-hero-overlay">
+            <h1>${escapeHtml(displaySpotName(spot))}</h1>
+            <span class="spot-region">${regionLabel(spot.region)}</span>
+            ${spot.location_approx ? `<span class="spot-approx">${t('spot.approx')}</span>` : ''}
+            ${spot.unverified ? `<span class="spot-unverified">${t('spot.unverified')}</span>` : ''}
+          </div>
+        </div>
+
+        ${instagramLink ? `<div class="spot-ig-cta">${instagramLink}</div>` : ''}
+
+        <div class="spot-detail-grid" style="margin-top: 2rem">
+          <div>
+            <div class="spot-safety-notice">
+              <strong>${t('spot.before')}</strong>
+              <p>${t('spot.beforeBody')}</p>
+              <a href="safety.html">${t('spot.safetyLink')}</a>
+            </div>
+
+            <div class="spot-info-card">
+              ${spotBriefHtml(spot, instagramUrl)}
+
+              <div class="spot-meta-grid">
+                <div class="meta-item">
+                  <label>${t('spot.height')}</label>
+                  <span>${heightLabel(spot)}</span>
+                </div>
+                <div class="meta-item">
+                  <label>${t('spot.access')}</label>
+                  <span>${accessibilityLabel(spot.accessibility)}</span>
+                </div>
+                <div class="meta-item">
+                  <label>${t('rocks.label')}</label>
+                  <span>${escapeHtml(displaySpotRocks(spot))}</span>
+                </div>
+                <div class="meta-item">
+                  <label>${t('spot.depth')}</label>
+                  <span>${waterDepthLabel(spot.water_depth)}</span>
+                </div>
+                <div class="meta-item">
+                  <label>${t('spot.season')}</label>
+                  <span>${escapeHtml(displaySpotSeason(spot))}</span>
+                </div>
+              </div>
+              <p class="depth-disclaimer">${t('spot.depthNote')}</p>
+
+              ${spot.location_approx ? `
+                <div class="spot-warnings spot-approx-note">
+                  <strong>${t('spot.approxTitle')}</strong><br>${t('spot.approxBody')}
+                </div>
+              ` : ''}
+
+              ${displaySpotWarnings(spot) ? `
+                <div class="spot-warnings" role="alert">
+                  <strong>${t('spot.warns')}</strong><br>${escapeHtml(displaySpotWarnings(spot)).replace(/\n/g, '<br>')}
+                </div>
+              ` : ''}
+
+              <div class="spot-actions">
+                <button type="button" class="btn btn-ghost${isFavorite(spot.id) ? ' is-fav' : ''}" id="favSpotBtn">${isFavorite(spot.id) ? t('profile.inFavs') : t('profile.saveFav')}</button>
+                ${instagramUrl ? `<a href="${escapeHtml(instagramUrl)}" target="_blank" rel="noopener noreferrer" class="btn btn-primary">${t('spot.igBtn')}</a>` : ''}
+                <a href="${wazeNavUrl(spot.lat, spot.lng, spot.waze_query)}" target="_blank" rel="noopener" class="btn btn-primary">${escapeHtml(spot.id === 'meshushim' ? (spot.waze_query || displaySpotName(spot)) : t('spot.waze'))}</a>
+                <a href="${googleMapsNavUrl(spot.lat, spot.lng)}" target="_blank" rel="noopener" class="btn btn-ghost">Google Maps</a>
+                <button class="btn btn-ghost" id="logJumpBtn">${t('spot.logJump')}</button>
+                <a href="community.html?tab=meetups&spot=${encodeURIComponent(spot.id)}" class="btn btn-ghost">${t('spot.setMeet')}</a>
+                <button type="button" class="btn btn-ghost btn-report" id="reportSpotBtn">${t('spot.report')}</button>
+              </div>
+            </div>
+
+            <div class="field-feed" id="fieldFeed">
+              <h2>${t('spot.field')}</h2>
+              <p class="page-desc">${t('spot.fieldDesc')}</p>
+              <div id="spotPostFormArea">
+                ${session ? `
+                  <form class="experience-form field-post-form" id="spotPostForm">
+                    <div id="spotPostMsg"></div>
+                    <div class="form-group">
+                      <label for="spotPostText">${t('spot.postLabel')}</label>
+                      <textarea name="text" id="spotPostText" rows="3" placeholder="${t('spot.postPh')}"></textarea>
+                    </div>
+                    <div class="form-group">
+                      <label for="spotPostPhoto">${t('spot.photoOpt')}</label>
+                      <input type="file" name="photo" id="spotPostPhoto" accept="image/*" />
+                      <p class="form-hint">${t('spot.compress')}</p>
+                      <img id="spotPostPreview" class="field-photo-preview" alt="" hidden />
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full" id="spotPostSubmit">${t('spot.postField')}</button>
+                  </form>
+                ` : `
+                  <div class="login-locked">
+                    <p>${t('spot.wantPost')}</p>
+                    <a href="login.html?redirect=${encodeURIComponent('spot.html?id=' + spotId)}">${t('spot.loginShare')}</a>${t('spot.loginShareAfter')}
+                  </div>
+                `}
+              </div>
+              <div id="spotPostsList" class="community-feed">
+                ${spotPosts.length ? spotPosts.map((post) => {
+                  const photo = safePhotoSrc(post.photo);
+                  return `
+                    <article class="community-card">
+                      <div class="community-card-top">
+                        <span class="community-card-meta">${escapeHtml(post.displayName || t('common.user'))}</span>
+                        <time class="community-card-date">${escapeHtml(formatDate(post.createdAt))}</time>
+                      </div>
+                      ${post.text ? `<p class="community-card-text">${escapeHtml(post.text)}</p>` : ''}
+                      ${photo ? `<img class="community-card-photo" src="${photo}" alt="${escapeHtml(t('community.photoAlt', { name: displaySpotName(spot) }))}" />` : ''}
+                    </article>
+                  `;
+                }).join('') : `<p class="muted">${t('spot.noField')}</p>`}
+              </div>
+            </div>
+
+            <div class="experiences-section">
+              <h2 style="margin-bottom: 1rem">${t('spot.exps', { n: experiences.length })}</h2>
+              <div id="experiencesList">
+                ${experiences.length ? experiences.map((exp) => `
+                  <div class="experience-card">
+                    <div class="experience-header">
+                      <div>
+                        <span class="experience-author">${exp.profiles?.display_name || t('common.user')}</span>
+                        <span class="experience-date">${formatDate(exp.created_at)}</span>
+                      </div>
+                      <span class="experience-rating">${stars(exp.rating || 5)}</span>
+                    </div>
+                    <p class="experience-text">${exp.text}</p>
+                  </div>
+                `).join('') : `<p style="color: var(--text-muted)">${t('spot.noExps')}</p>`}
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div id="experienceFormArea">
+              ${session ? `
+                <div class="experience-form">
+                  <h3>${t('spot.shareExp')}</h3>
+                  <form id="expForm">
+                    <div class="form-group">
+                      <label>${t('spot.whatThere')}</label>
+                      <textarea name="text" required placeholder="${t('spot.expPh')}"></textarea>
+                    </div>
+                    <div class="form-group">
+                      <label>${t('spot.rating')}</label>
+                      <select name="rating">
+                        <option value="5">${t('spot.r5')}</option>
+                        <option value="4">${t('spot.r4')}</option>
+                        <option value="3">${t('spot.r3')}</option>
+                        <option value="2">${t('spot.r2')}</option>
+                        <option value="1">${t('spot.r1')}</option>
+                      </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full">${t('common.publish')}</button>
+                  </form>
+                </div>
+              ` : `
+                <div class="login-locked">
+                  <p>${t('spot.wantExp')}</p>
+                  <a href="login.html?redirect=spot.html?id=${spotId}">${t('spot.loginWrite')}</a>${t('spot.loginWriteAfter')}
+                </div>
+              `}
+            </div>
+          </div>
+        </div>
+      `;
+
+      initSpotSlider(document.getElementById('spotSlider'));
+
+      document.getElementById('favSpotBtn')?.addEventListener('click', () => {
+        const on = toggleFavorite(spot.id);
+        const btn = document.getElementById('favSpotBtn');
+        btn.classList.toggle('is-fav', on);
+        btn.textContent = on ? t('profile.inFavs') : t('profile.saveFav');
+      });
+
+      document.getElementById('logJumpBtn')?.addEventListener('click', async () => {
+        const s = await requireAuth();
+        if (!s) return;
+        const height = prompt(t('spot.promptH'), spot.height_max);
+        if (!height) return;
+        await addJump({ spotId, userId: s.user.id, height: parseInt(height, 10) });
+        alert(t('spot.jumpOk'));
+      });
+
+      const reportDialog = document.getElementById('reportDialog');
+      const reportForm = document.getElementById('reportForm');
+
+      document.getElementById('reportSpotBtn')?.addEventListener('click', async () => {
+        const s = await requireAuth();
+        if (!s) return;
+        reportForm.reset();
+        reportDialog.showModal();
+      });
+
+      document.getElementById('reportCancel')?.addEventListener('click', () => reportDialog.close());
+
+      reportForm?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const s = await requireAuth();
+        if (!s) return;
+        const fd = new FormData(reportForm);
+        const reason = fd.get('reason');
+        if (!reason) return;
+        try {
+          await submitSpotReport({
+            spotId,
+            spotName: spot.name,
+            userId: s.user.id,
+            reason,
+            details: fd.get('details') || '',
+          });
+          reportDialog.close();
+          alert(t('spot.reportOk'));
+        } catch {
+          alert(t('spot.reportFail'));
+        }
+      });
+
+      document.getElementById('expForm')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const s = await requireAuth();
+        if (!s) return;
+        const fd = new FormData(e.target);
+        await addExperience({
+          spotId,
+          userId: s.user.id,
+          text: fd.get('text'),
+          rating: parseInt(fd.get('rating'), 10),
+        });
+        renderSpot();
+      });
+
+      const postPhotoInput = document.getElementById('spotPostPhoto');
+      const postPreview = document.getElementById('spotPostPreview');
+      postPhotoInput?.addEventListener('change', async () => {
+        const file = postPhotoInput.files?.[0];
+        if (!file || !postPreview) return;
+        try {
+          const dataUrl = await compressImageFile(file);
+          postPreview.src = dataUrl;
+          postPreview.hidden = false;
+          postPreview.dataset.compressed = dataUrl;
+        } catch (err) {
+          postPhotoInput.value = '';
+          postPreview.hidden = true;
+          delete postPreview.dataset.compressed;
+          alert(err.message || t('spot.imgBig'));
+        }
+      });
+
+      document.getElementById('spotPostForm')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const s = await requireAuth();
+        if (!s) return;
+        const submitBtn = document.getElementById('spotPostSubmit');
+        const msg = document.getElementById('spotPostMsg');
+        const fd = new FormData(e.target);
+        const text = String(fd.get('text') || '');
+        let photo = postPreview?.dataset.compressed || '';
+        const file = postPhotoInput?.files?.[0];
+        if (file && !photo) {
+          try {
+            photo = await compressImageFile(file);
+          } catch (err) {
+            if (msg) msg.innerHTML = `<p class="form-error">${escapeHtml(err.message || t('spot.imgBig'))}</p>`;
+            else alert(err.message || 'התמונה גדולה מדי');
+            return;
+          }
+        }
+        try {
+          if (submitBtn) submitBtn.disabled = true;
+          await addSpotPost({ spotId, text, photo });
+          renderSpot();
+        } catch (err) {
+          if (msg) msg.innerHTML = `<p class="form-error">${escapeHtml(err.message || t('spot.postFail'))}</p>`;
+          else alert(err.message || 'הפרסום נכשל');
+        } finally {
+          if (submitBtn) submitBtn.disabled = false;
+        }
+      });
+    }
+
+    renderSpot();
+  </script>
+</body>
+</html>

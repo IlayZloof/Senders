@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-visual" />
+  <meta name="theme-color" content="#0e1318" />
+  <script>
+    (function () {
+      var KEY = 'senders-theme';
+      var mode = localStorage.getItem(KEY) || 'dark';
+      try {
+        var q = new URLSearchParams(location.search).get('theme');
+        if (q === 'light' || q === 'dark' || q === 'auto') {
+          localStorage.setItem(KEY, q);
+          mode = q;
+        }
+      } catch (e) {}
+      if (mode !== 'light' && mode !== 'auto') mode = 'dark';
+      function resolved() {
+        if (mode === 'auto') {
+          return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        return mode;
+      }
+      var theme = resolved();
+      var root = document.documentElement;
+      var lang = 'he';
+      try {
+        lang = localStorage.getItem('senders-lang') === 'en' ? 'en' : 'he';
+      } catch (e2) {}
+      root.setAttribute('lang', lang);
+      root.setAttribute('dir', lang === 'en' ? 'ltr' : 'rtl');
+      root.setAttribute('data-lang', lang);
+      root.setAttribute('data-theme', theme);
+      root.setAttribute('data-theme-mode', mode);
+      root.style.colorScheme = theme;
+      var meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute('content', theme === 'light' ? '#efe6d6' : '#0e1318');
+    })();
+  </script>
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/favicon-32.png" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png" />
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+  <meta name="robots" content="noindex, nofollow, noarchive" />
+  <title data-i18n="meta.title.editProfile">עריכת פרופיל — Senders</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Hebrew:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="ops-theme.css" />
+</head>
+<body class="edit-profile-page">
+  <nav class="nav" id="nav">
+    <a href="index.html" class="nav-logo">SEND<span>ERS</span></a>
+    <button class="nav-toggle" id="navToggle" aria-label="תפריט מידע">
+      <span></span><span></span><span></span>
+    </button>
+    <ul class="nav-links nav-links-primary" id="navLinksPrimary">
+      <li><a href="index.html">בית</a></li>
+      <li><a href="map.html">מפה</a></li>
+      <li><a href="community.html">קהילה</a></li>
+      <li><a href="add-spot.html">הוספת ספוט</a></li>
+      <li><a href="profile.html">פרופיל</a></li>
+    </ul>
+    <ul class="nav-links nav-links-info" id="navLinks">
+      <li><a href="about.html">קצת עליי</a></li>
+      <li><a href="safety.html">בטיחות</a></li>
+      <li><a href="faq.html">שאלות נפוצות</a></li>
+      <li><a href="terms.html">תנאי שימוש</a></li>
+      <li><a href="privacy.html">מדיניות פרטיות</a></li>
+      <li><a href="contact.html">צור קשר</a></li>
+    </ul>
+    <div class="nav-auth" id="authArea"></div>
+  </nav>
+
+  <main>
+    <section class="section" style="padding-top: calc(var(--content-top) + 2rem)">
+      <div class="container" id="editProfileContent">
+        <p data-i18n="common.loading">טוען...</p>
+      </div>
+    </section>
+  </main>
+
+  <script type="module">
+    import { initNav, escapeHtml, profileAvatarSrc } from './js/ui.js';
+    import { t } from './js/i18n.js';
+    import { bindAvatarCrop } from './js/avatar-crop.js';
+    import { getSession, updateProfile, updateProfileAvatar, clearProfileAvatar } from './js/store.js';
+
+    initNav();
+
+    const DEFAULT_AVATAR = '/icons/avatar-default.svg';
+    const LOGIN_NEXT = 'login.html?next=edit-profile&redirect=edit-profile.html';
+    const BIO_MAX = 160;
+    const NAME_MAX = 40;
+    let activeCropper = null;
+
+    function goLogin() {
+      window.location.replace(LOGIN_NEXT);
+    }
+
+    function goProfile() {
+      window.location.href = 'profile.html';
+    }
+
+    async function renderEdit() {
+      const session = await getSession();
+      if (!session?.user) {
+        goLogin();
+        return;
+      }
+
+      const profile = session.profile || {};
+      const displayName = profile.display_name || '';
+      const bio = profile.bio || '';
+      const email = profile.email || session.user.email || '';
+      const photo = profileAvatarSrc(profile);
+      const avatarSrc = photo || DEFAULT_AVATAR;
+
+      document.title = t('meta.title.editProfile');
+      document.getElementById('editProfileContent').innerHTML = `
+        <div class="edit-profile-card">
+          <header class="section-header">
+            <h1 class="page-title">${t('profile.edit')}</h1>
+            <p class="page-desc">${t('editProfile.lead')}</p>
+          </header>
+
+          <div class="edit-profile-photo">
+            <button type="button" class="ig-profile-avatar" id="editAvatarBtn" aria-label="${t('profile.viewPhoto')}">
+              <img src="${escapeHtml(avatarSrc)}" alt="" id="editAvatarImg">
+            </button>
+            <p class="ig-avatar-modal-status" id="avatarModalStatus" hidden></p>
+          </div>
+
+          <form id="editProfileForm">
+            <div class="form-group">
+              <label for="editDisplayName">${t('editProfile.name')}</label>
+              <input id="editDisplayName" name="displayName" type="text" maxlength="${NAME_MAX}" required value="${escapeHtml(displayName)}" autocomplete="nickname">
+            </div>
+            <div class="form-group">
+              <label for="editBio">${t('editProfile.bio')} <span class="form-hint">(${t('common.optional')})</span></label>
+              <textarea id="editBio" name="bio" maxlength="${BIO_MAX}" rows="3" placeholder="${t('editProfile.bioPh')}">${escapeHtml(bio)}</textarea>
+              <p class="form-hint" id="bioCount"></p>
+            </div>
+            ${email ? `
+            <div class="form-group">
+              <label for="editEmail">${t('editProfile.email')}</label>
+              <input id="editEmail" type="email" value="${escapeHtml(email)}" readonly dir="ltr">
+              <p class="form-hint">${t('editProfile.emailHint')}</p>
+            </div>
+            ` : ''}
+            <div id="editFormError" class="form-error" hidden></div>
+            <div class="edit-profile-actions">
+              <a href="profile.html" class="btn btn-ghost">${t('common.cancel')}</a>
+              <button type="submit" class="btn btn-primary" id="editSaveBtn">${t('editProfile.save')}</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="ig-avatar-modal" id="avatarModal" hidden>
+          <div class="ig-avatar-modal-card" role="dialog" aria-modal="true" aria-label="${t('profile.viewPhoto')}">
+            <button type="button" class="ig-avatar-modal-close" id="avatarModalClose" aria-label="${t('profile.closePhoto')}">×</button>
+            <div class="ig-avatar-modal-img">
+              <img src="${escapeHtml(avatarSrc)}" alt="" id="avatarModalImg">
+            </div>
+            <p class="ig-avatar-modal-status" id="avatarLightboxStatus" hidden></p>
+            <div class="ig-avatar-modal-actions">
+              <button type="button" class="btn btn-ghost" id="avatarPickBtn">${photo ? t('profile.replacePhoto') : t('profile.addPhoto')}</button>
+              ${photo ? `<button type="button" class="btn btn-ghost" id="avatarRemoveBtn">${t('profile.removePhoto')}</button>` : ''}
+              <input type="file" id="avatarFileInput" accept="image/*" hidden>
+            </div>
+          </div>
+        </div>
+
+        <div class="ig-avatar-crop" id="avatarCrop" hidden>
+          <div class="ig-avatar-crop-card" role="dialog" aria-modal="true" aria-label="${t('profile.cropHint')}">
+            <p class="ig-avatar-crop-hint">${t('profile.cropHint')}</p>
+            <div class="ig-avatar-crop-stage" id="avatarCropStage">
+              <div class="ig-avatar-crop-circle" id="avatarCropCircle">
+                <img alt="" id="avatarCropImg" draggable="false">
+              </div>
+            </div>
+            <p class="ig-avatar-modal-status" id="avatarCropStatus" hidden></p>
+            <div class="ig-avatar-crop-actions">
+              <button type="button" class="btn btn-ghost" id="avatarCropCancel">${t('common.cancel')}</button>
+              <button type="button" class="btn btn-primary" id="avatarCropSave">${t('profile.cropSave')}</button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      bindEditChrome();
+    }
+
+    function bindEditChrome() {
+      const root = document.getElementById('editProfileContent');
+      activeCropper = bindAvatarCrop(root);
+      const fileInput = document.getElementById('avatarFileInput');
+      const statusEl = document.getElementById('avatarModalStatus');
+      const bioEl = document.getElementById('editBio');
+      const bioCount = document.getElementById('bioCount');
+
+      const updateCount = () => {
+        if (!bioCount || !bioEl) return;
+        bioCount.textContent = `${bioEl.value.length}/${BIO_MAX}`;
+      };
+      updateCount();
+      bioEl?.addEventListener('input', updateCount);
+
+      const modal = document.getElementById('avatarModal');
+      const lightboxStatus = document.getElementById('avatarLightboxStatus');
+      const openModal = () => {
+        if (modal) modal.hidden = false;
+      };
+      const closeModal = () => {
+        if (modal) modal.hidden = true;
+      };
+      document.getElementById('editAvatarBtn')?.addEventListener('click', openModal);
+      document.getElementById('avatarModalClose')?.addEventListener('click', closeModal);
+      modal?.addEventListener('click', (event) => {
+        if (event.target === modal) closeModal();
+      });
+      document.getElementById('avatarPickBtn')?.addEventListener('click', () => fileInput?.click());
+      document.getElementById('avatarRemoveBtn')?.addEventListener('click', async () => {
+        const errEl = lightboxStatus || statusEl;
+        if (errEl) {
+          errEl.hidden = false;
+          errEl.classList.remove('is-err');
+          errEl.textContent = t('profile.photoUploading');
+        }
+        try {
+          await clearProfileAvatar();
+          const nav = document.getElementById('navAvatar');
+          if (nav) {
+            nav.classList.remove('has-photo');
+            nav.innerHTML = `<img src="${DEFAULT_AVATAR}" alt="" class="nav-avatar-dummy">`;
+          }
+          await renderEdit();
+        } catch (err) {
+          if (errEl) {
+            errEl.hidden = false;
+            errEl.classList.add('is-err');
+            errEl.textContent = err?.message || t('profile.photoRemoveErr');
+          }
+        }
+      });
+
+      fileInput?.addEventListener('change', async () => {
+        const file = fileInput.files?.[0];
+        fileInput.value = '';
+        if (!file) return;
+        if (statusEl) {
+          statusEl.hidden = true;
+          statusEl.classList.remove('is-err');
+          statusEl.textContent = '';
+        }
+        try {
+          await activeCropper.open(file, async (dataUrl) => {
+            if (statusEl) {
+              statusEl.hidden = false;
+              statusEl.classList.remove('is-err');
+              statusEl.textContent = t('profile.photoUploading');
+            }
+            await updateProfileAvatar(dataUrl);
+            const navImg = document.querySelector('#navAvatar img');
+            if (navImg) navImg.src = dataUrl;
+            await renderEdit();
+            const savedEl = document.getElementById('avatarModalStatus');
+            if (savedEl) {
+              savedEl.hidden = false;
+              savedEl.classList.remove('is-err');
+              savedEl.textContent = t('editProfile.photoSaved');
+            }
+          });
+        } catch (err) {
+          if (statusEl) {
+            statusEl.hidden = false;
+            statusEl.classList.add('is-err');
+            statusEl.textContent = err?.message || t('profile.photoErr');
+          }
+        }
+      });
+
+      document.getElementById('editProfileForm')?.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const errEl = document.getElementById('editFormError');
+        const saveBtn = document.getElementById('editSaveBtn');
+        const name = document.getElementById('editDisplayName')?.value || '';
+        const bio = document.getElementById('editBio')?.value || '';
+        if (errEl) {
+          errEl.hidden = true;
+          errEl.textContent = '';
+        }
+        if (saveBtn) saveBtn.disabled = true;
+        try {
+          await updateProfile({ displayName: name, bio });
+          goProfile();
+        } catch (err) {
+          if (errEl) {
+            errEl.hidden = false;
+            errEl.textContent = err?.message || t('editProfile.saveErr');
+          }
+        } finally {
+          if (saveBtn) saveBtn.disabled = false;
+        }
+      });
+    }
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape') return;
+      if (activeCropper?.isOpen()) {
+        activeCropper.close();
+        return;
+      }
+      const modal = document.getElementById('avatarModal');
+      if (modal && !modal.hidden) modal.hidden = true;
+    });
+
+    renderEdit().catch(() => goLogin());
+  </script>
+</body>
+</html>
