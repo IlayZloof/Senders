@@ -54,13 +54,26 @@ export function writeCachedReelsPlaylist(videos) {
   }
 }
 
+/** Only warm video files on a decent connection and when Data Saver is off. */
 function canPrefetchVideos() {
   const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
   if (!conn) return true;
   if (conn.saveData) return false;
   const type = String(conn.effectiveType || '').toLowerCase();
-  return type !== 'slow-2g' && type !== '2g';
+  if (type === 'slow-2g' || type === '2g' || type === '3g') return false;
+  return true;
 }
+
+function isCellular() {
+  const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  return String(conn?.type || '').toLowerCase() === 'cellular';
+}
+
+/** Keep the first N reels' files in Cache Storage (playback starts from a local blob). */
+const MEDIA_KEEP = 2;
+/** Never download whole clips bigger than this in the background (iPhone .mov can be 30MB+). */
+const MEDIA_MAX_BYTES = 12 * 1024 * 1024;
+const MEDIA_MAX_BYTES_CELLULAR = 6 * 1024 * 1024;
 
 async function openMediaCache() {
   if (!('caches' in window)) return null;
@@ -100,35 +113,76 @@ export async function getCachedReelObjectUrl(src) {
   }
 }
 
-export async function cacheReelMedia(src) {
+/**
+ * Download one clip into Cache Storage. `keep` lists the URLs that may stay
+ * cached (everything else is evicted so the cache never grows past a couple
+ * of clips). Clips larger than the size cap are skipped: they stream normally.
+ */
+export async function cacheReelMedia(src, { keep = null, maxBytes = MEDIA_MAX_BYTES } = {}) {
   const url = String(src || '').trim();
   if (!url) return false;
   const cache = await openMediaCache();
   if (!cache) return false;
+  const keepSet = new Set((keep && keep.length ? keep : [url]).map(String));
+  const evict = async () => {
+    try {
+      const keys = await cache.keys();
+      await Promise.all(
+        keys.filter((request) => !keepSet.has(request.url)).map((request) => cache.delete(request))
+      );
+    } catch {
+      /* ignore */
+    }
+  };
   try {
     const existing = await cache.match(url);
-    if (existing && existing.ok) return true;
-    const response = await fetch(url, { mode: 'cors', credentials: 'omit', cache: 'force-cache' });
+    if (existing && existing.ok) {
+      await evict();
+      return true;
+    }
+    const controller = typeof AbortController === 'function' ? new AbortController() : null;
+    const response = await fetch(url, {
+      mode: 'cors',
+      credentials: 'omit',
+      signal: controller?.signal,
+    });
     if (!response.ok) return false;
+    const declared = Number(response.headers.get('content-length') || 0);
+    if (declared && declared > maxBytes) {
+      controller?.abort();
+      return false;
+    }
     const blob = await response.blob();
-    if (!blob.size) return false;
+    if (!blob.size || blob.size > maxBytes) return false;
     const stored = new Response(blob, {
       status: 200,
       headers: {
-        'Content-Type': blob.type || 'video/mp4',
+        'Content-Type': blob.type || response.headers.get('content-type') || 'video/mp4',
         'Content-Length': String(blob.size),
       },
     });
     await cache.put(url, stored);
-    const keys = await cache.keys();
-    await Promise.all(
-      keys
-        .filter((request) => request.url !== url)
-        .map((request) => cache.delete(request))
-    );
+    await evict();
     return true;
   } catch {
     return false;
+  }
+}
+
+/** Warm the first one or two clips of a playlist (respecting data saver / size caps). */
+export async function warmReelMedia(videos) {
+  if (!canPrefetchVideos()) return;
+  const urls = (videos || [])
+    .map((video) => String(video?.videoUrl || '').trim())
+    .filter(Boolean)
+    .slice(0, MEDIA_KEEP);
+  if (!urls.length) return;
+  const cellular = isCellular();
+  const targets = cellular ? urls.slice(0, 1) : urls;
+  const maxBytes = cellular ? MEDIA_MAX_BYTES_CELLULAR : MEDIA_MAX_BYTES;
+  for (const url of targets) {
+    // Sequential on purpose: never compete with the page for bandwidth.
+    await cacheReelMedia(url, { keep: urls, maxBytes });
   }
 }
 
@@ -166,11 +220,25 @@ export async function prefetchReelsShellAndFeed() {
   }
 
   try {
-    const videos = await getJumpVideos(PLAYLIST_LIMIT);
+    const fresh = await getJumpVideos(PLAYLIST_LIMIT);
+    // getJumpVideos() returns bare rows; keep the like/comment counts and
+    // avatars the Reels page stored last time so the instant paint isn't "0".
+    const prevById = Object.fromEntries(readCachedReelsPlaylist().map((v) => [v.id, v]));
+    const videos = fresh.map((video) => {
+      const prev = prevById[String(video.id)];
+      if (!prev) return video;
+      return {
+        ...video,
+        avatarUrl: video.avatarUrl || prev.avatarUrl,
+        likeCount: video.likeCount ?? prev.likeCount,
+        commentCount: video.commentCount ?? prev.commentCount,
+        liked: video.liked ?? prev.liked,
+        saved: video.saved ?? prev.saved,
+        displayName: video.displayName && video.displayName !== 'משתמש' ? video.displayName : prev.displayName || video.displayName,
+      };
+    });
     writeCachedReelsPlaylist(videos);
-    if (!canPrefetchVideos()) return;
-    const firstUrl = videos[0]?.videoUrl;
-    if (firstUrl) await cacheReelMedia(firstUrl);
+    await warmReelMedia(videos);
   } catch {
     /* keep last cached playlist */
   }

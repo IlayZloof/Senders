@@ -167,6 +167,9 @@ export function newAccountStatus(email) {
 }
 
 export function hasApprovedAccess(profile, authUser) {
+  // No profile = signed out. This used to fall through to the 'active'
+  // default, so signed-out visitors on login.html got the app tab bar.
+  if (!profile) return false;
   if (isAdmin(profile, authUser)) return true;
   return (profile?.status || 'active') === 'active';
 }
@@ -253,6 +256,7 @@ function markInvitationUsedLocal(email) {
 }
 
 async function touchLastLogin(userId) {
+  invalidateSessionCache();
   const now = new Date().toISOString();
   if (useCloud()) {
     await supabase.from('profiles').update({ last_login_at: now }).eq('id', userId);
@@ -407,7 +411,50 @@ function sessionFromAuth(authSession, profile) {
   };
 }
 
-export async function getSession() {
+/**
+ * getSession() is called several times per page load (nav gate, page script,
+ * canUseSite() inside every data loader, admin checks…). Each call used to hit
+ * Supabase for the profile row, so a single page made 3–5 sequential profile
+ * round-trips before showing anything. Share one in-flight/just-resolved
+ * result for a few seconds; any auth change or profile write invalidates it.
+ */
+const SESSION_MEMO_TTL_MS = 4000;
+let sessionMemo = null; // { promise, at }
+
+export function invalidateSessionCache() {
+  sessionMemo = null;
+}
+
+if (supabase) {
+  try {
+    supabase.auth.onAuthStateChange((event) => {
+      if (event !== 'INITIAL_SESSION') invalidateSessionCache();
+    });
+  } catch {
+    /* ignore */
+  }
+}
+
+export function getSession() {
+  const now = Date.now();
+  if (sessionMemo && now - sessionMemo.at < SESSION_MEMO_TTL_MS) {
+    return sessionMemo.promise;
+  }
+  const promise = getSessionUncached();
+  const memo = { promise, at: now };
+  sessionMemo = memo;
+  promise.then(
+    () => {
+      if (sessionMemo === memo) memo.at = Date.now();
+    },
+    () => {
+      if (sessionMemo === memo) sessionMemo = null;
+    }
+  );
+  return promise;
+}
+
+async function getSessionUncached() {
   if (useCloud()) {
     try {
       const authSession = await readSupabaseAuthSession();
@@ -602,6 +649,7 @@ function signInLocal(normalizedEmail, password, { fromCloudFallback = false } = 
 }
 
 export async function signUp(email, password, displayName) {
+  invalidateSessionCache();
   const normalizedEmail = email.toLowerCase();
 
   if (useCloud()) {
@@ -641,6 +689,7 @@ export async function signUp(email, password, displayName) {
 }
 
 export async function signIn(email, password) {
+  invalidateSessionCache();
   const normalizedEmail = email.toLowerCase();
   const isAdminUser = isAdminEmail(normalizedEmail);
 
@@ -680,6 +729,7 @@ export async function signIn(email, password) {
 }
 
 export async function signOut() {
+  invalidateSessionCache();
   if (useCloud()) {
     try {
       await supabase.auth.signOut();
@@ -689,6 +739,7 @@ export async function signOut() {
     }
   }
   localStorage.removeItem(LS_SESSION);
+  invalidateSessionCache();
 }
 
 export async function requestPasswordReset(email) {
@@ -835,6 +886,7 @@ export async function updateProfileAvatar(dataUrl) {
     }
   }
 
+  invalidateSessionCache();
   return { avatar_url: clearing ? '' : avatarUrl };
 }
 
@@ -878,6 +930,7 @@ export async function updateProfile({ displayName, bio } = {}) {
     }
   }
 
+  invalidateSessionCache();
   return { display_name: name, bio: bioText };
 }
 
@@ -2782,6 +2835,7 @@ export async function getAdminUserSummary() {
 }
 
 export async function updateUserRole(userId, makeAdmin) {
+  invalidateSessionCache();
   const session = await requireAdminSession();
   if (userId === session.profile.id && !makeAdmin) {
     const users = await getAllUsers();
@@ -2813,6 +2867,7 @@ export async function updateUserRole(userId, makeAdmin) {
 }
 
 export async function updateUserStatus(userId, status) {
+  invalidateSessionCache();
   const session = await requireAdminSession();
   if (userId === session.profile.id && status === 'disabled') {
     throw new Error('לא ניתן להשבית את החשבון שלך');
