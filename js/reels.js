@@ -10,6 +10,7 @@ import {
 import {
   addJumpVideo,
   addJumpVideoComment,
+  buildLoginUrl,
   isUploadCancelled,
   canManageJumpVideo,
   decorateReelsVideos,
@@ -63,7 +64,7 @@ function formatCount(n) {
 
 function loginRedirect(extra = '') {
   const next = extra || `reels.html${window.location.search || ''}`;
-  return `login.html?redirect=${encodeURIComponent(next)}`;
+  return buildLoginUrl(next);
 }
 
 function reelShareUrl(videoId) {

@@ -359,7 +359,7 @@
               ` : `
                 <div class="login-locked">
                   <p>${t('spot.wantExp')}</p>
-                  <a href="login.html?redirect=spot.html?id=${spotId}">${t('spot.loginWrite')}</a>${t('spot.loginWriteAfter')}
+                  <a href="login.html?redirect=${encodeURIComponent('spot.html?id=' + spotId)}">${t('spot.loginWrite')}</a>${t('spot.loginWriteAfter')}
                 </div>
               `}
             </div>
@@ -485,5 +485,6 @@
 
     renderSpot();
   </script>
+  <script type="module" src="/js/version.js"></script>
 </body>
 </html>

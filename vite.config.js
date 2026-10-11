@@ -1,7 +1,44 @@
+import { readFileSync } from 'fs';
 import { resolve } from 'path';
 import { defineConfig } from 'vite';
 
+// Single source of truth for the site version: "version" in package.json.
+const pkg = JSON.parse(readFileSync(resolve(__dirname, 'package.json'), 'utf8'));
+const APP_VERSION = pkg.version;
+
+/** Publishes /version.json in the build and on the dev/preview server. */
+function versionJsonPlugin() {
+  const body = () =>
+    JSON.stringify(
+      {
+        version: APP_VERSION,
+        commit: process.env.GITHUB_SHA || null,
+        builtAt: new Date().toISOString(),
+      },
+      null,
+      2
+    ) + '\n';
+  const serve = (server) => {
+    server.middlewares.use('/version.json', (_req, res) => {
+      res.setHeader('Content-Type', 'application/json; charset=utf-8');
+      res.setHeader('Cache-Control', 'no-cache');
+      res.end(body());
+    });
+  };
+  return {
+    name: 'senders-version-json',
+    configureServer: serve,
+    generateBundle() {
+      this.emitFile({ type: 'asset', fileName: 'version.json', source: body() });
+    },
+  };
+}
+
 export default defineConfig({
+  define: {
+    __APP_VERSION__: JSON.stringify(APP_VERSION),
+  },
+  plugins: [versionJsonPlugin()],
   build: {
     rollupOptions: {
       input: {
