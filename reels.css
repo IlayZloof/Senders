@@ -161,8 +161,6 @@ html.reels-cached .reels-loading {
   top: max(0.7rem, env(safe-area-inset-top, 0px));
   right: 0.7rem;
   left: auto;
-  inset-inline-start: auto;
-  inset-inline-end: auto;
   z-index: 2;
   display: inline-flex;
   align-items: center;
@@ -187,10 +185,11 @@ html.reels-cached .reels-loading {
 .reels-meta {
   position: absolute;
   z-index: 2;
-  left: 0.9rem;
-  right: 4.8rem;
-  inset-inline-start: auto;
-  inset-inline-end: auto;
+  /* Caption/spot chip on the reading side; leave room for the + button
+     (which sits on the inline-end side). The old physical left/right were
+     cancelled by "inset-inline-*: auto", so the text hugged the screen edge. */
+  inset-inline-start: 0.9rem;
+  inset-inline-end: 5.2rem;
   bottom: 1.1rem;
   color: #fff;
   text-align: start;
@@ -336,8 +335,6 @@ html.reels-cached .reels-loading {
   z-index: 3;
   right: 0.35rem;
   left: auto;
-  inset-inline-end: auto;
-  inset-inline-start: auto;
   /* Sit above the bottom overlay (location chip + caption), not on top of it. */
   bottom: 7.75rem;
   display: flex;
@@ -793,4 +790,24 @@ body.reels-page #commentsSheet.reels-comments-sheet:not([hidden]) {
 
 body.reels-page .upload-progress--above-submit {
   margin: 0.2rem 0 0.7rem;
+}
+
+/* Version line: keep it out of the way on the full-screen viewer — tiny,
+   faint and tucked half behind the bottom tab bar (no extra page height). */
+body.reels-page .app-version--standalone {
+  position: fixed;
+  inset-inline: 0;
+  bottom: calc(var(--tab-bar-h) + var(--safe-bottom, 0px));
+  z-index: 1;
+  margin: 0;
+  padding: 0;
+  font-size: 9px;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  color: #fff;
+  opacity: 0.2;
+  text-align: center;
+  transform: translateY(45%);
+  pointer-events: none;
+  user-select: none;
 }

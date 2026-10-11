@@ -49,6 +49,7 @@
   <title data-i18n="meta.title.users">ניהול משתמשים — Senders</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="preconnect" href="%VITE_SUPABASE_URL%" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Hebrew:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="ops-theme.css" />
@@ -105,8 +106,8 @@
                 <option value="user">משתמשים</option>
               </select>
               <select id="statusFilter">
+                <option value="all" selected>כל הסטטוסים</option>
                 <option value="disabled">מושבתים</option>
-                <option value="all">כל הסטטוסים</option>
                 <option value="active">פעילים</option>
                 <option value="pending">ממתינים לאישור</option>
               </select>
@@ -259,11 +260,22 @@
           const id = btn.dataset.id;
           const name = btn.dataset.name || 'המשתמש';
           if (!confirm(`למחוק את ${name} לגמרי מהאתר? הוא יצטרך להירשם מחדש ולחכות להפעלה.`)) return;
+          btn.disabled = true;
           try {
             await deleteUser(id);
-            await loadAll();
           } catch (err) {
+            btn.disabled = false;
             alert(err.message);
+            return;
+          }
+          // Deleted: drop the row right away, then refresh counts/list.
+          // A failed refresh must not look like a failed delete.
+          btn.closest('tr')?.remove();
+          usersData = usersData.filter((u) => u.id !== id);
+          try {
+            await loadAll();
+          } catch {
+            /* row already removed; list refreshes on next load */
           }
         });
       });

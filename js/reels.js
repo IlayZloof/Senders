@@ -31,10 +31,10 @@ import { bindUploadSpotPicker, emptySpotMediaHtml, getSpotImage } from './spots-
 import { dateLocale, regionLabel, t } from './i18n.js';
 import { displaySpotDescription, displaySpotName, displaySpotWarnings, spotNameEquals } from './spot-locale.js';
 import {
-  cacheReelMedia,
   getCachedReelObjectUrl,
   hasCachedReelMedia,
   readCachedReelsPlaylist,
+  warmReelMedia,
   writeCachedReelsPlaylist,
 } from './reels-prefetch.js';
 
@@ -98,10 +98,10 @@ function reelAuthorAvatarSrc(video, session) {
 }
 
 function formatRelativeHe(iso) {
-  const t = new Date(iso).getTime();
-  if (!Number.isFinite(t)) return '';
-  const sec = Math.max(0, Math.floor((Date.now() - t) / 1000));
-    if (sec < 45) return t('reels.now');
+  const ts = new Date(iso).getTime();
+  if (!Number.isFinite(ts)) return '';
+  const sec = Math.max(0, Math.floor((Date.now() - ts) / 1000));
+  if (sec < 45) return t('reels.now');
   const min = Math.floor(sec / 60);
   if (min < 60) return `${min}m`;
   const hr = Math.floor(min / 60);
@@ -170,24 +170,46 @@ export function initReels() {
     return slide?.querySelector('video') || feed.querySelector('video');
   }
 
-  async function bindCachedFirstVideo() {
+  function isMostlyInView(el) {
+    const r = el.getBoundingClientRect();
+    const vh = window.innerHeight || document.documentElement.clientHeight;
+    const visible = Math.min(r.bottom, vh) - Math.max(r.top, 0);
+    return r.height > 0 && visible / Math.min(r.height, vh) >= 0.65;
+  }
+
+  /**
+   * The first slide is rendered without a network src. If the clip was warmed
+   * in the background (other pages prefetch it), play it from the local blob;
+   * otherwise fall back to streaming. This avoids starting a network download
+   * and then throwing it away when the blob is swapped in.
+   */
+  function bindCachedFirstVideo() {
     const video = firstSlideVideo();
-    if (!video) {
-      hideReelsLoading();
-      return;
-    }
     hideReelsLoading();
-    const src = video.dataset.videoUrl || video.getAttribute('src') || '';
-    if (src && video.dataset.blobBound !== '1') {
-      const cached = await hasCachedReelMedia(src);
-      if (cached) {
-        const blobUrl = await getCachedReelObjectUrl(src);
-        if (blobUrl) {
-          if (firstBlobUrl && firstBlobUrl !== blobUrl) URL.revokeObjectURL(firstBlobUrl);
-          firstBlobUrl = blobUrl;
-          video.src = blobUrl;
-          video.dataset.blobBound = '1';
-        }
+    if (!video) return Promise.resolve();
+    if (!video._bindPromise) video._bindPromise = bindVideoSource(video);
+    return video._bindPromise;
+  }
+
+  async function bindVideoSource(video) {
+    const src = video.dataset.videoUrl || '';
+    if (src && !video.getAttribute('src')) {
+      let blobUrl = '';
+      if (await hasCachedReelMedia(src)) blobUrl = await getCachedReelObjectUrl(src);
+      if (blobUrl) {
+        if (firstBlobUrl && firstBlobUrl !== blobUrl) URL.revokeObjectURL(firstBlobUrl);
+        firstBlobUrl = blobUrl;
+        video.dataset.blobBound = '1';
+      }
+      if (!video.isConnected) {
+        if (blobUrl) URL.revokeObjectURL(blobUrl);
+        return;
+      }
+      video.preload = 'auto';
+      video.src = blobUrl || src;
+      if (video.dataset.userPaused !== '1' && isMostlyInView(video)) {
+        applySound(video);
+        video.play().catch(() => {});
       }
     }
     const ready = video.readyState >= 2;
@@ -330,8 +352,14 @@ export function initReels() {
         renderFeed({ keepPlaying: false });
         bindCachedFirstVideo();
       }
-      const firstUrl = feedVideos[0]?.videoUrl;
-      if (firstUrl) cacheReelMedia(firstUrl).then(() => bindCachedFirstVideo());
+      // Warm the first clips for the *next* visit once this one is playing.
+      // Never re-bind the playing video afterwards (that restarted playback).
+      const warm = () => warmReelMedia(feedVideos).catch(() => {});
+      if (typeof requestIdleCallback === 'function') {
+        window.setTimeout(() => requestIdleCallback(warm, { timeout: 5000 }), 4000);
+      } else {
+        window.setTimeout(warm, 5000);
+      }
 
       const spots = await spotsP;
       state.spots = spots;
@@ -460,9 +488,11 @@ export function initReels() {
     const profileHref = profileUrlForUser(video.userId);
     const profileLabel = `${t('nav.profile')}: ${name}`;
     const preload = index < 2 ? 'auto' : 'metadata';
+    // First slide: source is attached by bindCachedFirstVideo() (local blob when warmed).
+    const srcAttr = index === 0 ? '' : `src="${escapeHtml(video.videoUrl)}" `;
     return `
       <article class="reels-slide" data-video-id="${escapeHtml(video.id)}">
-        <video src="${escapeHtml(video.videoUrl)}" data-video-url="${escapeHtml(video.videoUrl)}" playsinline webkit-playsinline muted loop preload="${preload}"></video>
+        <video ${srcAttr}data-video-url="${escapeHtml(video.videoUrl)}" playsinline webkit-playsinline muted loop preload="${preload}"></video>
         <div class="reels-gradient"></div>
         ${muteButtonHtml(false)}
         <div class="reels-meta">
@@ -1251,7 +1281,6 @@ export function initReels() {
       }
       state.videos = [shown, ...state.videos.filter((v) => v.id !== created.id)];
       writeCachedReelsPlaylist(state.videos);
-      if (shown.videoUrl) cacheReelMedia(shown.videoUrl);
       hideUploadProgress();
       e.target.reset();
       clipEditor.reset();

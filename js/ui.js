@@ -77,9 +77,12 @@ function whenIdle(fn) {
   window.setTimeout(fn, 400);
 }
 
+let reelsPrefetchScheduled = false;
+
 function scheduleReelsPrefetch() {
-  if (isReelsPage()) return;
+  if (isReelsPage() || reelsPrefetchScheduled) return;
   if (!document.documentElement.classList.contains('access-granted')) return;
+  reelsPrefetchScheduled = true;
   injectReelsPrefetchLink();
   whenIdle(() => {
     prefetchReelsShellAndFeed().catch(() => {});
@@ -87,6 +90,57 @@ function scheduleReelsPrefetch() {
 }
 
 const ACCESS_OPEN_PAGES = new Set(['login.html', 'waiting.html']);
+
+/**
+ * Optimistic access hint. Every page used to stay behind the blank #accessGate
+ * until Supabase answered the session + profile lookup (several round-trips to
+ * Tokyo), which is why switching to Reels felt like a multi-second wait.
+ * After a verified "approved" result we remember the user id for a while; on
+ * the next page load, if the same Supabase user is still signed in locally,
+ * the chrome is shown immediately and the real check still runs right after
+ * (and re-locks / redirects if access was revoked). This is UI-only: data is
+ * still protected by RLS and every loader still calls canUseSite().
+ */
+const ACCESS_HINT_KEY = 'senders_access_hint';
+const ACCESS_HINT_TTL_MS = 6 * 60 * 60 * 1000;
+
+function localAuthUserId() {
+  try {
+    for (let i = 0; i < localStorage.length; i += 1) {
+      const key = localStorage.key(i) || '';
+      if (!/^sb-.+-auth-token$/.test(key)) continue;
+      const data = JSON.parse(localStorage.getItem(key) || 'null');
+      const id = data?.user?.id || data?.currentSession?.user?.id || '';
+      if (id) return String(id);
+    }
+  } catch {
+    /* ignore */
+  }
+  return '';
+}
+
+function writeAccessHint(userId) {
+  try {
+    if (userId) {
+      localStorage.setItem(ACCESS_HINT_KEY, JSON.stringify({ uid: String(userId), ts: Date.now() }));
+    } else {
+      localStorage.removeItem(ACCESS_HINT_KEY);
+    }
+  } catch {
+    /* ignore */
+  }
+}
+
+function hasFreshAccessHint() {
+  try {
+    const hint = JSON.parse(localStorage.getItem(ACCESS_HINT_KEY) || 'null');
+    if (!hint?.uid || !Number.isFinite(hint.ts)) return false;
+    if (Date.now() - hint.ts > ACCESS_HINT_TTL_MS) return false;
+    return hint.uid === localAuthUserId();
+  } catch {
+    return false;
+  }
+}
 
 function isAccessOpenPage() {
   return ACCESS_OPEN_PAGES.has(pageName().toLowerCase());
@@ -152,6 +206,7 @@ function applyAccessChrome(session) {
   const root = document.documentElement;
 
   if (approved) {
+    if (session?.accessToken && session?.user?.id) writeAccessHint(session.user.id);
     root.classList.remove('access-lock', 'access-waiting', 'hide-app-nav');
     root.classList.add('access-granted');
     removeAccessOverlay();
@@ -161,6 +216,8 @@ function applyAccessChrome(session) {
     return;
   }
 
+  writeAccessHint('');
+  root.classList.remove('access-granted');
   document.getElementById('tabBar')?.remove();
   root.classList.add('hide-app-nav');
   root.classList.toggle('access-waiting', waiting);
@@ -237,10 +294,15 @@ export function initNav() {
   scheduleReelsPrefetch();
   if (isStandalonePwa()) document.documentElement.classList.add('pwa-standalone');
 
-  document.documentElement.classList.add('hide-app-nav');
+  const optimistic = !isAccessOpenPage() && hasFreshAccessHint();
+  if (optimistic) {
+    document.documentElement.classList.add('access-granted');
+  } else {
+    document.documentElement.classList.add('hide-app-nav');
+  }
   if (isAccessOpenPage()) {
     document.documentElement.classList.add('access-open');
-  } else {
+  } else if (!optimistic) {
     document.documentElement.classList.add('access-lock');
     mountAccessOverlay(false);
   }
@@ -307,6 +369,12 @@ export function initNav() {
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeMenu();
   });
+
+  if (optimistic) {
+    ensureTabBar();
+    initFooter();
+    scheduleReelsPrefetch();
+  }
 
   updateAuthUI().finally(() => highlightTabBar());
   window.addEventListener('pageshow', highlightTabBar);
@@ -389,25 +457,6 @@ function ensureInfoNavLinks() {
 }
 
 const TAB_STORAGE = 'senders_tab';
-const TAB_ORDER = ['home', 'map', 'community', 'add', 'reels', 'me'];
-const SWIPE_IGNORE = [
-  'input',
-  'textarea',
-  'select',
-  'button',
-  '[contenteditable="true"]',
-  '.leaflet-container',
-  '.map-container',
-  '.map-search-suggest',
-  '.mini-map-wrap',
-  '.spot-slider',
-  '.tab-bar',
-  'dialog',
-  '.modal',
-  '.home-sheet',
-  '.home-plus',
-  '.reels-feed',
-].join(', ');
 
 function pageName() {
   const path = window.location.pathname.replace(/\/+$/, '');
@@ -579,35 +628,6 @@ function highlightTabBar() {
     }
   }
   paintTabId(active);
-}
-
-function hrefForTab(tab) {
-  const bar = document.getElementById('tabBar');
-  const link = bar?.querySelector(`a[data-tab="${tab}"]`);
-  const href = link?.getAttribute('href');
-  if (href) return href;
-  return {
-    home: 'index.html',
-    map: 'map.html',
-    community: 'community.html',
-    add: 'add-spot.html',
-    reels: 'reels.html',
-    me: 'profile.html',
-  }[tab] || '';
-}
-
-function goAdjacentTab(delta) {
-  const current = tabIdFromLocation();
-  if (!current) return false;
-  const index = TAB_ORDER.indexOf(current);
-  if (index < 0) return false;
-  const next = TAB_ORDER[index + delta];
-  if (!next) return false;
-  const href = hrefForTab(next);
-  if (!href) return false;
-  paintTabId(next);
-  window.location.href = href;
-  return true;
 }
 
 function updateTabBarMe(admin) {
