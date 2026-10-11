@@ -29,18 +29,42 @@ export const supabase = hasSupabase
   : null;
 
 const CLOUD_DOWN_KEY = 'sendit_cloud_down';
+/**
+ * A single failed fetch (flaky mobile network, request aborted by navigation,
+ * Safari "Load failed") used to flip the whole tab into offline/local mode
+ * forever: getSession() then ignored the real Supabase login and every gated
+ * page bounced to login. The flag now expires quickly and is cleared as soon as
+ * Supabase answers again.
+ */
+const CLOUD_DOWN_TTL_MS = 30_000;
 
 function markCloudUnreachable() {
   try {
-    sessionStorage.setItem(CLOUD_DOWN_KEY, '1');
+    sessionStorage.setItem(CLOUD_DOWN_KEY, String(Date.now()));
   } catch {
     /* ignore quota / private mode */
   }
 }
 
+function clearCloudUnreachable() {
+  try {
+    sessionStorage.removeItem(CLOUD_DOWN_KEY);
+  } catch {
+    /* ignore */
+  }
+}
+
 function isCloudUnreachable() {
   try {
-    return sessionStorage.getItem(CLOUD_DOWN_KEY) === '1';
+    const raw = sessionStorage.getItem(CLOUD_DOWN_KEY);
+    if (!raw) return false;
+    const at = Number(raw);
+    // Legacy value '1' (no timestamp) or expired -> treat as reachable again.
+    if (!Number.isFinite(at) || at < 1e12 || Date.now() - at > CLOUD_DOWN_TTL_MS) {
+      sessionStorage.removeItem(CLOUD_DOWN_KEY);
+      return false;
+    }
+    return true;
   } catch {
     return false;
   }
@@ -405,6 +429,7 @@ export async function getSession() {
           profile = { ...profile, ...patch };
         }
 
+        clearCloudUnreachable();
         return sessionFromAuth(authSession, profile);
       }
     } catch (err) {
