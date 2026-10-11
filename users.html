@@ -260,11 +260,22 @@
           const id = btn.dataset.id;
           const name = btn.dataset.name || 'המשתמש';
           if (!confirm(`למחוק את ${name} לגמרי מהאתר? הוא יצטרך להירשם מחדש ולחכות להפעלה.`)) return;
+          btn.disabled = true;
           try {
             await deleteUser(id);
-            await loadAll();
           } catch (err) {
+            btn.disabled = false;
             alert(err.message);
+            return;
+          }
+          // Deleted: drop the row right away, then refresh counts/list.
+          // A failed refresh must not look like a failed delete.
+          btn.closest('tr')?.remove();
+          usersData = usersData.filter((u) => u.id !== id);
+          try {
+            await loadAll();
+          } catch {
+            /* row already removed; list refreshes on next load */
           }
         });
       });

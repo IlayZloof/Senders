@@ -2917,8 +2917,10 @@ export async function deleteUser(userId) {
     const { error } = await supabase.rpc('admin_delete_user', { target_id: userId });
     if (error) {
       const msg = String(error.message || '');
-      if (msg.includes('function') && msg.toLowerCase().includes('admin_delete_user')) {
-        throw new Error('מחיקה דורשת הרצת SQL ב-Supabase (019_admin_delete_user).');
+      // Only "function not found" (PostgREST PGRST202) means the SQL is missing.
+      // Permission errors etc. also mention the function name, so don't match on text.
+      if (error.code === 'PGRST202') {
+        throw new Error('מחיקה דורשת הרצת SQL ב-Supabase (022_admin_delete_user_live).');
       }
       throw new Error(msg || 'מחיקת המשתמש נכשלה');
     }
