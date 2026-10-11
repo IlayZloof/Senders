@@ -29,18 +29,42 @@ export const supabase = hasSupabase
   : null;
 
 const CLOUD_DOWN_KEY = 'sendit_cloud_down';
+/**
+ * A single failed fetch (flaky mobile network, request aborted by navigation,
+ * Safari "Load failed") used to flip the whole tab into offline/local mode
+ * forever: getSession() then ignored the real Supabase login and every gated
+ * page bounced to login. The flag now expires quickly and is cleared as soon as
+ * Supabase answers again.
+ */
+const CLOUD_DOWN_TTL_MS = 30_000;
 
 function markCloudUnreachable() {
   try {
-    sessionStorage.setItem(CLOUD_DOWN_KEY, '1');
+    sessionStorage.setItem(CLOUD_DOWN_KEY, String(Date.now()));
   } catch {
     /* ignore quota / private mode */
   }
 }
 
+function clearCloudUnreachable() {
+  try {
+    sessionStorage.removeItem(CLOUD_DOWN_KEY);
+  } catch {
+    /* ignore */
+  }
+}
+
 function isCloudUnreachable() {
   try {
-    return sessionStorage.getItem(CLOUD_DOWN_KEY) === '1';
+    const raw = sessionStorage.getItem(CLOUD_DOWN_KEY);
+    if (!raw) return false;
+    const at = Number(raw);
+    // Legacy value '1' (no timestamp) or expired -> treat as reachable again.
+    if (!Number.isFinite(at) || at < 1e12 || Date.now() - at > CLOUD_DOWN_TTL_MS) {
+      sessionStorage.removeItem(CLOUD_DOWN_KEY);
+      return false;
+    }
+    return true;
   } catch {
     return false;
   }
@@ -282,28 +306,26 @@ async function ensureProfileForAuthUser(authUser, displayName) {
   const email = profileEmail(profile, authUser);
 
   if (!profile) {
+    // The database decides is_admin/status (new non-admin accounts start
+    // 'disabled' until an admin approves them — migration 020). We only send
+    // the basic fields and read back what the DB actually stored.
     const newProfile = {
       id: authUser.id,
       display_name: authDisplayName(authUser, displayName),
       email,
-      is_admin: isAdminEmail(email),
-      status: newAccountStatus(email),
       created_at: authUser.created_at || new Date().toISOString(),
     };
-    const { error } = await supabase.from('profiles').insert(newProfile);
-    if (error) throw error;
-    profile = newProfile;
-  } else if (
-    !isAdminEmail(email)
-    && profile.status === 'active'
-    && !profile.last_login_at
-    && Date.now() - new Date(profile.created_at || 0).getTime() < 48 * 60 * 60 * 1000
-  ) {
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('profiles')
-      .update({ status: 'disabled' })
-      .eq('id', authUser.id);
-    if (!error) profile = { ...profile, status: 'disabled' };
+      .insert(newProfile)
+      .select()
+      .single();
+    if (error) throw error;
+    profile = data || {
+      ...newProfile,
+      is_admin: isAdminEmail(email),
+      status: newAccountStatus(email),
+    };
   }
 
   return profile;
@@ -405,6 +427,7 @@ export async function getSession() {
           profile = { ...profile, ...patch };
         }
 
+        clearCloudUnreachable();
         return sessionFromAuth(authSession, profile);
       }
     } catch (err) {
@@ -580,7 +603,6 @@ function signInLocal(normalizedEmail, password, { fromCloudFallback = false } = 
 
 export async function signUp(email, password, displayName) {
   const normalizedEmail = email.toLowerCase();
-  const isAdminUser = isAdminEmail(normalizedEmail);
 
   if (useCloud()) {
     try {
@@ -597,12 +619,11 @@ export async function signUp(email, password, displayName) {
         throw error;
       }
       if (data.user) {
+        // is_admin/status are set by the database (migration 020), not the client.
         const { error: profileErr } = await supabase.from('profiles').upsert({
           id: data.user.id,
           display_name: displayName,
           email: normalizedEmail,
-          is_admin: isAdminUser,
-          status: newAccountStatus(normalizedEmail),
         });
         if (!profileErr && data.session) {
           await touchLastLogin(data.user.id);
