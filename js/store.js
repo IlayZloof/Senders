@@ -427,32 +427,74 @@ function isSafeAppPath(path) {
   const raw = String(path || '').trim();
   if (!raw) return false;
   if (raw.startsWith('//') || raw.includes('://') || raw.includes('..')) return false;
+  // Backslashes / control chars can be normalised by browsers into //host
+  if (/[\\\u0000-\u001f]/.test(raw)) return false;
+  if (/^[a-z][a-z0-9+.-]*:/i.test(raw)) return false; // javascript:, data:, etc.
   return true;
 }
 
+/** Pages that must never be used as a post-login redirect target (prevents login loops). */
+const AUTH_PAGES = new Set(['login.html', 'waiting.html']);
+
+/** Normalised page file name ("login", "/login.html?x" -> "login.html"). */
+export function pageFileOf(path) {
+  const raw = String(path || '').trim().replace(/[?#].*$/, '').replace(/\/+$/, '');
+  let file = (raw.split('/').pop() || '').toLowerCase();
+  if (!file || file === 'index' || file === 'index.html') return 'index.html';
+  if (!file.endsWith('.html')) file = `${file}.html`;
+  return file;
+}
+
+export function isAuthPagePath(path) {
+  return AUTH_PAGES.has(pageFileOf(path));
+}
+
 function withHtmlPage(path) {
-  const raw = String(path || '').trim().replace(/^\//, '');
+  const raw = String(path || '').trim().replace(/^\/+/, '');
   if (raw === 'edit-profile' || raw.startsWith('edit-profile?') || raw.startsWith('edit-profile#')) {
     return raw.replace(/^edit-profile/, 'edit-profile.html');
   }
   return raw;
 }
 
+/**
+ * Returns a safe same-origin relative path (no leading slash), or `fallback`.
+ * Rejects absolute/cross-origin URLs, protocol-relative paths, and the
+ * login/waiting pages themselves (a redirect back to login is what caused loops).
+ */
 export function safeAppPath(path, fallback = 'index.html') {
   const raw = String(path || '').trim();
   if (!raw) return fallback;
+  let next;
   if (/^https?:\/\//i.test(raw)) {
     try {
       const url = new URL(raw);
       if (url.origin !== window.location.origin) return fallback;
-      const next = withHtmlPage(`${url.pathname.replace(/^\//, '')}${url.search}${url.hash}`);
-      return isSafeAppPath(next) ? next : fallback;
+      next = withHtmlPage(`${url.pathname}${url.search}${url.hash}`);
     } catch {
       return fallback;
     }
+  } else {
+    if (raw.startsWith('//')) return fallback;
+    next = withHtmlPage(raw);
   }
-  const relative = withHtmlPage(raw.replace(/^\//, ''));
-  return isSafeAppPath(relative) ? relative : fallback;
+  if (!isSafeAppPath(next)) return fallback;
+  if (isAuthPagePath(next)) return fallback;
+  return next;
+}
+
+/**
+ * Build the login URL exactly once. `next` defaults to the current page
+ * (pathname + search only, never hash/origin). If the current page is already
+ * login/waiting, no redirect param is added, so URLs can never nest.
+ */
+export function buildLoginUrl(next) {
+  const target = next == null
+    ? `${window.location.pathname}${window.location.search}`
+    : String(next);
+  const safe = safeAppPath(target, '');
+  if (!safe || safe === 'index.html') return '/login.html';
+  return `/login.html?${new URLSearchParams({ redirect: safe })}`;
 }
 
 export function rememberAuthRedirect(path) {
@@ -1950,6 +1992,40 @@ export async function getCommunityUpdates(limit = 40) {
 
 export const MAX_JUMP_VIDEO_BYTES = 40 * 1024 * 1024;
 
+/** Must match storage bucket `jump-videos` allowed_mime_types (migration 006). */
+export const JUMP_VIDEO_ALLOWED_MIME = ['video/mp4', 'video/quicktime', 'video/webm', 'video/3gpp', 'video/3gpp2'];
+
+const JUMP_VIDEO_EXT_MIME = {
+  mp4: 'video/mp4',
+  m4v: 'video/mp4',
+  mov: 'video/quicktime',
+  qt: 'video/quicktime',
+  webm: 'video/webm',
+  '3gp': 'video/3gpp',
+  '3gpp': 'video/3gpp',
+  '3g2': 'video/3gpp2',
+};
+
+/**
+ * Base MIME for upload: strips parameters such as `;codecs=vp9,opus`
+ * (MediaRecorder output) so the Content-Type matches the bucket allow-list.
+ * Maps aliases (video/x-m4v -> video/mp4) and infers from the extension when
+ * the browser leaves `file.type` empty (common on iOS Photos).
+ * Returns '' when the type is not allowed.
+ */
+export function jumpVideoContentType(file) {
+  let base = String(file?.type || '').split(';')[0].trim().toLowerCase();
+  if (base === 'video/x-m4v' || base === 'video/m4v') base = 'video/mp4';
+  if (!base || base === 'application/octet-stream') {
+    const ext = String(file?.name || '').split('.').pop().toLowerCase();
+    base = JUMP_VIDEO_EXT_MIME[ext] || '';
+  }
+  return JUMP_VIDEO_ALLOWED_MIME.includes(base) ? base : '';
+}
+
+export const JUMP_VIDEO_TOO_BIG_MSG = 'הסרטון גדול מדי — אפשר להעלות עד 40MB. קצרו את הסרטון ונסו שוב.';
+export const JUMP_VIDEO_BAD_TYPE_MSG = 'סוג הקובץ לא נתמך. אפשר להעלות MP4, MOV, WebM או 3GP.';
+
 function normalizeJumpVideo(row) {
   if (!row) return null;
   return {
@@ -2414,7 +2490,8 @@ function xhrPutFile(url, file, { contentType, headers = {}, onProgress, signal }
 }
 
 async function uploadJumpVideoObject(path, file, onProgress, accessToken, signal) {
-  const contentType = file.type || 'video/mp4';
+  // Never send `video/webm;codecs=...` — the bucket allow-list only matches base MIME types.
+  const contentType = jumpVideoContentType(file) || 'video/mp4';
   if (!accessToken) throw new Error('צריך להתחבר');
   if (signal?.aborted) throw cancelledUploadError();
   const authHeaders = {
@@ -2469,14 +2546,17 @@ export async function addJumpVideo({ spotId, spotName, caption = '', file, onPro
   const resolvedId = String(spotId || '').trim() || (resolvedName ? `custom:${resolvedName}` : '');
   if (!resolvedName && !resolvedId) throw new Error('נא לתייג ספוט');
   if (!file) throw new Error('נא לבחור סרטון');
-  if (!String(file.type || '').startsWith('video/')) {
-    throw new Error('נא לבחור קובץ סרטון');
+  const uploadType = jumpVideoContentType(file);
+  if (!uploadType) {
+    throw new Error(JUMP_VIDEO_BAD_TYPE_MSG);
   }
   if (file.size > MAX_JUMP_VIDEO_BYTES) {
-    throw new Error('הסרטון גדול מדי (עד 40MB).');
+    throw new Error(JUMP_VIDEO_TOO_BIG_MSG);
   }
 
-  const ext = (file.name.split('.').pop() || 'mp4').toLowerCase().replace(/[^a-z0-9]/g, '') || 'mp4';
+  const MIME_EXT = { 'video/mp4': 'mp4', 'video/quicktime': 'mov', 'video/webm': 'webm', 'video/3gpp': '3gp', 'video/3gpp2': '3g2' };
+  const rawExt = String(file.name || '').split('.').pop().toLowerCase().replace(/[^a-z0-9]/g, '');
+  const ext = (rawExt && JUMP_VIDEO_EXT_MIME[rawExt] === uploadType) ? rawExt : MIME_EXT[uploadType];
   const path = `${userId}/${uid()}.${ext}`;
   logJumpPublish('storage-start', { bytes: file.size, spotId: resolvedId });
   try {
