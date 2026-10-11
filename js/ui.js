@@ -1,4 +1,4 @@
-import { getSession, signOut, isAdmin, hasApprovedAccess, isWaitingAccess, getUnreadNotificationCount } from './store.js';
+import { getSession, signOut, isAdmin, hasApprovedAccess, isWaitingAccess, getUnreadNotificationCount, buildLoginUrl } from './store.js';
 import { prefetchReelsShellAndFeed } from './reels-prefetch.js';
 import { initFooter } from './footer.js';
 import { initThemeControl } from './theme.js';
@@ -190,8 +190,8 @@ function enforceAccessGate(session) {
   }
   if (!session) {
     if (!ACCESS_OPEN_PAGES.has(page)) {
-      const next = `${window.location.pathname}${window.location.search}`;
-      window.location.replace(`login.html?redirect=${encodeURIComponent(next)}`);
+      // buildLoginUrl() takes pathname+search once and never wraps a login/waiting URL
+      window.location.replace(buildLoginUrl());
     }
     return;
   }
@@ -840,8 +840,7 @@ export async function updateAuthUI() {
 export function requireAdmin() {
   return getSession().then((session) => {
     if (!session) {
-      const params = new URLSearchParams({ redirect: window.location.pathname + window.location.search });
-      window.location.href = `login.html?${params}`;
+      window.location.href = buildLoginUrl();
       return null;
     }
     if (!isAdmin(session.profile, session.user)) {
@@ -863,8 +862,7 @@ export function maskEmail(email) {
 export function requireAuth(message = t('auth.required')) {
   return getSession().then((session) => {
     if (!session) {
-      const params = new URLSearchParams({ redirect: window.location.pathname + window.location.search });
-      window.location.href = `login.html?${params}`;
+      window.location.href = buildLoginUrl();
       return null;
     }
     return session;

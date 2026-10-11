@@ -15,7 +15,21 @@ import { MAX_JUMP_VIDEO_BYTES } from './store.js';
 import { t } from './i18n.js';
 
 const MAX_CLIPS = 8;
-const MAX_SOURCE_BYTES = 120 * 1024 * 1024;
+/** Larger sources are only accepted when this device can trim/re-encode them. */
+const MAX_TRIM_SOURCE_BYTES = 120 * 1024 * 1024;
+
+function canTrimOnDevice() {
+  if (typeof MediaRecorder === 'undefined') return false;
+  const v = typeof document !== 'undefined' ? document.createElement('video') : null;
+  const hasCapture = Boolean(v && (typeof v.captureStream === 'function' || typeof v.mozCaptureStream === 'function'));
+  const canvas = typeof document !== 'undefined' ? document.createElement('canvas') : null;
+  return hasCapture || Boolean(canvas && typeof canvas.captureStream === 'function');
+}
+
+/** Picker limit: 40MB (bucket limit) unless the device can trim, then up to 120MB per source clip. */
+function maxSourceBytes() {
+  return canTrimOnDevice() ? MAX_TRIM_SOURCE_BYTES : MAX_JUMP_VIDEO_BYTES;
+}
 const MIN_KEEP = 0.25;
 const SRC_EPSILON = 0.3;
 
@@ -391,11 +405,13 @@ async function encodeClips(clips, onStatus) {
     await stopped;
     fallback?.stop();
 
-    const type = rec.mimeType || mime || 'video/webm';
+    // MediaRecorder reports e.g. "video/webm;codecs=vp9,opus"; storage only allows the base MIME.
+    const rawType = rec.mimeType || mime || 'video/webm';
+    const type = String(rawType).split(';')[0].trim().toLowerCase().includes('mp4') ? 'video/mp4' : 'video/webm';
     const blob = new Blob(chunks, { type });
     if (!blob.size) throw new Error(t('clip.encodeFail'));
     if (blob.size > MAX_JUMP_VIDEO_BYTES) throw new Error(t('clip.tooBigOut'));
-    const ext = type.includes('mp4') ? 'mp4' : 'webm';
+    const ext = type === 'video/mp4' ? 'mp4' : 'webm';
     return new File([blob], `jump-${Date.now()}.${ext}`, { type });
   } finally {
     fallback?.stop();
@@ -605,8 +621,8 @@ export function mountClipEditor(root, { maxBytes = MAX_JUMP_VIDEO_BYTES, onChang
         setStatus(t('clip.notVideo'));
         continue;
       }
-      if (file.size > MAX_SOURCE_BYTES) {
-        setStatus(t('clip.tooBigSrc'));
+      if (file.size > maxSourceBytes()) {
+        setStatus(canTrimOnDevice() ? t('clip.tooBigSrc') : t('clip.tooBigUpload'));
         continue;
       }
       try {
