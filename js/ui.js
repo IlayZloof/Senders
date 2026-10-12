@@ -797,6 +797,7 @@ function startAccessWatch() {
 export async function updateAuthUI() {
   const session = await getSession();
   enforceAccessGate(session);
+  window.__sendersBooted = true; // see boot failsafe in each page's HTML
   startAccessWatch();
   const authArea = document.getElementById('authArea');
   const admin = Boolean(session?.profile && isAdmin(session.profile, session.user));

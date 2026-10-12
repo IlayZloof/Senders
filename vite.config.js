@@ -40,6 +40,10 @@ export default defineConfig({
   },
   plugins: [versionJsonPlugin()],
   build: {
+    // Older iPhones (iOS 14/15 Safari, incl. the WhatsApp in-app browser) must
+    // be able to parse every bundle; one syntax error = blank page.
+    target: ['es2019', 'safari14'],
+    cssTarget: ['safari14'],
     rollupOptions: {
       input: {
         main: resolve(__dirname, 'index.html'),
