@@ -1,4 +1,4 @@
-import { getSession, signOut, isAdmin, hasApprovedAccess, isWaitingAccess, getUnreadNotificationCount, buildLoginUrl } from './store.js';
+import { getSession, invalidateSessionCache, signOut, isAdmin, hasApprovedAccess, isWaitingAccess, getUnreadNotificationCount, buildLoginUrl } from './store.js';
 import { prefetchReelsShellAndFeed } from './reels-prefetch.js';
 import { initFooter } from './footer.js';
 import { initThemeControl } from './theme.js';
@@ -769,9 +769,35 @@ function updateAdminNavLink(admin) {
   usersNav?.querySelector('a')?.classList.toggle('active', /users\.html$/i.test(window.location.pathname));
 }
 
+/*
+ * Live revocation: if an admin disables a user who is already on a page, re-check
+ * the profile every 15s (only while the tab is visible) and on returning to the
+ * tab. Acts only on a positive "waiting/disabled" answer, never on a network blip.
+ */
+const ACCESS_WATCH_MS = 15000;
+function startAccessWatch() {
+  if (window.__sendersAccessWatch) return;
+  window.__sendersAccessWatch = true;
+  const check = async () => {
+    if (document.visibilityState !== 'visible') return;
+    if (!document.documentElement.classList.contains('access-granted')) return;
+    try {
+      invalidateSessionCache();
+      const s = await getSession();
+      if (!s?.profile || isAdmin(s.profile, s.user)) return;
+      if (isWaitingAccess(s.profile, s.user)) enforceAccessGate(s);
+    } catch {
+      /* ignore transient errors */
+    }
+  };
+  window.setInterval(check, ACCESS_WATCH_MS);
+  document.addEventListener('visibilitychange', check);
+}
+
 export async function updateAuthUI() {
   const session = await getSession();
   enforceAccessGate(session);
+  startAccessWatch();
   const authArea = document.getElementById('authArea');
   const admin = Boolean(session?.profile && isAdmin(session.profile, session.user));
   updateAdminNavLink(admin);

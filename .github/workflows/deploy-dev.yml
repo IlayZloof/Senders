@@ -1,0 +1,59 @@
+name: Deploy preview (senders-dev)
+
+# Preview deploy: every push to dev builds the site and deploys it to a
+# separate Worker, senders-dev, so changes can be checked on a phone before
+# "promote". Uses the same live Supabase project. Production is untouched.
+on:
+  push:
+    branches: [dev]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-preview
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: preview
+      url: https://senders-dev.ilay-zloof.workers.dev
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Write .env.local from repo secrets (public values only)
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_ADMIN_EMAIL: ${{ secrets.VITE_ADMIN_EMAIL }}
+        run: |
+          {
+            echo "VITE_SUPABASE_URL=$VITE_SUPABASE_URL"
+            echo "VITE_SUPABASE_ANON_KEY=$VITE_SUPABASE_ANON_KEY"
+            echo "VITE_ADMIN_EMAIL=$VITE_ADMIN_EMAIL"
+          } > .env.local
+
+      - name: Build (vite build)
+        run: npm run build
+
+      - name: Show version being deployed
+        run: cat dist/version.json
+
+      - name: Deploy Worker senders-dev
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy --config wrangler.jsonc --no-autoconfig --name senders-dev
