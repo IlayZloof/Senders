@@ -2,7 +2,7 @@ export const LANG_KEY = 'senders-lang';
 
 const STRINGS = {
   he: {
-    'meta.title.home': 'Senders — קהילת קופצי הצוקים',
+    'meta.title.home': 'Senders- קהילת קופצי הצוקים',
     'meta.title.map': 'מפה — Senders',
     'meta.title.login': 'התחברות — Senders',
     'meta.title.add': 'הוספת ספוט — Senders',
