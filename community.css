@@ -55,8 +55,8 @@
 }
 
 html[data-theme="light"] .community-connect-badge--soon {
-  background: rgba(181, 74, 50, 0.12);
-  color: #9a3d29;
+  background: rgba(196, 163, 90, 0.20);
+  color: #634a0e;
 }
 
 .community-connect-card a {

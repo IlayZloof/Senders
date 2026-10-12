@@ -37,7 +37,7 @@ export function applyTheme(mode = readThemeMode()) {
   root.setAttribute('data-theme-mode', mode);
   root.style.colorScheme = theme;
   const meta = document.querySelector('meta[name="theme-color"]');
-  if (meta) meta.setAttribute('content', theme === 'light' ? '#efe6d6' : '#0e1318');
+  if (meta) meta.setAttribute('content', theme === 'light' ? '#dde2e8' : '#0e1318');
   document.dispatchEvent(new CustomEvent('senders-theme-change', { detail: { mode, theme } }));
   return { mode, theme };
 }
