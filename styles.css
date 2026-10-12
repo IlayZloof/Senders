@@ -54,10 +54,10 @@ html[data-theme="light"] {
   --surface-2: #cfd6de;
   --text: #1a2027;
   --text-muted: #4a5560;
-  --accent: #7a5b12;
-  --accent-dark: #634a0e;
+  --accent: #2b4560;
+  --accent-dark: #1f3449;
   --accent-2: #2e6b5e;
-  --accent-soft: rgba(196, 163, 90, 0.20);
+  --accent-soft: rgba(43, 69, 96, 0.14);
   --accent-ink: #ffffff;
   --cta: #c4a35a;
   --cta-hover: #b39149;

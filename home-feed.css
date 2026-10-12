@@ -709,8 +709,8 @@ html[data-theme="light"] .upload-progress-track {
 }
 
 html[data-theme="light"] .upload-cancel-btn {
-  border-color: rgba(122, 91, 18, 0.40);
-  color: #7a5b12;
+  border-color: rgba(43, 69, 96, 0.40);
+  color: #2b4560;
 }
 
 html[data-theme="light"] .upload-progress-fill {
