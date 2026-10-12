@@ -2,7 +2,7 @@ export const LANG_KEY = 'senders-lang';
 
 const STRINGS = {
   he: {
-    'meta.title.home': 'Senders — ספוטי קפיצה',
+    'meta.title.home': 'Senders — קהילת קופצי הצוקים',
     'meta.title.map': 'מפה — Senders',
     'meta.title.login': 'התחברות — Senders',
     'meta.title.add': 'הוספת ספוט — Senders',
@@ -19,7 +19,7 @@ const STRINGS = {
     'meta.title.users': 'משתמשים — Senders',
     'meta.title.admin': 'ניהול — Senders',
     'meta.title.spot': 'ספוט — Senders',
-    'meta.desc.home': 'מצאו ספוטי קפיצה בישראל. מפה, חוויות וקהילה.',
+    'meta.desc.home': 'מצאו ספוטים לקפיצה בישראל ושתפו חוויות עם הקהילה',
 
     'nav.home': 'בית',
     'nav.map': 'מפה',
