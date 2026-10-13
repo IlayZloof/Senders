@@ -1,4 +1,4 @@
-const CACHE_NAME = 'senders-ops-v78';
+const CACHE_NAME = 'senders-ops-v79';
 const REELS_MEDIA_CACHE = 'senders-reels-media';
 
 function collectLocalAssetUrls(html, baseHref) {

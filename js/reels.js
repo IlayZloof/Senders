@@ -1,3 +1,5 @@
+import { findSpotByRef } from './data-guards.js';
+import { guardVideo } from './video-fallback.js';
 import {
   escapeHtml,
   googleMapsNavUrl,
@@ -476,7 +478,7 @@ export function initReels() {
   }
 
   function renderSlide(video, index = 0) {
-    const spot = state.spots.find((s) => String(s.id) === String(video.spotId));
+    const spot = findSpotByRef(state.spots, video.spotId);
     const spotName = displaySpotName(spot, video.spotName || t('common.spot'));
     const spotChip = spot
       ? `<button type="button" class="reels-spot" data-open-spot="${escapeHtml(video.spotId)}">${escapeHtml(spotName)}</button>`
@@ -547,6 +549,7 @@ export function initReels() {
     state.observer?.disconnect();
     const videos = [...feed.querySelectorAll('video')];
     if (!videos.length) return;
+    videos.forEach((video) => guardVideo(video));
     videos.forEach((video) => applySound(video));
     syncMuteBadges();
     state.observer = new IntersectionObserver((entries) => {

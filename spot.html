@@ -161,7 +161,8 @@
       document.title = `${displaySpotName(spot)} — Senders`;
 
       const spotMedia = getSpotMedia(spot);
-      const feedVideos = (await getJumpVideos(80)).filter((v) => String(v.spotId) === String(spot.id));
+      const spotRefs = new Set([String(spot.id), ...(Array.isArray(spot.aliases) ? spot.aliases.map(String) : [])]);
+      const feedVideos = (await getJumpVideos(80)).filter((v) => spotRefs.has(String(v.spotId)));
       const seen = new Set(spotMedia.map((item) => item.src));
       for (const video of feedVideos) {
         if (!video.videoUrl || seen.has(video.videoUrl)) continue;

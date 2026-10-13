@@ -1,3 +1,4 @@
+import { guardVideo } from './video-fallback.js';
 /**
  * Physical (LTR) touch carousel — swipe follows the finger, not RTL reading order.
  * The slider root is dir=ltr so Hebrew page direction cannot invert translateX.
@@ -63,6 +64,7 @@ export function initSpotSlider(root) {
   }
 
   // Tap a video to play/pause (pointer capture on the viewport ate taps before).
+  videos.forEach((video) => guardVideo(video));
   videos.forEach((video) => {
     video.addEventListener('error', () => {
       video.closest('.spot-slider-slide')?.classList.add('is-blocked');

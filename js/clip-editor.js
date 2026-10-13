@@ -1,3 +1,4 @@
+import { RECORDER_MIME_PREFERENCE } from './data-guards.js';
 /**
  * Shared jump-video clip editor (trim, reorder, multi-clip).
  *
@@ -54,14 +55,8 @@ function isFullRange(clip) {
 }
 
 function pickRecorderMime() {
-  const types = [
-    'video/webm;codecs=vp9,opus',
-    'video/webm;codecs=vp8,opus',
-    'video/webm;codecs=vp9,vorbis',
-    'video/mp4;codecs=avc1.42E01E,mp4a.40.2',
-    'video/webm',
-    'video/mp4',
-  ];
+  // MP4 first: WebM output did not play on some iPhones (docs/LESSONS.md #3).
+  const types = RECORDER_MIME_PREFERENCE;
   if (typeof MediaRecorder === 'undefined') return '';
   return types.find((type) => MediaRecorder.isTypeSupported(type)) || '';
 }
