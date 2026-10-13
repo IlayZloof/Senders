@@ -7,6 +7,7 @@ import {
   videoContentType, validateVideoFile, uploadErrorMessage, MAX_VIDEO_BYTES, VIDEO_ERR, clearWebmAlphaFlag,
 } from './data-guards.js';
 
+import { reportMissingSchema } from './missing-feature.js';
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 const ADMIN_EMAILS = (
@@ -1710,23 +1711,28 @@ async function requireCloudUserSession() {
 function isMissingRelationError(err) {
   const code = String(err?.code || '');
   const msg = String(err?.message || err?.details || err?.hint || '').toLowerCase();
-  return (
+  const missing = (
     code === '42P01' ||
     code === 'PGRST205' ||
     msg.includes('could not find the table') ||
     (msg.includes('schema cache') && msg.includes('table'))
   );
+  if (missing) reportMissingSchema(err, 'table');
+  return missing;
 }
 
 function isMissingTableError(err) {
   const code = String(err?.code || '');
   const msg = String(err?.message || err?.details || err?.hint || '').toLowerCase();
-  return (
-    isMissingRelationError(err) ||
+  if (isMissingRelationError(err)) return true;
+  const missing =
     code === 'PGRST204' ||
+    code === 'PGRST202' ||
+    code === '42883' ||
     msg.includes('does not exist') ||
-    msg.includes('schema cache')
-  );
+    msg.includes('schema cache');
+  if (missing) reportMissingSchema(err, code === 'PGRST202' || code === '42883' ? 'function' : 'schema object');
+  return missing;
 }
 
 function isPermissionWriteError(err) {
