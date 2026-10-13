@@ -2186,7 +2186,12 @@ async function fetchJumpVideoRows({ limit = 40, userId = null, ids = null } = {}
   });
   const rows = (cloud || []).map(normalizeJumpVideo).filter((row) => row?.videoUrl);
   const visibleIds = new Set((await getAllSpots()).map((s) => String(s.id)));
-  return rows.filter((row) => !row.spotId || visibleIds.has(String(row.spotId)));
+  // Reels tagged with a free-text spot ("custom:<name>") are never in the spot
+  // catalogue, so they must not be filtered out (that made fresh uploads vanish).
+  return rows.filter((row) => {
+    const sid = String(row.spotId || '');
+    return !sid || sid.startsWith('custom:') || visibleIds.has(sid);
+  });
 }
 
 export async function getJumpVideos(limit = 40) {
@@ -2260,7 +2265,8 @@ async function attachReelAuthorProfiles(list) {
   list.forEach((video) => {
     const profile = withCachedAvatar(byId[video.userId] || { id: video.userId });
     video.avatarUrl = profilePhotoFromRow(profile) || video.avatarUrl || '';
-    if (profile?.display_name && (!video.displayName || video.displayName === 'משתמש')) {
+    // The live profile name wins over the copy stored on the reel at upload time.
+    if (profile?.display_name && profile.display_name !== 'משתמש') {
       video.displayName = profile.display_name;
     }
   });
