@@ -161,6 +161,57 @@ export function cannotPlayVideoUrl(url, canPlayType) {
   return canPlayType(mime) === '';
 }
 
+/**
+ * Max output size for re-encoded reels. A 4K (2160x3840) VP9 WebM made by the
+ * clip editor failed to decode in WebKit (MEDIA_ERR_SRC_NOT_SUPPORTED).
+ */
+export const MAX_RECORD_LONG_SIDE = 1920;
+
+/** Scale (w,h) down to fit within maxLong on the long side; never upscales; even dims. */
+export function fitWithin(w, h, maxLong = MAX_RECORD_LONG_SIDE) {
+  const W = Math.max(16, Math.round(Number(w) || 720));
+  const H = Math.max(16, Math.round(Number(h) || 1280));
+  const scale = Math.min(1, maxLong / Math.max(W, H));
+  const even = (n) => Math.max(16, Math.round(n * scale / 2) * 2);
+  return { width: scale < 1 ? even(W) : W, height: scale < 1 ? even(H) : H, scaled: scale < 1 };
+}
+
+/** Pick the right user-facing reason for a <video> error. */
+export function videoErrorKind(errorCode, url, canPlayType) {
+  if (Number(errorCode) === 4 || cannotPlayVideoUrl(url, canPlayType)) return 'unsupported';
+  return 'error';
+}
+
+/**
+ * Reload decision for the stale-JS guard: only when the server runs a different
+ * real version and we haven't already reloaded for it (no reload loops).
+ */
+export function shouldReloadForVersion(running, server, alreadyReloadedFor) {
+  const r = String(running || '').trim();
+  const s = String(server || '').trim();
+  if (!r || !s || r === 'dev' || r === s) return false;
+  return alreadyReloadedFor !== s;
+}
+
+/**
+ * WebM with the Matroska AlphaMode flag set (EBML id 0x53C0, value 1) does not
+ * decode in WebKit/iOS (MEDIA_ERR_SRC_NOT_SUPPORTED). Chrome's MediaRecorder sets
+ * it for canvas-sourced VP9. Flip the value byte 1 -> 0 in the track header
+ * (same length, file stays valid; the video has no real transparency).
+ * Returns the number of flags cleared. Mutates `bytes` (Uint8Array).
+ */
+export function clearWebmAlphaFlag(bytes, scanLimit = 256 * 1024) {
+  let cleared = 0;
+  const end = Math.min(bytes?.length || 0, scanLimit) - 3;
+  for (let i = 0; i < end; i += 1) {
+    if (bytes[i] === 0x53 && bytes[i + 1] === 0xc0 && bytes[i + 2] === 0x81 && bytes[i + 3] === 0x01) {
+      bytes[i + 3] = 0x00;
+      cleared += 1;
+    }
+  }
+  return cleared;
+}
+
 /** Recorder output order: MP4 (plays everywhere incl. iOS) before WebM. */
 export const RECORDER_MIME_PREFERENCE = [
   'video/mp4;codecs=avc1.42E01E,mp4a.40.2',

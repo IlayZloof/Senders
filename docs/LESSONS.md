@@ -44,3 +44,24 @@ so both deploy workflows (main and dev) fail before deploying if a guard breaks.
 Use `filterBySpotVisibility(items, await getHiddenSpotIds())`, never
 `visibleIds.has(...)`; render names through `liveDisplayName`; pass every new
 `<video>` through `guardVideo`. Add a test case to `tests/data-guards.test.js`.
+
+## 5. Reel recorded as WebM with an alpha channel did not play on iPhone
+- **Bug (Oct 13):** ישי: "videos don't work via the map". Verified with
+  Playwright WebKit (iPhone 13): Lev's reel on מפל דבורה fails with
+  `MEDIA_ERR_SRC_NOT_SUPPORTED`; every other reel plays. Chromium plays all.
+- **Root cause:** the file's track header has Matroska `AlphaMode=1` (Chrome
+  MediaRecorder output from an alpha canvas). WebKit refuses alpha VP9. The
+  same stream with the flag flipped to 0 plays (verified). Not resolution, not
+  codec, not the network.
+- **Guards:** clip-editor canvas uses `{ alpha: false }` and caps output at
+  1080p (`fitWithin`); every WebM upload passes through `clearWebmAlphaFlag()`
+  before upload; the player shows "can't play this format" for error code 4
+  instead of "check your connection" (`videoErrorKind`).
+
+## 6. Stale JavaScript after a deploy
+- **Risk:** a tab or home-screen app left open keeps running old code; the
+  service worker already uses skipWaiting/clients.claim and network-first HTML
+  with hashed assets, so a fresh load is always current, but an open tab is not.
+- **Guard:** `startStaleVersionGuard()` (js/ui.js) checks /version.json on
+  load, on return to the tab and every 10 min, and reloads once per new version
+  (`shouldReloadForVersion`, never during an upload).

@@ -1,4 +1,4 @@
-import { RECORDER_MIME_PREFERENCE } from './data-guards.js';
+import { RECORDER_MIME_PREFERENCE, fitWithin } from './data-guards.js';
 /**
  * Shared jump-video clip editor (trim, reorder, multi-clip).
  *
@@ -298,16 +298,24 @@ function playUntil(video, end) {
 
 function startCanvasFallback(video) {
   const canvas = document.createElement('canvas');
-  const ctx = canvas.getContext('2d');
+  // alpha:false — an alpha canvas made Chrome record VP9 WebM with AlphaMode=1,
+  // which iPhones cannot play (docs/LESSONS.md #5).
+  const ctx = canvas.getContext('2d', { alpha: false });
+  // Cap at 1080p: 4K VP9 output did not play on iPhone/WebKit (docs/LESSONS.md #5).
+  let srcW = 0;
+  let srcH = 0;
   const sizeToVideo = () => {
-    canvas.width = Math.max(16, video.videoWidth || 720);
-    canvas.height = Math.max(16, video.videoHeight || 1280);
+    srcW = video.videoWidth;
+    srcH = video.videoHeight;
+    const size = fitWithin(video.videoWidth || 720, video.videoHeight || 1280);
+    canvas.width = size.width;
+    canvas.height = size.height;
   };
   sizeToVideo();
   let running = true;
   const draw = () => {
     if (!running) return;
-    if (video.videoWidth && (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight)) {
+    if (video.videoWidth && (srcW !== video.videoWidth || srcH !== video.videoHeight)) {
       sizeToVideo();
     }
     if (video.readyState >= 2) ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
@@ -354,8 +362,10 @@ async function encodeClips(clips, onStatus) {
       /* captureStream still works on many browsers without a play() */
     }
     let captured = null;
-    if (typeof video.captureStream === 'function') captured = video.captureStream();
-    else if (typeof video.mozCaptureStream === 'function') captured = video.mozCaptureStream();
+    // Sources above 1080p go through the (scaling) canvas path instead of raw capture.
+    const tooLarge = fitWithin(video.videoWidth, video.videoHeight).scaled;
+    if (!tooLarge && typeof video.captureStream === 'function') captured = video.captureStream();
+    else if (!tooLarge && typeof video.mozCaptureStream === 'function') captured = video.mozCaptureStream();
     if (!captured || !captured.getVideoTracks().length) {
       fallback = startCanvasFallback(video);
       captured = fallback.stream;

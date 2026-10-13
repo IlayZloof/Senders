@@ -4,7 +4,7 @@ import deletedSpotIdsSeed from '../data/deleted-spots.json';
 import { normalizeRocks, RETIRED_MEDIA_SRCS } from './spots-util.js';
 import {
   hiddenSpotIdSet, filterBySpotVisibility, liveDisplayName, liveSpotName, applyLiveNames,
-  videoContentType, validateVideoFile, uploadErrorMessage, MAX_VIDEO_BYTES, VIDEO_ERR,
+  videoContentType, validateVideoFile, uploadErrorMessage, MAX_VIDEO_BYTES, VIDEO_ERR, clearWebmAlphaFlag,
 } from './data-guards.js';
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
@@ -2659,6 +2659,35 @@ async function uploadJumpVideoObject(path, file, onProgress, accessToken, signal
 }
 
 export async function addJumpVideo({ spotId, spotName, caption = '', file, onProgress, signal } = {}) {
+  if (typeof window !== 'undefined') window.__sendersBusy = (window.__sendersBusy || 0) + 1;
+  try {
+    return await addJumpVideoInner({ spotId, spotName, caption, file, onProgress, signal });
+  } finally {
+    if (typeof window !== 'undefined') window.__sendersBusy = Math.max(0, (window.__sendersBusy || 1) - 1);
+  }
+}
+
+/** Make a WebM playable on iOS before upload (see clearWebmAlphaFlag). */
+async function sanitizeVideoForUpload(file) {
+  if (videoContentType(file) !== 'video/webm' || typeof file?.slice !== 'function') return file;
+  try {
+    const headLen = Math.min(file.size, 256 * 1024);
+    const head = new Uint8Array(await file.slice(0, headLen).arrayBuffer());
+    if (!clearWebmAlphaFlag(head)) return file;
+    const fixed = new Blob([head, file.slice(headLen)], { type: 'video/webm' });
+    try {
+      return new File([fixed], file.name || 'reel.webm', { type: 'video/webm' });
+    } catch {
+      fixed.name = file.name || 'reel.webm';
+      return fixed;
+    }
+  } catch {
+    return file;
+  }
+}
+
+async function addJumpVideoInner({ spotId, spotName, caption = '', file, onProgress, signal } = {}) {
+  file = await sanitizeVideoForUpload(file);
   const session = await requireCloudUserSession();
   if (!useCloud()) throw new Error('העלאת סרטונים דורשת חיבור.');
   const userId = session.user.id;

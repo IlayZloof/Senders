@@ -4,6 +4,7 @@ import {
   liveDisplayName, liveSpotName, applyLiveNames, findSpotByRef,
   videoContentType, validateVideoFile, uploadErrorMessage, cannotPlayVideoUrl,
   RECORDER_MIME_PREFERENCE, VIDEO_ERR, MAX_VIDEO_BYTES,
+  fitWithin, videoErrorKind, shouldReloadForVersion, clearWebmAlphaFlag,
 } from '../js/data-guards.js';
 
 const all = [
@@ -93,5 +94,55 @@ describe('playback (bug: videos via map/iOS did not play)', () => {
     expect(RECORDER_MIME_PREFERENCE[0]).toMatch(/^video\/mp4/);
     expect(RECORDER_MIME_PREFERENCE.findIndex((m) => m.startsWith('video/webm')))
       .toBeGreaterThan(RECORDER_MIME_PREFERENCE.findIndex((m) => m.startsWith('video/mp4')));
+  });
+});
+
+describe('re-encode size cap (bug: 4K VP9 WebM failed in WebKit)', () => {
+  it('scales 4K portrait down to 1080x1920', () => {
+    expect(fitWithin(2160, 3840)).toEqual({ width: 1080, height: 1920, scaled: true });
+  });
+  it('never upscales and keeps even dims', () => {
+    expect(fitWithin(464, 832)).toEqual({ width: 464, height: 832, scaled: false });
+    const r = fitWithin(3001, 1999);
+    expect(r.width % 2 + r.height % 2).toBe(0);
+    expect(Math.max(r.width, r.height)).toBeLessThanOrEqual(1920);
+  });
+  it('handles missing metadata', () => {
+    expect(fitWithin(0, 0).scaled).toBe(false);
+  });
+});
+
+describe('video error reason', () => {
+  const lies = () => 'maybe';
+  it('code 4 = unsupported even if canPlayType says maybe', () => {
+    expect(videoErrorKind(4, 'a.webm', lies)).toBe('unsupported');
+  });
+  it('network/decode errors are not called unsupported', () => {
+    expect(videoErrorKind(2, 'a.mp4', lies)).toBe('error');
+  });
+});
+
+describe('stale JS guard', () => {
+  it('reloads once per new version', () => {
+    expect(shouldReloadForVersion('1.0.13', '1.0.14', null)).toBe(true);
+    expect(shouldReloadForVersion('1.0.13', '1.0.14', '1.0.14')).toBe(false);
+  });
+  it('no reload when equal, unknown or dev', () => {
+    expect(shouldReloadForVersion('1.0.14', '1.0.14', null)).toBe(false);
+    expect(shouldReloadForVersion('dev', '1.0.14', null)).toBe(false);
+    expect(shouldReloadForVersion('1.0.13', '', null)).toBe(false);
+  });
+});
+
+describe('WebM alpha flag (bug: Lev\'s reel did not play on iPhone/WebKit)', () => {
+  it('clears AlphaMode=1 in place without changing length', () => {
+    const b = Uint8Array.from([0x1a, 0x45, 0x53, 0xc0, 0x81, 0x01, 0x00]);
+    expect(clearWebmAlphaFlag(b)).toBe(1);
+    expect([...b]).toEqual([0x1a, 0x45, 0x53, 0xc0, 0x81, 0x00, 0x00]);
+  });
+  it('leaves files without the flag untouched', () => {
+    const b = Uint8Array.from([0x53, 0xc0, 0x81, 0x00, 0x42]);
+    expect(clearWebmAlphaFlag(b)).toBe(0);
+    expect(clearWebmAlphaFlag(new Uint8Array())).toBe(0);
   });
 });

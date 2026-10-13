@@ -1,4 +1,4 @@
-import { cannotPlayVideoUrl } from './data-guards.js';
+import { videoErrorKind } from './data-guards.js';
 
 /**
  * Every <video> that autoplays must also work when autoplay is refused or the
@@ -22,7 +22,7 @@ function ensureStyle() {
 
 export const VF_MSG = {
   tap: '▶ הקישו לניגון',
-  unsupported: 'המכשיר הזה לא מצליח לנגן את פורמט הסרטון (WebM). נסו מדפדפן אחר או ממחשב.',
+  unsupported: 'המכשיר הזה לא מצליח לנגן את הסרטון הזה (פורמט או רזולוציה). נסו מדפדפן אחר או ממחשב.',
   error: 'לא הצלחנו לטעון את הסרטון. בדקו את החיבור ונסו שוב.',
 };
 
@@ -47,12 +47,16 @@ export function guardVideo(video, host = video?.parentElement) {
     video.play().then(() => { overlay.hidden = true; }).catch(() => {});
   });
   video.addEventListener('playing', () => { overlay.hidden = true; });
-  video.addEventListener('error', () => {
+  const onError = () => {
     const src = video.currentSrc || video.src || video.dataset.videoUrl;
-    show(cannotPlayVideoUrl(src, (m) => video.canPlayType(m)) ? VF_MSG.unsupported : VF_MSG.error, false);
-  });
-  const src = video.getAttribute('src') || video.dataset.videoUrl;
-  if (cannotPlayVideoUrl(src, (m) => video.canPlayType(m))) show(VF_MSG.unsupported, false);
+    // MEDIA_ERR_SRC_NOT_SUPPORTED (4) = format/codec/resolution the device can't decode,
+    // not a connection problem. Judge only after a real error (canPlayType lies: MOV
+    // reports '' in Chromium yet plays; 4K VP9 WebM reports 'maybe' in WebKit yet fails).
+    const kind = videoErrorKind(video.error?.code, src, (m) => video.canPlayType(m));
+    show(kind === 'unsupported' ? VF_MSG.unsupported : VF_MSG.error, false);
+  };
+  video.addEventListener('error', onError);
+  if (video.error) onError(); // error fired before we were attached
   // Wrap play() so any refusal (autoplay policy) surfaces the tap overlay.
   const nativePlay = video.play.bind(video);
   video.play = () => {

@@ -4384,3 +4384,4 @@ html.pwa-standalone .tab-bar {
   bottom: 50%; left: 50%; transform: translate(-50%, 50%);
   font-size: 1rem; padding: .7rem 1.1rem; background: rgba(0,0,0,.75);
 }
+.spot-reel-open { z-index: 5; }
