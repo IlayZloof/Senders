@@ -1,7 +1,7 @@
 {
   "name": "senders-ops",
-  "version": "1.0.25",
-  "description": "Senders Ops — עיצוב כהה מקצועי לספוטי קפיצה בישראל",
+  "version": "1.1.0-raw-summit",
+  "description": "Senders — Raw Summit Brutal",
   "type": "module",
   "scripts": {
     "dev": "vite",
