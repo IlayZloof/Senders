@@ -2,7 +2,13 @@ import { createClient } from '@supabase/supabase-js';
 import seedSpots from '../data/seed-spots.json';
 import deletedSpotIdsSeed from '../data/deleted-spots.json';
 import { normalizeRocks, RETIRED_MEDIA_SRCS } from './spots-util.js';
+import {
+  hiddenSpotIdSet, filterBySpotVisibility, liveDisplayName, liveSpotName, applyLiveNames,
+  videoContentType, validateVideoFile, uploadErrorMessage, MAX_VIDEO_BYTES, VIDEO_ERR, clearWebmAlphaFlag,
+  classifySignUpResult, isAlreadyRegisteredAuthError,
+} from './data-guards.js';
 
+import { reportMissingSchema } from './missing-feature.js';
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 const ADMIN_EMAILS = (
@@ -612,7 +618,7 @@ function signUpLocal(normalizedEmail, password, displayName) {
   const isAdminUser = isAdminEmail(normalizedEmail);
   const users = read(LS_USERS);
   if (users.some((u) => u.email === normalizedEmail)) {
-    throw new Error('כתובת האימייל כבר רשומה');
+    throw new Error('כתובת האימייל כבר רשומה. התחברו או אפסו סיסמה.');
   }
 
   const user = {
@@ -650,7 +656,7 @@ function signInLocal(normalizedEmail, password, { fromCloudFallback = false } = 
 
 export async function signUp(email, password, displayName) {
   invalidateSessionCache();
-  const normalizedEmail = email.toLowerCase();
+  const normalizedEmail = String(email || '').trim().toLowerCase();
 
   if (useCloud()) {
     try {
@@ -664,9 +670,21 @@ export async function signUp(email, password, displayName) {
           markCloudUnreachable();
           return signUpLocal(normalizedEmail, password, displayName);
         }
+        if (isAlreadyRegisteredAuthError(error)) {
+          throw Object.assign(new Error('כתובת האימייל כבר רשומה. התחברו או אפסו סיסמה.'), {
+            code: 'user_already_exists',
+            cause: error,
+          });
+        }
         throw error;
       }
-      if (data.user) {
+      const kind = classifySignUpResult(data);
+      if (kind === 'already_registered') {
+        throw Object.assign(new Error('כתובת האימייל כבר רשומה. התחברו או אפסו סיסמה.'), {
+          code: 'user_already_exists',
+        });
+      }
+      if (data?.user && kind !== 'empty') {
         // is_admin/status are set by the database (migration 020), not the client.
         const { error: profileErr } = await supabase.from('profiles').upsert({
           id: data.user.id,
@@ -1256,6 +1274,36 @@ export async function getAllSpots() {
   return visibleSpotsForViewer(spots, admin);
 }
 
+/**
+ * Spot ids this viewer must not see content for (admin-only spots). Content
+ * tagged with anything else — custom:/free-text, aliases, deleted or unknown
+ * spots — is kept. See docs/LESSONS.md #1.
+ */
+async function getHiddenSpotIds() {
+  const [spots, admin] = await Promise.all([loadApprovedSpots(), currentViewerIsAdmin()]);
+  return hiddenSpotIdSet(spots, visibleSpotsForViewer(spots, admin));
+}
+
+/** userId -> profile row for live names/avatars; {} when unavailable. */
+async function fetchProfilesById(userIds) {
+  const ids = [...new Set((userIds || []).filter(Boolean).map(String))];
+  const byId = {};
+  if (!ids.length) return byId;
+  if (useCloud()) {
+    try {
+      const { data, error } = await supabase.from('profiles').select('*').in('id', ids);
+      if (!error) (data || []).forEach((p) => { byId[p.id] = p; });
+    } catch {
+      /* stored copies stay as fallback */
+    }
+  }
+  const locals = read(LS_USERS, []);
+  (Array.isArray(locals) ? locals : []).forEach((u) => {
+    if (u?.id && ids.includes(String(u.id)) && !byId[u.id]) byId[u.id] = u;
+  });
+  return byId;
+}
+
 export async function getSpot(id) {
   if (isDeletedSpot(id)) return null;
   const admin = await currentViewerIsAdmin();
@@ -1676,23 +1724,28 @@ async function requireCloudUserSession() {
 function isMissingRelationError(err) {
   const code = String(err?.code || '');
   const msg = String(err?.message || err?.details || err?.hint || '').toLowerCase();
-  return (
+  const missing = (
     code === '42P01' ||
     code === 'PGRST205' ||
     msg.includes('could not find the table') ||
     (msg.includes('schema cache') && msg.includes('table'))
   );
+  if (missing) reportMissingSchema(err, 'table');
+  return missing;
 }
 
 function isMissingTableError(err) {
   const code = String(err?.code || '');
   const msg = String(err?.message || err?.details || err?.hint || '').toLowerCase();
-  return (
-    isMissingRelationError(err) ||
+  if (isMissingRelationError(err)) return true;
+  const missing =
     code === 'PGRST204' ||
+    code === 'PGRST202' ||
+    code === '42883' ||
     msg.includes('does not exist') ||
-    msg.includes('schema cache')
-  );
+    msg.includes('schema cache');
+  if (missing) reportMissingSchema(err, code === 'PGRST202' || code === '42883' ? 'function' : 'schema object');
+  return missing;
 }
 
 function isPermissionWriteError(err) {
@@ -1711,7 +1764,8 @@ function socialWriteError(err, fallback) {
   const msg = String(err?.message || '');
   if (isMissingRelationError(err)) return fallback;
   if (isPermissionWriteError(err)) {
-    return 'צריך להתחבר';
+    // RLS also refuses accounts that are still waiting for approval.
+    return /not authenticated|jwt/i.test(msg) ? 'צריך להתחבר' : VIDEO_ERR.forbidden.replace('להעלות', 'לבצע את הפעולה');
   }
   if (code === '23503') {
     return 'החשבון לא מוכן עדיין. התחברו מחדש ונסו שוב';
@@ -1723,10 +1777,10 @@ function jumpVideoInsertError(err, fallback) {
   const code = String(err?.code || '');
   const msg = String(err?.message || '');
   if (isMissingRelationError(err) || isMissingTableError(err)) {
-    return 'שמירת הסרטון נכשלה — חסרה טבלה או פונקציית פרסום. הריצו את SQL ב-Supabase.';
+    return VIDEO_ERR.server;
   }
   if (isPermissionWriteError(err)) {
-    return 'שמירת הסרטון נחסמה (הרשאות). הריצו את SQL של הפרסום, התחברו מחדש ונסו שוב.';
+    return VIDEO_ERR.forbidden;
   }
   if (code === '23503' || /profile missing/i.test(msg)) {
     return 'החשבון לא מוכן עדיין. התחברו מחדש ונסו שוב.';
@@ -1823,9 +1877,10 @@ export async function getSpotPosts(spotId = null) {
   const local = read(LS_SPOT_POSTS, [])
     .filter((p) => (spotId ? String(p.spotId || p.spot_id) === String(spotId) : true));
 
-  return mergeById(cloudRows.map(normalizeSpotPost), local.map(normalizeSpotPost))
+  const posts = mergeById(cloudRows.map(normalizeSpotPost), local.map(normalizeSpotPost))
     .filter(Boolean)
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  return applyLiveNames(posts, await fetchProfilesById(posts.map((p) => p.userId)));
 }
 
 export async function addSpotPost({ spotId, text = '', photo = '' }) {
@@ -1893,8 +1948,16 @@ export async function getMeetups(options = {}) {
 
   if (includeHidden) return all;
 
-  const visibleIds = new Set((await getAllSpots()).map((s) => String(s.id)));
-  return all.filter((m) => !m.spotId || visibleIds.has(String(m.spotId)));
+  const hidden = await getHiddenSpotIds();
+  const visible = filterBySpotVisibility(all, hidden);
+  const [spots, profiles] = await Promise.all([
+    getAllSpots(),
+    fetchProfilesById(visible.map((m) => m.userId)),
+  ]);
+  return applyLiveNames(visible, profiles).map((m) => ({
+    ...m,
+    spotName: liveSpotName(spots, m.spotId, m.spotName),
+  }));
 }
 
 export async function deleteMeetup(meetupId) {
@@ -2015,15 +2078,17 @@ export async function getRecentPublicJumps(limit = 20) {
 
 export async function getCommunityUpdates(limit = 40) {
   const spots = await getAllSpots();
-  const visibleIds = new Set(spots.map((s) => String(s.id)));
-  const spotName = (id) => spots.find((s) => String(s.id) === String(id))?.name || 'ספוט';
+  const hidden = await getHiddenSpotIds();
 
   const [posts, meetups, jumps] = await Promise.all([
     getSpotPosts(),
     getMeetups(),
     getRecentPublicJumps(limit),
   ]);
-  const onVisibleSpot = (item) => !item.spotId || visibleIds.has(String(item.spotId));
+  const profiles = await fetchProfilesById([
+    ...posts.map((p) => p.userId), ...meetups.map((m) => m.userId), ...jumps.map((j) => j.userId),
+  ]);
+  const nameOf = (item) => liveDisplayName(profiles[item.userId], item.displayName);
 
   const items = [
     ...posts.map((p) => ({
@@ -2031,8 +2096,9 @@ export async function getCommunityUpdates(limit = 40) {
       id: `post-${p.id}`,
       createdAt: p.createdAt,
       spotId: p.spotId,
-      spotName: spotName(p.spotId),
-      displayName: p.displayName,
+      spotName: liveSpotName(spots, p.spotId, p.spotName),
+      userId: p.userId,
+      displayName: nameOf(p),
       text: p.text,
       photo: p.photo,
     })),
@@ -2042,8 +2108,9 @@ export async function getCommunityUpdates(limit = 40) {
       createdAt: m.createdAt,
       when: m.when,
       spotId: m.spotId,
-      spotName: m.spotName || spotName(m.spotId),
-      displayName: m.displayName,
+      spotName: liveSpotName(spots, m.spotId, m.spotName),
+      userId: m.userId,
+      displayName: nameOf(m),
       text: m.note,
     })),
     ...jumps.map((j) => ({
@@ -2051,20 +2118,22 @@ export async function getCommunityUpdates(limit = 40) {
       id: `jump-${j.id}`,
       createdAt: j.createdAt,
       spotId: j.spotId,
-      spotName: j.spotName || spotName(j.spotId),
-      displayName: j.displayName,
+      spotName: liveSpotName(spots, j.spotId, j.spotName),
+      userId: j.userId,
+      displayName: nameOf(j),
       height: j.height,
       text: j.notes,
     })),
   ];
 
   return items
-    .filter((item) => item.createdAt && onVisibleSpot(item))
+    .filter((item) => item.createdAt)
+    .filter((item) => filterBySpotVisibility([item], hidden).length)
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
     .slice(0, limit);
 }
 
-export const MAX_JUMP_VIDEO_BYTES = 40 * 1024 * 1024;
+export const MAX_JUMP_VIDEO_BYTES = MAX_VIDEO_BYTES;
 
 /** Must match storage bucket `jump-videos` allowed_mime_types (migration 006). */
 export const JUMP_VIDEO_ALLOWED_MIME = ['video/mp4', 'video/quicktime', 'video/webm', 'video/3gpp', 'video/3gpp2'];
@@ -2088,13 +2157,7 @@ const JUMP_VIDEO_EXT_MIME = {
  * Returns '' when the type is not allowed.
  */
 export function jumpVideoContentType(file) {
-  let base = String(file?.type || '').split(';')[0].trim().toLowerCase();
-  if (base === 'video/x-m4v' || base === 'video/m4v') base = 'video/mp4';
-  if (!base || base === 'application/octet-stream') {
-    const ext = String(file?.name || '').split('.').pop().toLowerCase();
-    base = JUMP_VIDEO_EXT_MIME[ext] || '';
-  }
-  return JUMP_VIDEO_ALLOWED_MIME.includes(base) ? base : '';
+  return videoContentType(file);
 }
 
 export const JUMP_VIDEO_TOO_BIG_MSG = 'הסרטון גדול מדי — אפשר להעלות עד 40MB. קצרו את הסרטון ונסו שוב.';
@@ -2185,8 +2248,8 @@ async function fetchJumpVideoRows({ limit = 40, userId = null, ids = null } = {}
     return data || [];
   });
   const rows = (cloud || []).map(normalizeJumpVideo).filter((row) => row?.videoUrl);
-  const visibleIds = new Set((await getAllSpots()).map((s) => String(s.id)));
-  return rows.filter((row) => !row.spotId || visibleIds.has(String(row.spotId)));
+  // Deny-list: only reels on admin-only spots are hidden (docs/LESSONS.md #1).
+  return filterBySpotVisibility(rows, await getHiddenSpotIds());
 }
 
 export async function getJumpVideos(limit = 40) {
@@ -2260,9 +2323,8 @@ async function attachReelAuthorProfiles(list) {
   list.forEach((video) => {
     const profile = withCachedAvatar(byId[video.userId] || { id: video.userId });
     video.avatarUrl = profilePhotoFromRow(profile) || video.avatarUrl || '';
-    if (profile?.display_name && (!video.displayName || video.displayName === 'משתמש')) {
-      video.displayName = profile.display_name;
-    }
+    // The live profile name wins over the copy stored on the reel at upload time.
+    video.displayName = liveDisplayName(profile, video.displayName);
   });
 }
 
@@ -2549,11 +2611,16 @@ function xhrPutFile(url, file, { contentType, headers = {}, onProgress, signal }
         resolve();
         return;
       }
-      reject(new Error(xhr.responseText || `upload ${xhr.status}`));
+      const err = new Error(xhr.responseText || `upload ${xhr.status}`);
+      err.status = xhr.status;
+      err.responseText = xhr.responseText;
+      reject(err);
     };
     xhr.onerror = () => {
       cleanup();
-      reject(new Error('העלאת הסרטון נכשלה'));
+      const err = new Error(VIDEO_ERR.network);
+      err.network = true;
+      reject(err);
     };
     xhr.onabort = () => {
       cleanup();
@@ -2611,6 +2678,35 @@ async function uploadJumpVideoObject(path, file, onProgress, accessToken, signal
 }
 
 export async function addJumpVideo({ spotId, spotName, caption = '', file, onProgress, signal } = {}) {
+  if (typeof window !== 'undefined') window.__sendersBusy = (window.__sendersBusy || 0) + 1;
+  try {
+    return await addJumpVideoInner({ spotId, spotName, caption, file, onProgress, signal });
+  } finally {
+    if (typeof window !== 'undefined') window.__sendersBusy = Math.max(0, (window.__sendersBusy || 1) - 1);
+  }
+}
+
+/** Make a WebM playable on iOS before upload (see clearWebmAlphaFlag). */
+async function sanitizeVideoForUpload(file) {
+  if (videoContentType(file) !== 'video/webm' || typeof file?.slice !== 'function') return file;
+  try {
+    const headLen = Math.min(file.size, 256 * 1024);
+    const head = new Uint8Array(await file.slice(0, headLen).arrayBuffer());
+    if (!clearWebmAlphaFlag(head)) return file;
+    const fixed = new Blob([head, file.slice(headLen)], { type: 'video/webm' });
+    try {
+      return new File([fixed], file.name || 'reel.webm', { type: 'video/webm' });
+    } catch {
+      fixed.name = file.name || 'reel.webm';
+      return fixed;
+    }
+  } catch {
+    return file;
+  }
+}
+
+async function addJumpVideoInner({ spotId, spotName, caption = '', file, onProgress, signal } = {}) {
+  file = await sanitizeVideoForUpload(file);
   const session = await requireCloudUserSession();
   if (!useCloud()) throw new Error('העלאת סרטונים דורשת חיבור.');
   const userId = session.user.id;
@@ -2619,14 +2715,9 @@ export async function addJumpVideo({ spotId, spotName, caption = '', file, onPro
   const resolvedName = String(spotName || '').trim();
   const resolvedId = String(spotId || '').trim() || (resolvedName ? `custom:${resolvedName}` : '');
   if (!resolvedName && !resolvedId) throw new Error('נא לתייג ספוט');
-  if (!file) throw new Error('נא לבחור סרטון');
-  const uploadType = jumpVideoContentType(file);
-  if (!uploadType) {
-    throw new Error(JUMP_VIDEO_BAD_TYPE_MSG);
-  }
-  if (file.size > MAX_JUMP_VIDEO_BYTES) {
-    throw new Error(JUMP_VIDEO_TOO_BIG_MSG);
-  }
+  const check = validateVideoFile(file, MAX_JUMP_VIDEO_BYTES);
+  if (!check.ok) throw new Error(check.error);
+  const uploadType = check.type;
 
   const MIME_EXT = { 'video/mp4': 'mp4', 'video/quicktime': 'mov', 'video/webm': 'webm', 'video/3gpp': '3gp', 'video/3gpp2': '3g2' };
   const rawExt = String(file.name || '').split('.').pop().toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -2644,10 +2735,10 @@ export async function addJumpVideo({ spotId, spotName, caption = '', file, onPro
       code: uploadError?.code || uploadError?.statusCode,
       message: uploadError?.message,
     });
-    if (storageUnavailableError(uploadError)) {
+    if (isMissingTableError(uploadError) || /bucket not found/i.test(String(uploadError?.message || ''))) {
       throw new Error('העלאת סרטונים עדיין לא פעילה. נסו שוב מאוחר יותר.');
     }
-    throw new Error(socialWriteError(uploadError, 'העלאת הסרטון נכשלה'));
+    throw new Error(uploadErrorMessage(uploadError, file.size));
   }
   logJumpPublish('storage-ok', { bytes: file.size });
 

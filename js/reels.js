@@ -1,3 +1,5 @@
+import { findSpotByRef } from './data-guards.js';
+import { guardVideo } from './video-fallback.js';
 import {
   escapeHtml,
   googleMapsNavUrl,
@@ -476,7 +478,7 @@ export function initReels() {
   }
 
   function renderSlide(video, index = 0) {
-    const spot = state.spots.find((s) => String(s.id) === String(video.spotId));
+    const spot = findSpotByRef(state.spots, video.spotId);
     const spotName = displaySpotName(spot, video.spotName || t('common.spot'));
     const spotChip = spot
       ? `<button type="button" class="reels-spot" data-open-spot="${escapeHtml(video.spotId)}">${escapeHtml(spotName)}</button>`
@@ -547,6 +549,7 @@ export function initReels() {
     state.observer?.disconnect();
     const videos = [...feed.querySelectorAll('video')];
     if (!videos.length) return;
+    videos.forEach((video) => guardVideo(video));
     videos.forEach((video) => applySound(video));
     syncMuteBadges();
     state.observer = new IntersectionObserver((entries) => {
@@ -624,6 +627,41 @@ export function initReels() {
       const slide = e.target.closest('.reels-slide');
       const videoEl = slide?.querySelector('video');
       if (!videoEl) return;
+      // Double-tap = like (Instagram/TikTok style). A single tap waits briefly
+      // so a second tap can cancel the play/pause toggle.
+      const now = Date.now();
+      if (state.lastTap && state.lastTap.slide === slide && now - state.lastTap.at < 300) {
+        window.clearTimeout(state.lastTap.timer);
+        state.lastTap = null;
+        showDoubleTapHeart(slide, e);
+        const likeBtnEl = slide.querySelector('[data-like]');
+        const vid = likeBtnEl?.getAttribute('data-like');
+        const v = state.videos.find((item) => item.id === vid);
+        if (likeBtnEl && v && !v.liked) onLike(likeBtnEl);
+        return;
+      }
+      const timer = window.setTimeout(() => {
+        state.lastTap = null;
+        togglePlayback(slide, videoEl);
+      }, 300);
+      state.lastTap = { slide, at: now, timer };
+    }
+  }
+
+  function showDoubleTapHeart(slide, e) {
+    const rect = slide.getBoundingClientRect();
+    const heart = document.createElement('div');
+    heart.className = 'reels-dbl-heart';
+    heart.setAttribute('aria-hidden', 'true');
+    heart.innerHTML = '<svg viewBox="0 0 24 24" width="96" height="96"><path fill="currentColor" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>';
+    heart.style.left = `${(e.clientX || rect.left + rect.width / 2) - rect.left}px`;
+    heart.style.top = `${(e.clientY || rect.top + rect.height / 2) - rect.top}px`;
+    slide.appendChild(heart);
+    window.setTimeout(() => heart.remove(), 900);
+  }
+
+  function togglePlayback(slide, videoEl) {
+    {
       if (videoEl.paused) {
         videoEl.dataset.userPaused = '';
         applySound(videoEl);

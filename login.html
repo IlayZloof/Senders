@@ -106,8 +106,8 @@
             <div class="auth-divider" id="authDivider" hidden><span data-i18n="login.or">או</span></div>
 
             <div class="auth-tabs">
-              <button class="auth-tab active" data-mode="login" data-i18n="login.tab.login">התחברות</button>
-              <button class="auth-tab" data-mode="signup" data-i18n="login.tab.signup">הרשמה</button>
+              <button type="button" class="auth-tab active" data-mode="login" data-i18n="login.tab.login">התחברות</button>
+              <button type="button" class="auth-tab" data-mode="signup" data-i18n="login.tab.signup">הרשמה</button>
             </div>
 
             <form id="authForm">
@@ -126,7 +126,7 @@
                 </div>
                 <a href="#forgot" class="auth-forgot-link" id="forgotLink" data-i18n="login.forgot">שכחתי סיסמה?</a>
               </div>
-              <button type="submit" class="btn btn-primary btn-full" id="submitBtn" data-i18n="login.tab.login">התחברות</button>
+              <button type="submit" class="btn btn-primary btn-full" id="submitBtn">התחברות</button>
             </form>
           </div>
 
@@ -251,6 +251,18 @@
       if (msg.includes('email logins are disabled')) {
         return 'התחברות באימייל וסיסמה כבויה ב-Supabase. השתמשו ב-Google, או הפעילו Email ב-Dashboard → Authentication → Providers.';
       }
+      if (
+        msg.includes('user already registered') ||
+        msg.includes('already been registered') ||
+        msg.includes('email address already') ||
+        msg.includes('email already registered') ||
+        msg.includes('user_already_exists') ||
+        msg.includes('email_exists') ||
+        String(err?.code || '').toLowerCase() === 'user_already_exists' ||
+        String(err?.code || '').toLowerCase() === 'email_exists'
+      ) {
+        return 'כתובת האימייל כבר רשומה. התחברו או אפסו סיסמה.';
+      }
       if (msg.includes('invalid login credentials')) {
         return 'אימייל או סיסמה שגויים';
       }
@@ -346,16 +358,27 @@
       formInfo.hidden = true;
     }
 
-    function setMode(m) {
+    function setMode(m, { syncUrl = true } = {}) {
       mode = m;
-      tabs.forEach((t) => t.classList.toggle('active', t.dataset.mode === m));
+      tabs.forEach((tab) => tab.classList.toggle('active', tab.dataset.mode === m));
       nameGroup.hidden = m !== 'signup';
       forgotLink.hidden = m !== 'login';
+      forgotLink.style.display = m === 'login' ? '' : 'none';
       submitBtn.textContent = m === 'signup' ? t('login.tab.signup') : t('login.tab.login');
+      const welcomeEl = authWelcome?.querySelector('.page-title');
+      const leadEl = authWelcome?.querySelector('[data-i18n="login.lead"]') || authWelcome?.querySelector('p');
+      if (welcomeEl) welcomeEl.textContent = m === 'signup' ? t('login.welcomeSignup') : t('login.welcome');
+      if (leadEl) leadEl.textContent = m === 'signup' ? t('login.leadSignup') : t('login.lead');
+      document.title = m === 'signup' ? t('meta.title.signup') : t('meta.title.login');
+      const googleLabel = document.querySelector('#googleBtn [data-i18n="login.google"]');
+      if (googleLabel) googleLabel.textContent = m === 'signup' ? t('login.googleSignup') : t('login.google');
       formError.hidden = true;
-      formInfo.hidden = m !== 'signup';
-      if (m === 'signup') {
-        formInfo.textContent = t('login.signupHint');
+      formInfo.hidden = true;
+      if (syncUrl) {
+        const url = new URL(window.location.href);
+        if (m === 'signup') url.searchParams.set('mode', 'signup');
+        else url.searchParams.delete('mode');
+        window.history.replaceState({}, '', url);
       }
     }
 
@@ -424,9 +447,9 @@
       showMessage(formError, formatAuthError(err));
     });
 
-    if (mode === 'signup') setMode('signup');
+    setMode(mode, { syncUrl: mode === 'signup' });
 
-    tabs.forEach((t) => t.addEventListener('click', () => setMode(t.dataset.mode)));
+    tabs.forEach((tab) => tab.addEventListener('click', () => setMode(tab.dataset.mode)));
 
     forgotLink.addEventListener('click', (e) => {
       e.preventDefault();
@@ -450,25 +473,33 @@
     document.getElementById('authForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       formError.hidden = true;
+      formInfo.hidden = true;
 
       const fd = new FormData(e.target);
+      const email = String(fd.get('email') || '').trim();
+      const password = String(fd.get('password') || '');
+      const submitMode = mode;
+      submitBtn.disabled = true;
 
       try {
-        if (mode === 'signup') {
-          const name = fd.get('displayName');
+        if (submitMode === 'signup') {
+          const name = String(fd.get('displayName') || '').trim();
           if (!name) throw new Error(t('login.needName'));
-          const result = await signUp(fd.get('email'), fd.get('password'), name);
+          const result = await signUp(email, password, name);
           if (!result?.session) {
-            showMessage(formInfo, 'נרשמת! בדקו מייל לאימות, ואז התחברו.');
-            setMode('login');
+            // Confirm-email projects return no session. Stay on signup — never
+            // flip to login or call signIn (that produced «אימייל או סיסמה שגויים»).
+            showMessage(formInfo, t('login.signupConfirmEmail'));
             return;
           }
         } else {
-          await signIn(fd.get('email'), fd.get('password'));
+          await signIn(email, password);
         }
         goAfterAuth();
       } catch (err) {
         showMessage(formError, formatAuthError(err));
+      } finally {
+        submitBtn.disabled = false;
       }
     });
 

@@ -614,9 +614,12 @@ html[data-theme="light"] input[type="search"].spot-picker-search {
     gap: 0.85rem;
   }
 
+  .map-page .map-sidebar {
+    min-height: 0;
+  }
+
   .map-sidebar .btn-full {
-    position: sticky;
-    bottom: 0;
+    flex-shrink: 0;
     margin-top: 0.35rem;
   }
 

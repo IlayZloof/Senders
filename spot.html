@@ -161,12 +161,13 @@
       document.title = `${displaySpotName(spot)} — Senders`;
 
       const spotMedia = getSpotMedia(spot);
-      const feedVideos = (await getJumpVideos(80)).filter((v) => String(v.spotId) === String(spot.id));
+      const spotRefs = new Set([String(spot.id), ...(Array.isArray(spot.aliases) ? spot.aliases.map(String) : [])]);
+      const feedVideos = (await getJumpVideos(80)).filter((v) => spotRefs.has(String(v.spotId)));
       const seen = new Set(spotMedia.map((item) => item.src));
       for (const video of feedVideos) {
         if (!video.videoUrl || seen.has(video.videoUrl)) continue;
         seen.add(video.videoUrl);
-        spotMedia.push({ type: 'video', src: video.videoUrl });
+        spotMedia.push({ type: 'video', src: video.videoUrl, reelId: video.id });
       }
 
       const hasMedia = spotMedia.length > 0;
@@ -185,6 +186,7 @@
                   ${item.type === 'video' ? `
                     <video class="spot-slider-video" src="${escapeHtml(item.src)}" playsinline webkit-playsinline muted defaultMuted loop preload="${i === 0 ? 'auto' : 'metadata'}"></video>
                     <span class="spot-media-badge">${t('common.video')}</span>
+                    ${item.reelId ? `<a class="spot-reel-open" href="reels.html?v=${encodeURIComponent(item.reelId)}">▶ צפייה ברילס</a>` : ''}
                   ` : `
                     <img src="${escapeHtml(item.src)}" alt="${escapeHtml(displaySpotName(spot))}${item.caption ? ` — ${escapeHtml(item.caption)}` : (multi ? ` — ${i + 1}` : '')}" class="spot-slider-img" ${i === 0 ? '' : 'loading="lazy"'} />
                   `}

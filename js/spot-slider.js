@@ -1,3 +1,4 @@
+import { guardVideo } from './video-fallback.js';
 /**
  * Physical (LTR) touch carousel — swipe follows the finger, not RTL reading order.
  * The slider root is dir=ltr so Hebrew page direction cannot invert translateX.
@@ -31,7 +32,12 @@ export function initSpotSlider(root) {
       video.defaultMuted = true;
       const on = slides[i]?.contains(video);
       if (on) {
-        video.play().catch(() => {});
+        video.play().then(() => {
+          video.closest('.spot-slider-slide')?.classList.remove('is-blocked');
+        }).catch(() => {
+          // Autoplay refused or the format can't play here: show the play hint.
+          video.closest('.spot-slider-slide')?.classList.add('is-blocked');
+        });
       } else {
         video.pause();
         try {
@@ -57,6 +63,32 @@ export function initSpotSlider(root) {
     syncPlayback(index);
   }
 
+  // Tap a video to play/pause (pointer capture on the viewport ate taps before).
+  videos.forEach((video) => guardVideo(video));
+  videos.forEach((video) => {
+    video.addEventListener('error', () => {
+      video.closest('.spot-slider-slide')?.classList.add('is-blocked');
+    });
+  });
+  let tapX = 0;
+  let tapY = 0;
+  root.addEventListener('pointerdown', (e) => { tapX = e.clientX; tapY = e.clientY; }, true);
+  root.addEventListener('pointerup', (e) => {
+    if (Math.abs(e.clientX - tapX) > 10 || Math.abs(e.clientY - tapY) > 10) return;
+    if (e.target.closest('a, button')) return;
+    const video = slides[index]?.querySelector('video');
+    if (!video) return;
+    if (video.paused) {
+      video.play().then(() => {
+        slides[index]?.classList.remove('is-blocked');
+      }).catch(() => {
+        slides[index]?.classList.add('is-blocked');
+      });
+    } else {
+      video.pause();
+    }
+  }, true);
+
   if (count <= 1) {
     syncPlayback(0);
     return;
@@ -68,6 +100,7 @@ export function initSpotSlider(root) {
 
   function onPointerDown(e) {
     if (e.pointerType === 'mouse' && e.button !== 0) return;
+    if (e.target.closest?.('a, button')) return;
     dragging = true;
     pointerId = e.pointerId;
     startX = e.clientX;

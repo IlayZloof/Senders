@@ -1,3 +1,5 @@
+import { APP_VERSION } from './version.js';
+import { shouldReloadForVersion } from './data-guards.js';
 import { getSession, invalidateSessionCache, signOut, isAdmin, hasApprovedAccess, isWaitingAccess, getUnreadNotificationCount, buildLoginUrl } from './store.js';
 import { prefetchReelsShellAndFeed } from './reels-prefetch.js';
 import { initFooter } from './footer.js';
@@ -51,7 +53,43 @@ function ensureBrandLogo() {
 
 function registerServiceWorker() {
   if (!import.meta.env.PROD || !('serviceWorker' in navigator)) return;
-  navigator.serviceWorker.register('/sw.js').catch(() => {});
+  navigator.serviceWorker.register('/sw.js').then((reg) => {
+    startStaleVersionGuard(reg);
+  }).catch(() => {
+    startStaleVersionGuard(null);
+  });
+}
+
+/**
+ * Generic guard against stale JS (docs/LESSONS.md #6): a tab or home-screen app
+ * left open keeps running old code even after a deploy. On load, on return to
+ * the tab and every 10 min (skipped while an upload runs), compare /version.json with the running version and
+ * reload once per new version. Also checks for a new service worker.
+ */
+function startStaleVersionGuard(reg) {
+  const KEY = 'senders-reloaded-for';
+  let busy = false;
+  const check = async () => {
+    if (busy || document.visibilityState !== 'visible') return;
+    if (window.__sendersBusy > 0) return; // never reload during an upload
+    busy = true;
+    try {
+      reg?.update?.().catch(() => {});
+      const res = await fetch(`/version.json?t=${Date.now()}`, { cache: 'no-store' });
+      if (!res.ok) return;
+      const { version } = await res.json();
+      if (!shouldReloadForVersion(APP_VERSION, version, sessionStorage.getItem(KEY))) return;
+      sessionStorage.setItem(KEY, version);
+      window.location.reload();
+    } catch {
+      /* offline: keep running */
+    } finally {
+      busy = false;
+    }
+  };
+  check();
+  document.addEventListener('visibilitychange', check);
+  window.setInterval(check, 10 * 60 * 1000);
 }
 
 function isReelsPage() {
