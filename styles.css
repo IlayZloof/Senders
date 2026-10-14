@@ -2720,14 +2720,14 @@ html[data-theme="light"] .ig-avatar-crop-circle {
   grid-template-columns: repeat(3, 1fr);
   gap: 2px;
   margin: 0 -1.15rem 1.25rem;
-  background: var(--border);
+  background: transparent;
 }
 
 .profile-reel-cell {
   position: relative;
   aspect-ratio: 1 / 1;
   overflow: hidden;
-  background: #1a1f24;
+  background: var(--bg);
 }
 
 .profile-reel-cell video {
