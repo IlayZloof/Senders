@@ -2,9 +2,9 @@
 <html lang="he" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <style>html,body{background:#0e1318;color:#e8eef3}html[data-theme="light"],html[data-theme="light"] body{background:#dde2e8;color:#1a2027}</style>
+  <style>html,body{background:#071824;color:#e8e4d9}html[data-theme="light"],html[data-theme="light"] body{background:#e8e4d9;color:#071824}</style>
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-visual" />
-  <meta name="theme-color" content="#0e1318" />
+  <meta name="theme-color" content="#071824" />
   <script>
     (function () {
       var KEY = 'senders-theme';
@@ -37,7 +37,7 @@
       root.setAttribute('data-theme-mode', mode);
       root.style.colorScheme = theme;
       var meta = document.querySelector('meta[name="theme-color"]');
-      if (meta) meta.setAttribute('content', theme === 'light' ? '#dde2e8' : '#0e1318');
+      if (meta) meta.setAttribute('content', theme === 'light' ? '#e8e4d9' : '#071824');
     })();
   </script>
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -53,12 +53,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link rel="preconnect" href="%VITE_SUPABASE_URL%" crossorigin />
   <!-- Fonts must never block first paint (a stalled fonts request = white screen on iPhone). -->
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Hebrew:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@500;600;700&display=swap" media="print" onload="this.media='all'" />
-  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Hebrew:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@500;600;700&display=swap" /></noscript>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=Assistant:wght@300;400;500;600;700&display=swap" media="print" onload="this.media='all'" />
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=Assistant:wght@300;400;500;600;700&display=swap" /></noscript>
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="ops-theme.css" />
+  <link rel="stylesheet" href="theme-atlas.css" />
 </head>
-<body class="admin-page">
+<body class="admin-page theme-atlas">
   <nav class="nav" id="nav">
     <a href="index.html" class="nav-logo">SEND<span>ERS</span></a>
     <button class="nav-toggle" id="navToggle" aria-label="תפריט מידע">
