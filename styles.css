@@ -1611,6 +1611,7 @@ html.keyboard-open .map-page .map-sidebar > .btn-full,
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  min-height: 0;
   overflow: visible;
 }
 
@@ -1887,7 +1888,9 @@ html.keyboard-open .map-page .map-sidebar > .btn-full,
 }
 
 .map-page .map-layout {
-  height: calc(100dvh - var(--nav-offset) - 88px - var(--tab-bar-h) - var(--safe-bottom));
+  /* Leave room for compact hero (title+legend) so map+sidebar fit in one screen */
+  height: calc(100dvh - var(--nav-offset) - 7rem - var(--tab-bar-h) - var(--safe-bottom));
+  max-height: calc(100dvh - var(--nav-offset) - 7rem - var(--tab-bar-h) - var(--safe-bottom));
 }
 
 .page-title {
@@ -3447,6 +3450,7 @@ html.pwa-standalone .tab-bar {
   .admin-stats {
     grid-template-columns: 1fr;
     height: auto;
+    max-height: none;
   }
 
   .map-container {
@@ -3454,7 +3458,12 @@ html.pwa-standalone .tab-bar {
     min-height: 280px;
   }
 
-  .map-sidebar { max-height: none; }
+  .map-sidebar { max-height: none; overflow: visible; }
+  .map-page .map-spot-list {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: visible;
+  }
   .footer-inner { align-items: center; text-align: center; }
 }
 
@@ -4270,9 +4279,32 @@ html.pwa-standalone .tab-bar {
   }
 
   .map-page .map-layout {
-    height: calc(100dvh - var(--nav-offset) - 100px);
-    min-height: 560px;
+    /* Hero sits above; do not use ~full vh or the page grows past the screen */
+    height: calc(100dvh - var(--nav-offset) - 7rem);
+    max-height: calc(100dvh - var(--nav-offset) - 7rem);
+    min-height: 360px;
     grid-template-columns: minmax(0, 1fr) 320px;
+    align-items: stretch;
+  }
+
+  .map-page .map-container {
+    min-height: 0;
+    height: 100%;
+  }
+
+  /* Cap sidebar to the map column; scroll names inside the list, not the page */
+  .map-page .map-sidebar {
+    height: 100%;
+    max-height: 100%;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .map-page .map-spot-list {
+    flex: 1 1 0;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
   }
 
   .map-page .footer {
@@ -4350,12 +4382,25 @@ html.pwa-standalone .tab-bar {
   .map-page .map-layout {
     grid-template-columns: 1fr;
     height: auto;
+    max-height: none;
     min-height: 0;
   }
 
   .map-page .map-container {
     height: min(62dvh, 620px);
     min-height: 360px;
+  }
+
+  /* Stacked tablet: do not clamp sidebar (desktop overflow rules are in ≥769) */
+  .map-page .map-sidebar {
+    height: auto;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .map-page .map-spot-list {
+    flex: 1 1 auto;
+    overflow: visible;
   }
 }
 
