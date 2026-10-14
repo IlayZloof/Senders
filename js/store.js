@@ -1488,11 +1488,15 @@ export async function addSpot(spot, userId, profile) {
 }
 
 export async function approveSpot(spotId) {
+  await requireAdminSession();
+  const id = String(spotId || '').trim();
+  if (!id) throw new Error('ספוט לא נמצא');
+
   if (useCloud()) {
     const { data, error } = await supabase
       .from('spots')
       .update({ status: 'approved' })
-      .eq('id', spotId)
+      .eq('id', id)
       .select()
       .single();
     if (error) throw error;
@@ -1500,7 +1504,7 @@ export async function approveSpot(spotId) {
   }
 
   const pending = read(LS_PENDING);
-  const idx = pending.findIndex((s) => s.id === spotId);
+  const idx = pending.findIndex((s) => String(s.id) === id);
   if (idx === -1) throw new Error('הספוט לא נמצא');
 
   const [spot] = pending.splice(idx, 1);
@@ -1514,12 +1518,17 @@ export async function approveSpot(spotId) {
 }
 
 export async function rejectSpot(spotId) {
+  await requireAdminSession();
+  const id = String(spotId || '').trim();
+  if (!id) throw new Error('ספוט לא נמצא');
+
   if (useCloud()) {
-    await supabase.from('spots').delete().eq('id', spotId);
+    const { error } = await supabase.from('spots').delete().eq('id', id);
+    if (error) throw error;
     return;
   }
 
-  const pending = read(LS_PENDING).filter((s) => s.id !== spotId);
+  const pending = read(LS_PENDING).filter((s) => String(s.id) !== id);
   write(LS_PENDING, pending);
 }
 
