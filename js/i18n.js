@@ -236,6 +236,7 @@ const STRINGS = {
     'login.forgotLocal': 'במצב מקומי אפשר לאפס כאן ישירות.',
     'login.resetLocal': 'איפוס סיסמה',
     'login.needName': 'נא להזין שם תצוגה',
+    'login.signupConfirmEmail': 'נרשמת בהצלחה! בדקו את תיבת המייל לאימות. אחרי האימות אפשר להתחבר.',
 
     'add.tag': 'קהילה',
     'add.title': 'הוספת <span class="accent">ספוט</span>',
@@ -880,6 +881,7 @@ const STRINGS = {
     'login.forgotLocal': 'In local mode you can reset the password here.',
     'login.resetLocal': 'Reset password',
     'login.needName': 'Please enter a display name',
+    'login.signupConfirmEmail': 'Signed up! Check your email to verify, then sign in.',
 
     'add.tag': 'Community',
     'add.title': 'Add a <span class="accent">spot</span>',

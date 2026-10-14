@@ -5,6 +5,7 @@ import { normalizeRocks, RETIRED_MEDIA_SRCS } from './spots-util.js';
 import {
   hiddenSpotIdSet, filterBySpotVisibility, liveDisplayName, liveSpotName, applyLiveNames,
   videoContentType, validateVideoFile, uploadErrorMessage, MAX_VIDEO_BYTES, VIDEO_ERR, clearWebmAlphaFlag,
+  classifySignUpResult, isAlreadyRegisteredAuthError,
 } from './data-guards.js';
 
 import { reportMissingSchema } from './missing-feature.js';
@@ -617,7 +618,7 @@ function signUpLocal(normalizedEmail, password, displayName) {
   const isAdminUser = isAdminEmail(normalizedEmail);
   const users = read(LS_USERS);
   if (users.some((u) => u.email === normalizedEmail)) {
-    throw new Error('כתובת האימייל כבר רשומה');
+    throw new Error('כתובת האימייל כבר רשומה. התחברו או אפסו סיסמה.');
   }
 
   const user = {
@@ -655,7 +656,7 @@ function signInLocal(normalizedEmail, password, { fromCloudFallback = false } = 
 
 export async function signUp(email, password, displayName) {
   invalidateSessionCache();
-  const normalizedEmail = email.toLowerCase();
+  const normalizedEmail = String(email || '').trim().toLowerCase();
 
   if (useCloud()) {
     try {
@@ -669,9 +670,21 @@ export async function signUp(email, password, displayName) {
           markCloudUnreachable();
           return signUpLocal(normalizedEmail, password, displayName);
         }
+        if (isAlreadyRegisteredAuthError(error)) {
+          throw Object.assign(new Error('כתובת האימייל כבר רשומה. התחברו או אפסו סיסמה.'), {
+            code: 'user_already_exists',
+            cause: error,
+          });
+        }
         throw error;
       }
-      if (data.user) {
+      const kind = classifySignUpResult(data);
+      if (kind === 'already_registered') {
+        throw Object.assign(new Error('כתובת האימייל כבר רשומה. התחברו או אפסו סיסמה.'), {
+          code: 'user_already_exists',
+        });
+      }
+      if (data?.user && kind !== 'empty') {
         // is_admin/status are set by the database (migration 020), not the client.
         const { error: profileErr } = await supabase.from('profiles').upsert({
           id: data.user.id,
