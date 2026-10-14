@@ -81,3 +81,6 @@ Use `filterBySpotVisibility(items, await getHiddenSpotIds())`, never
   `/videos/` as a load error, not unsupported; on WebM decode failure
   `repairWebmObjectUrl()` fetches the file, `repairedWebmBytes()` / 
   `clearWebmAlphaFlag()`, and replays from a blob (covers pre-sanitize uploads).
+
+## 8. Login vs signup must feel like different modes
+Testers reported login and signup looking the same. Share one page but change title, lead, Google CTA, submit label, name field, forgot-link visibility, and `?mode=signup` in the URL when switching tabs.

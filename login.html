@@ -346,16 +346,30 @@
       formInfo.hidden = true;
     }
 
-    function setMode(m) {
+    function setMode(m, { syncUrl = true } = {}) {
       mode = m;
-      tabs.forEach((t) => t.classList.toggle('active', t.dataset.mode === m));
+      tabs.forEach((tab) => tab.classList.toggle('active', tab.dataset.mode === m));
       nameGroup.hidden = m !== 'signup';
       forgotLink.hidden = m !== 'login';
+      forgotLink.style.display = m === 'login' ? '' : 'none';
       submitBtn.textContent = m === 'signup' ? t('login.tab.signup') : t('login.tab.login');
+      const welcomeEl = authWelcome?.querySelector('.page-title');
+      const leadEl = authWelcome?.querySelector('[data-i18n="login.lead"]') || authWelcome?.querySelector('p');
+      if (welcomeEl) welcomeEl.textContent = m === 'signup' ? t('login.welcomeSignup') : t('login.welcome');
+      if (leadEl) leadEl.textContent = m === 'signup' ? t('login.leadSignup') : t('login.lead');
+      document.title = m === 'signup' ? t('meta.title.signup') : t('meta.title.login');
+      const googleLabel = document.querySelector('#googleBtn [data-i18n="login.google"]');
+      if (googleLabel) googleLabel.textContent = m === 'signup' ? t('login.googleSignup') : t('login.google');
       formError.hidden = true;
       formInfo.hidden = m !== 'signup';
       if (m === 'signup') {
         formInfo.textContent = t('login.signupHint');
+      }
+      if (syncUrl) {
+        const url = new URL(window.location.href);
+        if (m === 'signup') url.searchParams.set('mode', 'signup');
+        else url.searchParams.delete('mode');
+        window.history.replaceState({}, '', url);
       }
     }
 
@@ -424,9 +438,9 @@
       showMessage(formError, formatAuthError(err));
     });
 
-    if (mode === 'signup') setMode('signup');
+    setMode(mode, { syncUrl: mode === 'signup' });
 
-    tabs.forEach((t) => t.addEventListener('click', () => setMode(t.dataset.mode)));
+    tabs.forEach((tab) => tab.addEventListener('click', () => setMode(tab.dataset.mode)));
 
     forgotLink.addEventListener('click', (e) => {
       e.preventDefault();
