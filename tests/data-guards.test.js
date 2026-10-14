@@ -5,6 +5,7 @@ import {
   videoContentType, validateVideoFile, uploadErrorMessage, cannotPlayVideoUrl,
   RECORDER_MIME_PREFERENCE, VIDEO_ERR, MAX_VIDEO_BYTES,
   fitWithin, videoErrorKind, shouldReloadForVersion, clearWebmAlphaFlag,
+  isUnshippedLocalVideo, isWebmUrl, repairedWebmBytes,
 } from '../js/data-guards.js';
 
 const all = [
@@ -144,5 +145,46 @@ describe('WebM alpha flag (bug: Lev\'s reel did not play on iPhone/WebKit)', () 
     const b = Uint8Array.from([0x53, 0xc0, 0x81, 0x00, 0x42]);
     expect(clearWebmAlphaFlag(b)).toBe(0);
     expect(clearWebmAlphaFlag(new Uint8Array())).toBe(0);
+  });
+});
+
+describe('unshipped seed videos (bug: iPhone showed format error for missing /videos/)', () => {
+  it('detects relative and absolute /videos/ paths', () => {
+    expect(isUnshippedLocalVideo('/videos/spots/eilat-katza-2.mov')).toBe(true);
+    expect(isUnshippedLocalVideo('https://senders-dev.ilay-zloof.workers.dev/videos/spots/x.mp4')).toBe(true);
+    expect(isUnshippedLocalVideo('https://x.supabase.co/storage/v1/object/public/jump-videos/a.webm')).toBe(false);
+    expect(isUnshippedLocalVideo('/images/spots/eilat-katza-8.jpg')).toBe(false);
+    expect(isUnshippedLocalVideo('')).toBe(false);
+  });
+  it('filter used by getSpotMedia keeps photos and cloud reels, drops seed /videos/', () => {
+    const srcs = [
+      '/images/spots/eilat-katza-8.jpg',
+      '/videos/spots/eilat-katza-2.mov',
+      '/videos/spots/eilat-katza-bridge.mp4',
+      'https://rtaqgkaobhecupjzxdex.supabase.co/storage/v1/object/public/jump-videos/a.webm',
+    ];
+    const kept = srcs.filter((s) => !isUnshippedLocalVideo(s));
+    expect(kept).toEqual([
+      '/images/spots/eilat-katza-8.jpg',
+      'https://rtaqgkaobhecupjzxdex.supabase.co/storage/v1/object/public/jump-videos/a.webm',
+    ]);
+  });
+  it('labels missing seed videos as load error, not unsupported codec', () => {
+    expect(videoErrorKind(4, '/videos/spots/x.mov', () => 'maybe')).toBe('error');
+  });
+});
+
+describe('WebM playback repair helpers', () => {
+  it('isWebmUrl ignores query strings', () => {
+    expect(isWebmUrl('https://x/a.webm?tok=1')).toBe(true);
+    expect(isWebmUrl('https://x/a.mp4')).toBe(false);
+  });
+  it('repairedWebmBytes returns a cleared copy only when AlphaMode=1', () => {
+    const bad = Uint8Array.from([0x1a, 0x45, 0x53, 0xc0, 0x81, 0x01, 0x00]);
+    const out = repairedWebmBytes(bad);
+    expect(out).not.toBeNull();
+    expect([...out]).toEqual([0x1a, 0x45, 0x53, 0xc0, 0x81, 0x00, 0x00]);
+    expect([...bad]).toEqual([0x1a, 0x45, 0x53, 0xc0, 0x81, 0x01, 0x00]); // original untouched
+    expect(repairedWebmBytes(Uint8Array.from([0x53, 0xc0, 0x81, 0x00]))).toBeNull();
   });
 });

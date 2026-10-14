@@ -65,3 +65,19 @@ Use `filterBySpotVisibility(items, await getHiddenSpotIds())`, never
 - **Guard:** `startStaleVersionGuard()` (js/ui.js) checks /version.json on
   load, on return to the tab and every 10 min, and reloads once per new version
   (`shouldReloadForVersion`, never during an upload).
+
+## 7. Spot carousel showed "format/resolution" for videos that were never deployed
+- **Bug (Oct 14):** מישה on iPhone 16 Safari (preview): spot **קצא – אילת**
+  (`eilat-katza`) showed «המכשיר הזה לא מצליח לנגן את הסרטון הזה (פורמט או
+  רזולוציה)» on a carousel video slide. UI and 4G were fine — not a Cloudflare
+  block.
+- **Root cause:** seed spots list `/videos/spots/*.mov|mp4`, but `public/videos/`
+  is gitignored and never reaches the Worker, so every seed clip 404s. Safari
+  reports `MEDIA_ERR_SRC_NOT_SUPPORTED` (code 4) for a missing resource, and we
+  labeled code 4 as a codec/format problem. Separate class: older user WebMs still
+  have Matroska `AlphaMode=1` (upload sanitize only helps new files).
+- **Guards:** `isUnshippedLocalVideo()` + filter in `getSpotMedia()` so broken
+  seed clips never become `<video>` slides; `videoErrorKind` treats unshipped
+  `/videos/` as a load error, not unsupported; on WebM decode failure
+  `repairWebmObjectUrl()` fetches the file, `repairedWebmBytes()` / 
+  `clearWebmAlphaFlag()`, and replays from a blob (covers pre-sanitize uploads).

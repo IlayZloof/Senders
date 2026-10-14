@@ -178,6 +178,8 @@ export function fitWithin(w, h, maxLong = MAX_RECORD_LONG_SIDE) {
 
 /** Pick the right user-facing reason for a <video> error. */
 export function videoErrorKind(errorCode, url, canPlayType) {
+  // Missing seed /videos/ assets 404 as code 4 — that is not a codec problem.
+  if (isUnshippedLocalVideo(url)) return 'error';
   if (Number(errorCode) === 4 || cannotPlayVideoUrl(url, canPlayType)) return 'unsupported';
   return 'error';
 }
@@ -210,6 +212,43 @@ export function clearWebmAlphaFlag(bytes, scanLimit = 256 * 1024) {
     }
   }
   return cleared;
+}
+
+/**
+ * Seed spot clips live under `/videos/...` in the repo, but `public/videos/` is
+ * gitignored and never uploaded to the Worker. A missing file makes Safari fire
+ * MEDIA_ERR_SRC_NOT_SUPPORTED (code 4), which we used to label as "format or
+ * resolution". Relative `/videos/` paths (and same-path absolute URLs) are not
+ * playable until those assets are actually hosted.
+ */
+export function isUnshippedLocalVideo(src) {
+  const raw = String(src || '').trim();
+  if (!raw) return false;
+  let path = raw;
+  if (/^https?:\/\//i.test(raw)) {
+    try {
+      path = new URL(raw).pathname || '';
+    } catch {
+      return false;
+    }
+  }
+  return /^\/videos\//i.test(path);
+}
+
+/** True when the URL looks like a WebM we can attempt AlphaMode repair on. */
+export function isWebmUrl(src) {
+  const path = String(src || '').split('?')[0].split('#')[0];
+  return /\.webm$/i.test(path);
+}
+
+/**
+ * Copy `bytes` and clear AlphaMode if present. Returns the repaired copy, or
+ * null when nothing needed changing (caller should not swap the source).
+ */
+export function repairedWebmBytes(bytes, scanLimit = 256 * 1024) {
+  if (!bytes || !bytes.length) return null;
+  const copy = bytes instanceof Uint8Array ? new Uint8Array(bytes) : new Uint8Array(bytes);
+  return clearWebmAlphaFlag(copy, scanLimit) > 0 ? copy : null;
 }
 
 /** Recorder output order: MP4 (plays everywhere incl. iOS) before WebM. */

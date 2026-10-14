@@ -1,9 +1,10 @@
-import { videoErrorKind } from './data-guards.js';
+import { videoErrorKind, isWebmUrl, repairedWebmBytes } from './data-guards.js';
 
 /**
  * Every <video> that autoplays must also work when autoplay is refused or the
- * format can't be decoded (iOS + WebM). See docs/LESSONS.md #3.
+ * format can't be decoded (iOS + WebM). See docs/LESSONS.md #3 and #5/#7.
  * - play() rejected  -> "tap to play" overlay (tap plays with a user gesture)
+ * - WebM AlphaMode=1 -> fetch, strip flag, replay from a blob (existing uploads)
  * - decode error / unsupported container -> clear Hebrew notice
  */
 const STYLE_ID = 'video-fallback-style';
@@ -26,6 +27,17 @@ export const VF_MSG = {
   error: 'לא הצלחנו לטעון את הסרטון. בדקו את החיבור ונסו שוב.',
 };
 
+/** Fetch a WebM, strip AlphaMode if set, return an object URL — or null. */
+export async function repairWebmObjectUrl(src, fetchImpl = fetch) {
+  if (!isWebmUrl(src)) return null;
+  const res = await fetchImpl(src);
+  if (!res?.ok) return null;
+  const buf = new Uint8Array(await res.arrayBuffer());
+  const fixed = repairedWebmBytes(buf);
+  if (!fixed) return null;
+  return URL.createObjectURL(new Blob([fixed], { type: 'video/webm' }));
+}
+
 export function guardVideo(video, host = video?.parentElement) {
   if (!video || !host || video.dataset.vfBound) return;
   video.dataset.vfBound = '1';
@@ -47,13 +59,46 @@ export function guardVideo(video, host = video?.parentElement) {
     video.play().then(() => { overlay.hidden = true; }).catch(() => {});
   });
   video.addEventListener('playing', () => { overlay.hidden = true; });
-  const onError = () => {
+
+  const showFinalError = () => {
     const src = video.currentSrc || video.src || video.dataset.videoUrl;
     // MEDIA_ERR_SRC_NOT_SUPPORTED (4) = format/codec/resolution the device can't decode,
     // not a connection problem. Judge only after a real error (canPlayType lies: MOV
     // reports '' in Chromium yet plays; 4K VP9 WebM reports 'maybe' in WebKit yet fails).
     const kind = videoErrorKind(video.error?.code, src, (m) => video.canPlayType(m));
     show(kind === 'unsupported' ? VF_MSG.unsupported : VF_MSG.error, false);
+  };
+
+  let repairing = false;
+  const onError = () => {
+    const src = video.currentSrc || video.src || video.dataset.videoUrl || '';
+    // One shot: existing WebMs uploaded before clearWebmAlphaFlag still have AlphaMode=1.
+    if (!repairing && !video.dataset.vfRepaired && isWebmUrl(src)) {
+      repairing = true;
+      video.dataset.vfRepaired = '1';
+      repairWebmObjectUrl(src).then((blobUrl) => {
+        repairing = false;
+        if (!blobUrl || !video.isConnected) {
+          if (blobUrl) URL.revokeObjectURL(blobUrl);
+          showFinalError();
+          return;
+        }
+        if (video.dataset.vfBlob) {
+          try { URL.revokeObjectURL(video.dataset.vfBlob); } catch { /* ignore */ }
+        }
+        video.dataset.vfBlob = blobUrl;
+        video.src = blobUrl;
+        video.load();
+        if (video.dataset.userPaused !== '1') {
+          video.play().catch(() => {});
+        }
+      }).catch(() => {
+        repairing = false;
+        showFinalError();
+      });
+      return;
+    }
+    showFinalError();
   };
   video.addEventListener('error', onError);
   if (video.error) onError(); // error fired before we were attached

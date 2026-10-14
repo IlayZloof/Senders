@@ -1,5 +1,6 @@
 import { t } from './i18n.js';
 import { displaySpotName, spotNameEquals, spotSearchHaystack } from './spot-locale.js';
+import { isUnshippedLocalVideo } from './data-guards.js';
 
 /** צבעי ספוט לפי גובה מקסימלי */
 export function spotColor(spot) {
@@ -83,6 +84,8 @@ export function getSpotMedia(spot) {
   for (const raw of mediaSources(spot)) {
     const url = mediaSrc(raw);
     if (!url || seen.has(url) || RETIRED_MEDIA_SRCS.has(url) || isStockPlaceholder(url)) continue;
+    // Seed /videos/... files are not in the Worker deploy (public/videos gitignored).
+    if (isUnshippedLocalVideo(url)) continue;
     seen.add(url);
     const caption = mediaCaption(raw, captions);
     items.push({
