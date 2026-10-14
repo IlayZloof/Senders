@@ -361,10 +361,7 @@
       const googleLabel = document.querySelector('#googleBtn [data-i18n="login.google"]');
       if (googleLabel) googleLabel.textContent = m === 'signup' ? t('login.googleSignup') : t('login.google');
       formError.hidden = true;
-      formInfo.hidden = m !== 'signup';
-      if (m === 'signup') {
-        formInfo.textContent = t('login.signupHint');
-      }
+      formInfo.hidden = true;
       if (syncUrl) {
         const url = new URL(window.location.href);
         if (m === 'signup') url.searchParams.set('mode', 'signup');
