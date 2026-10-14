@@ -261,3 +261,43 @@ export const RECORDER_MIME_PREFERENCE = [
   'video/webm;codecs=vp9,vorbis',
   'video/webm',
 ];
+
+/**
+ * Auth signup result classification (email confirm + anti-enumeration).
+ * Supabase with Confirm email ON returns session=null for a real new user.
+ * For an email that already exists it often returns a user with identities=[]
+ * and no error (anti-enumeration) — that must NOT be treated as "check your
+ * inbox", or the UI flips to login and a later sign-in shows wrong-password.
+ */
+export function isAlreadyRegisteredAuthError(err) {
+  const code = String(err?.code || err?.error_code || '').toLowerCase();
+  const msg = String(err?.message || err?.msg || err?.error_description || '').toLowerCase();
+  if (
+    code === 'user_already_exists' ||
+    code === 'email_exists' ||
+    code === 'user_already_registered'
+  ) {
+    return true;
+  }
+  return (
+    msg.includes('user already registered') ||
+    msg.includes('already been registered') ||
+    msg.includes('email address already') ||
+    msg.includes('email already registered') ||
+    msg.includes('user_already_exists') ||
+    msg.includes('email_exists')
+  );
+}
+
+/**
+ * @param {{ user?: { identities?: unknown[] } | null, session?: unknown } | null | undefined} data
+ * @returns {'session' | 'confirm_email' | 'already_registered' | 'empty'}
+ */
+export function classifySignUpResult(data) {
+  if (!data || typeof data !== 'object') return 'empty';
+  if (data.session) return 'session';
+  const identities = data.user?.identities;
+  if (Array.isArray(identities) && identities.length === 0) return 'already_registered';
+  if (data.user) return 'confirm_email';
+  return 'empty';
+}

@@ -6,6 +6,7 @@ import {
   RECORDER_MIME_PREFERENCE, VIDEO_ERR, MAX_VIDEO_BYTES,
   fitWithin, videoErrorKind, shouldReloadForVersion, clearWebmAlphaFlag,
   isUnshippedLocalVideo, isWebmUrl, repairedWebmBytes,
+  classifySignUpResult, isAlreadyRegisteredAuthError,
 } from '../js/data-guards.js';
 
 const all = [
@@ -186,5 +187,20 @@ describe('WebM playback repair helpers', () => {
     expect([...out]).toEqual([0x1a, 0x45, 0x53, 0xc0, 0x81, 0x00, 0x00]);
     expect([...bad]).toEqual([0x1a, 0x45, 0x53, 0xc0, 0x81, 0x01, 0x00]); // original untouched
     expect(repairedWebmBytes(Uint8Array.from([0x53, 0xc0, 0x81, 0x00]))).toBeNull();
+  });
+});
+
+describe('email signup classification (bug: signup flipped to login / wrong-password)', () => {
+  it('classifySignUpResult: session, confirm-email, already-registered, empty', () => {
+    expect(classifySignUpResult({ session: { access_token: 'x' }, user: { identities: [{}] } })).toBe('session');
+    expect(classifySignUpResult({ session: null, user: { identities: [{ provider: 'email' }] } })).toBe('confirm_email');
+    expect(classifySignUpResult({ session: null, user: { identities: [] } })).toBe('already_registered');
+    expect(classifySignUpResult({ user: null, session: null })).toBe('empty');
+    expect(classifySignUpResult(null)).toBe('empty');
+  });
+  it('isAlreadyRegisteredAuthError maps codes and messages', () => {
+    expect(isAlreadyRegisteredAuthError({ code: 'user_already_exists' })).toBe(true);
+    expect(isAlreadyRegisteredAuthError({ message: 'User already registered' })).toBe(true);
+    expect(isAlreadyRegisteredAuthError({ message: 'Invalid login credentials' })).toBe(false);
   });
 });

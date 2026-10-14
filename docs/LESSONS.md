@@ -92,3 +92,18 @@ Testers reported login and signup looking the same. Share one page but change ti
 ## 10. Map page desktop: viewport height vs sidebar list
 - **Bug:** On desktop the map column was ~full `100dvh` while a hero sat above it, so the page scrolled a long way; the left spot name list grew with every spot and stretched the grid (`min-height: auto` + `overflow: visible`).
 - **Fix:** Cap `.map-page .map-layout` to `100dvh - nav - hero` (~7rem), set sidebar/list `min-height: 0` + `overflow-y: auto` on `.map-spot-list` so names scroll inside the column. Mobile (`max-width: 900px`) keeps height:auto / overflow visible. Remeasure Leaflet (`invalidateSize` + Israel bounds) after layout.
+
+## 11. Email signup must not flip to login / wrong-password
+- **Bug (Oct 14):** Eli on senders-dev: after הרשמה the UI jumped to the login
+  tab and showed «אימייל או סיסמה שגויים».
+- **Root cause:** Supabase has `mailer_autoconfirm: false`, so a real signup
+  returns `session: null`. The submit handler treated that as “check email”
+  then called `setMode('login')` (which also cleared the success toast). An
+  already-registered email often returns the same shape with
+  `user.identities = []` (anti-enumeration). The user then landed on login and
+  any sign-in attempt mapped to invalid credentials — not a signup failure.
+- **Guard:** `classifySignUpResult()` + `isAlreadyRegisteredAuthError()` in
+  `js/data-guards.js`. Signup with a session → `waiting.html` via the existing
+  gate; signup without a session → stay on signup with a confirm-email message;
+  already-registered → Hebrew error, stay on signup; never auto `signIn` after
+  signup. Covered by `tests/data-guards.test.js`.
