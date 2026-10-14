@@ -9,3 +9,4 @@ dist/
 .DS_Store
 public/videos/
 supabase/.temp/
+node_modules
