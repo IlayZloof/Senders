@@ -217,12 +217,12 @@
               <div class="criteria-grid">
                 <div class="form-group">
                   <label data-i18n="add.lat">קו רוחב (Latitude)</label>
-                  <input type="number" name="lat" step="0.001" placeholder="31.500" dir="ltr" />
+                  <input type="number" name="lat" step="any" inputmode="decimal" placeholder="31.500" dir="ltr" />
                   <p class="form-hint" data-i18n="add.latHint">אפשר גם להזין ידנית</p>
                 </div>
                 <div class="form-group">
                   <label data-i18n="add.lng">קו אורך (Longitude)</label>
-                  <input type="number" name="lng" step="0.001" placeholder="34.750" dir="ltr" />
+                  <input type="number" name="lng" step="any" inputmode="decimal" placeholder="34.750" dir="ltr" />
                 </div>
               </div>
               <div class="mini-map-wrap" id="pickMap" style="height: 250px; margin-top: 1rem"></div>
@@ -271,21 +271,50 @@
         return;
       }
       document.getElementById('wizardWrap').hidden = false;
-      initPickMap();
+      bindMapLinkField();
     });
 
+    const ISRAEL_CENTER = [31.5, 34.9];
+    const ISRAEL_PICK_BOUNDS = L.latLngBounds([29.3, 34.1], [33.5, 35.95]);
+
     function initPickMap() {
-      pickMap = L.map('pickMap').setView([31.5, 34.9], 8);
+      // Create only once the location step is visible — Leaflet mis-centers
+      // when the container is display:none (looks like Lebanon/Cyprus).
+      if (pickMap) {
+        refreshPickMapView();
+        return;
+      }
+      const el = document.getElementById('pickMap');
+      if (!el || el.offsetHeight < 40) return;
+
+      pickMap = L.map('pickMap', {
+        maxBounds: ISRAEL_PICK_BOUNDS.pad(0.15),
+        maxBoundsViscosity: 0.85,
+        worldCopyJump: false,
+        scrollWheelZoom: true,
+      }).setView(ISRAEL_CENTER, 8);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© OSM',
       }).addTo(pickMap);
 
       pickMap.on('click', (e) => {
         const { lat, lng } = e.latlng;
-        setPickedLocation(lat, lng, { digits: 3 });
+        setPickedLocation(lat, lng, { digits: 5 });
       });
 
       bindMapLinkField();
+      refreshPickMapView();
+    }
+
+    function refreshPickMapView() {
+      if (!pickMap) return;
+      pickMap.invalidateSize({ pan: false });
+      if (!pickMarker) {
+        pickMap.setView(ISRAEL_CENTER, 8, { animate: false });
+      } else {
+        const ll = pickMarker.getLatLng();
+        pickMap.setView(ll, Math.max(pickMap.getZoom() || 8, 12), { animate: false });
+      }
     }
 
     function mapLinkMessage(code) {
@@ -376,10 +405,12 @@
       return next;
     }
 
+    let mapLinkBound = false;
     function bindMapLinkField() {
       const input = document.getElementById('mapLinkInput');
       const btn = document.getElementById('extractMapLinkBtn');
-      if (!input || !btn) return;
+      if (!input || !btn || mapLinkBound) return;
+      mapLinkBound = true;
 
       btn.addEventListener('click', () => {
         applyMapLink(input.value).catch(() => {});
@@ -414,7 +445,13 @@
       document.getElementById('prevBtn').hidden = currentStep === 1;
       document.getElementById('nextBtn').hidden = currentStep === 3;
       document.getElementById('submitBtn').hidden = currentStep !== 3;
-      if (currentStep === 3) setTimeout(() => pickMap?.invalidateSize(), 100);
+      if (currentStep === 3) {
+        setTimeout(() => {
+          initPickMap();
+          refreshPickMapView();
+        }, 50);
+        setTimeout(() => refreshPickMapView(), 250);
+      }
     }
 
     document.getElementById('hasSecondary')?.addEventListener('change', (e) => {

@@ -84,3 +84,7 @@ Use `filterBySpotVisibility(items, await getHiddenSpotIds())`, never
 
 ## 8. Login vs signup must feel like different modes
 Testers reported login and signup looking the same. Share one page but change title, lead, Google CTA, submit label, name field, forgot-link visibility, and `?mode=signup` in the URL when switching tabs.
+
+## 9. Add-spot map + extracted coords
+- `input type=number step=0.001` rejects Google-extracted coords (e.g. 33.17509) — Chrome shows Hebrew «הערך שחולץ לא תקין». Use `step=any`.
+- Leaflet must not be created while the wizard panel is `display:none`; otherwise the view looks stuck north (Lebanon/Cyprus). Init/refresh on step 3 with `invalidateSize` + Israel center.
