@@ -134,9 +134,24 @@
     </section>
   </main>
 
+  <dialog id="pendingSpotDialog" class="admin-spot-dialog" aria-labelledby="pendingSpotDialogTitle">
+    <div class="admin-spot-dialog-card">
+      <div class="admin-spot-dialog-head">
+        <h3 id="pendingSpotDialogTitle"></h3>
+        <button type="button" class="btn btn-ghost btn-sm" id="pendingSpotDialogClose" aria-label="סגירה">✕</button>
+      </div>
+      <div class="admin-spot-dialog-body" id="pendingSpotDialogBody"></div>
+      <div class="admin-spot-dialog-actions">
+        <button type="button" class="btn btn-primary btn-sm" id="pendingSpotDialogApprove"></button>
+        <button type="button" class="btn btn-ghost btn-sm" id="pendingSpotDialogReject"></button>
+        <button type="button" class="btn btn-ghost btn-sm" id="pendingSpotDialogDismiss"></button>
+      </div>
+    </div>
+  </dialog>
+
   <script type="module">
-    import { initNav, formatDate, formatDateTime, heightLabel, escapeHtml } from './js/ui.js';
-    import { t } from './js/i18n.js';
+    import { initNav, formatDate, formatDateTime, heightLabel, escapeHtml, safePhotoSrc } from './js/ui.js';
+    import { t, regionLabel, accessibilityLabel, waterDepthLabel } from './js/i18n.js';
     import { displaySpotDescription, displaySpotName, spotSearchHaystack } from './js/spot-locale.js';
     import {
       getSession, isAdmin, getPendingSpots, approveSpot, rejectSpot,
@@ -149,6 +164,123 @@
 
     let adminSpotQuery = '';
     let cachedHiddenSpots = [];
+    let cachedPendingSpots = [];
+    let detailsSpotId = '';
+
+    const pendingDialog = document.getElementById('pendingSpotDialog');
+    const pendingDialogBody = document.getElementById('pendingSpotDialogBody');
+    const pendingDialogTitle = document.getElementById('pendingSpotDialogTitle');
+    const pendingDialogApprove = document.getElementById('pendingSpotDialogApprove');
+    const pendingDialogReject = document.getElementById('pendingSpotDialogReject');
+    const pendingDialogDismiss = document.getElementById('pendingSpotDialogDismiss');
+    const pendingDialogClose = document.getElementById('pendingSpotDialogClose');
+
+    function emptyVal(v) {
+      const s = String(v ?? '').trim();
+      return s || t('admin.field.empty');
+    }
+
+    function submitterLabel(spot) {
+      const profile = spot?.profiles;
+      const name = profile?.display_name || '';
+      const email = profile?.email || '';
+      if (name && email) return `${name} · ${email}`;
+      if (name || email) return name || email;
+      return spot?.created_by ? String(spot.created_by) : t('admin.field.empty');
+    }
+
+    function detailRow(label, valueHtml) {
+      return `<div class="admin-spot-detail-row"><dt>${escapeHtml(label)}</dt><dd>${valueHtml}</dd></div>`;
+    }
+
+    function renderPendingDetails(spot) {
+      const lat = Number(spot.lat);
+      const lng = Number(spot.lng);
+      const hasCoords = Number.isFinite(lat) && Number.isFinite(lng);
+      const coordsHtml = hasCoords
+        ? `<span dir="ltr">${escapeHtml(lat.toFixed(5))}, ${escapeHtml(lng.toFixed(5))}</span>
+           <a class="admin-spot-map-link" href="https://www.google.com/maps?q=${encodeURIComponent(`${lat},${lng}`)}" target="_blank" rel="noopener noreferrer">Google Maps</a>`
+        : escapeHtml(t('admin.field.empty'));
+      const ig = String(spot.instagram_url || '').trim();
+      const igHtml = ig
+        ? `<a href="${escapeHtml(ig)}" target="_blank" rel="noopener noreferrer" dir="ltr">${escapeHtml(ig)}</a>`
+        : escapeHtml(t('admin.field.empty'));
+      const imgSrc = safePhotoSrc(spot.image);
+      const imgHtml = imgSrc
+        ? `<img class="admin-spot-detail-img" src="${escapeHtml(imgSrc)}" alt="" loading="lazy" />`
+        : escapeHtml(t('admin.field.empty'));
+      const rocks = spot.rocks ?? (spot.rocks_below === false ? t('rocks.none') : spot.rocks_below === true ? t('rocks.unknown') : '');
+      return `<dl class="admin-spot-detail-list">
+        ${detailRow(t('admin.field.name'), escapeHtml(displaySpotName(spot)))}
+        ${detailRow(t('admin.field.submitter'), escapeHtml(submitterLabel(spot)))}
+        ${detailRow(t('admin.field.region'), escapeHtml(regionLabel(spot.region) || t('admin.field.empty')))}
+        ${detailRow(t('admin.field.height'), escapeHtml(heightLabel(spot)))}
+        ${detailRow(t('admin.field.coords'), coordsHtml)}
+        ${detailRow(t('admin.field.access'), escapeHtml(accessibilityLabel(spot.accessibility) || t('admin.field.empty')))}
+        ${detailRow(t('admin.field.rocks'), escapeHtml(emptyVal(rocks)))}
+        ${detailRow(t('admin.field.depth'), escapeHtml(waterDepthLabel(spot.water_depth) || t('admin.field.empty')))}
+        ${detailRow(t('admin.field.depthChecked'), escapeHtml(spot.depth_known ? t('admin.field.yes') : t('admin.field.no')))}
+        ${detailRow(t('admin.field.season'), escapeHtml(emptyVal(spot.season)))}
+        ${detailRow(t('admin.field.warnings'), `<span class="admin-spot-detail-text">${escapeHtml(emptyVal(spot.warnings))}</span>`)}
+        ${detailRow(t('admin.field.description'), `<span class="admin-spot-detail-text">${escapeHtml(emptyVal(displaySpotDescription(spot)))}</span>`)}
+        ${detailRow(t('admin.field.instagram'), igHtml)}
+        ${detailRow(t('admin.field.image'), imgHtml)}
+        ${detailRow(t('admin.field.created'), escapeHtml(formatDateTime(spot.created_at) || t('admin.field.empty')))}
+        ${detailRow(t('admin.field.id'), `<code dir="ltr">${escapeHtml(spot.id || '')}</code>`)}
+      </dl>`;
+    }
+
+    function openPendingDetails(spotId) {
+      const spot = cachedPendingSpots.find((s) => String(s.id) === String(spotId));
+      if (!spot || !pendingDialog) return;
+      detailsSpotId = String(spot.id);
+      pendingDialogTitle.textContent = t('admin.detailsTitle');
+      pendingDialogApprove.textContent = t('admin.approve');
+      pendingDialogReject.textContent = t('admin.reject');
+      pendingDialogDismiss.textContent = t('admin.close');
+      pendingDialogBody.innerHTML = renderPendingDetails(spot);
+      if (typeof pendingDialog.showModal === 'function') pendingDialog.showModal();
+      else pendingDialog.setAttribute('open', '');
+    }
+
+    function closePendingDetails() {
+      detailsSpotId = '';
+      if (!pendingDialog) return;
+      if (typeof pendingDialog.close === 'function') pendingDialog.close();
+      else pendingDialog.removeAttribute('open');
+    }
+
+    async function handleApprove(spotId) {
+      if (!spotId) return;
+      if (!confirm(t('admin.approveConfirm'))) return;
+      try {
+        await approveSpot(spotId);
+        closePendingDetails();
+        await renderAdmin();
+      } catch (err) {
+        alert(err?.message || t('admin.approveFail'));
+      }
+    }
+
+    async function handleReject(spotId) {
+      if (!spotId) return;
+      if (!confirm(t('admin.rejectConfirm'))) return;
+      try {
+        await rejectSpot(spotId);
+        closePendingDetails();
+        await renderAdmin();
+      } catch (err) {
+        alert(err?.message || t('admin.rejectFail'));
+      }
+    }
+
+    pendingDialogClose?.addEventListener('click', closePendingDetails);
+    pendingDialogDismiss?.addEventListener('click', closePendingDetails);
+    pendingDialogApprove?.addEventListener('click', () => handleApprove(detailsSpotId));
+    pendingDialogReject?.addEventListener('click', () => handleReject(detailsSpotId));
+    pendingDialog?.addEventListener('click', (e) => {
+      if (e.target === pendingDialog) closePendingDetails();
+    });
 
     function renderHiddenSpotList() {
       const searchEl = document.getElementById('adminSpotSearch');
@@ -241,18 +373,20 @@
         `).join('')
         : `<p class="admin-empty">${t('admin.noNotifs')}</p>`;
 
+      cachedPendingSpots = pending;
       document.getElementById('pendingList').innerHTML = pending.length
         ? pending.map((spot) => `
-          <div class="admin-pending-card" data-id="${spot.id}">
-            <div>
+          <div class="admin-pending-card" data-id="${escapeHtml(spot.id)}">
+            <div class="admin-pending-main">
               <strong>${escapeHtml(displaySpotName(spot))}</strong>
-              <span>${heightLabel(spot)} · ${formatDate(spot.created_at)}</span>
-              <p>${escapeHtml(displaySpotDescription(spot))}</p>
+              <span>${escapeHtml(heightLabel(spot))} · ${escapeHtml(formatDate(spot.created_at))}</span>
+              <span class="admin-pending-submitter">${escapeHtml(submitterLabel(spot))}</span>
+              <p>${escapeHtml(displaySpotDescription(spot) || t('admin.field.empty'))}</p>
             </div>
-            <div class="admin-actions">
-              <button class="btn btn-primary btn-sm approve-btn">${t('admin.approve')}</button>
-              <button class="btn btn-ghost btn-sm reject-btn">${t('admin.reject')}</button>
-              <a href="spot.html?id=${spot.id}" class="btn btn-ghost btn-sm">${t('admin.view')}</a>
+            <div class="admin-actions admin-actions--pending">
+              <button type="button" class="btn btn-primary btn-sm approve-btn">${t('admin.approve')}</button>
+              <button type="button" class="btn btn-ghost btn-sm details-btn">${t('admin.details')}</button>
+              <button type="button" class="btn btn-ghost btn-sm reject-btn">${t('admin.reject')}</button>
             </div>
           </div>
         `).join('')
@@ -287,20 +421,24 @@
         `).join('')
         : `<p class="admin-empty">${t('admin.noActivity')}</p>`;
 
-      document.querySelectorAll('.approve-btn').forEach((btn) => {
+      document.querySelectorAll('#pendingList .approve-btn').forEach((btn) => {
         btn.addEventListener('click', async (e) => {
-          const id = e.target.closest('.admin-pending-card').dataset.id;
-          await approveSpot(id);
-          renderAdmin();
+          const id = e.target.closest('.admin-pending-card')?.dataset.id;
+          await handleApprove(id);
         });
       });
 
-      document.querySelectorAll('.reject-btn').forEach((btn) => {
+      document.querySelectorAll('#pendingList .details-btn').forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          const id = e.target.closest('.admin-pending-card')?.dataset.id;
+          openPendingDetails(id);
+        });
+      });
+
+      document.querySelectorAll('#pendingList .reject-btn').forEach((btn) => {
         btn.addEventListener('click', async (e) => {
-          if (!confirm('לדחות את הספוט?')) return;
-          const id = e.target.closest('.admin-pending-card').dataset.id;
-          await rejectSpot(id);
-          renderAdmin();
+          const id = e.target.closest('.admin-pending-card')?.dataset.id;
+          await handleReject(id);
         });
       });
 
