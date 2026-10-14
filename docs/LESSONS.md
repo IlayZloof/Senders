@@ -107,3 +107,14 @@ Testers reported login and signup looking the same. Share one page but change ti
   gate; signup without a session → stay on signup with a confirm-email message;
   already-registered → Hebrew error, stay on signup; never auto `signIn` after
   signup. Covered by `tests/data-guards.test.js`.
+
+## 12. Admin pending spots need Approve + Details
+- **Bug (Oct 14):** Ilay saw pending spots on `/admin.html` but had no clear way
+  to approve them or review the full submission before deciding.
+- **Root cause:** Approve/reject existed as small buttons with no error feedback,
+  and the only extra action was a generic “view” link — not a full field review
+  of what the user submitted.
+- **Fix:** Per-pending-spot **אישור** / **פירוט** / **דחייה**; Details opens a
+  dark-theme dialog with name, submitter, coords, rocks, depth, warnings, etc.;
+  approve/reject confirm + surface errors; `approveSpot`/`rejectSpot` require an
+  admin session.
