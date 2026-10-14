@@ -234,20 +234,38 @@ export async function initMap(containerId, options = {}) {
   });
   applyIsraelZoomConstraints(mapInstance);
   mapInstance.on('resize', () => applyIsraelZoomConstraints(mapInstance));
-  mapInstance.whenReady(() => {
-    requestAnimationFrame(() => {
-      mapInstance.invalidateSize({ pan: false });
-      applyIsraelZoomConstraints(mapInstance);
+  function remeasureIsraelView() {
+    if (!mapInstance) return;
+    mapInstance.invalidateSize({ pan: false });
+    mapInstance.fitBounds(ISRAEL_BOUNDS, {
+      paddingTopLeft: L.point(24, 56),
+      paddingBottomRight: L.point(24, 24),
     });
+    applyIsraelZoomConstraints(mapInstance);
+  }
+
+  mapInstance.whenReady(() => {
+    requestAnimationFrame(() => remeasureIsraelView());
+    // Desktop CSS clamps map height after first paint; remeasure so Israel stays centered
+    setTimeout(() => remeasureIsraelView(), 120);
   });
   if (!orientationBound) {
     window.addEventListener('orientationchange', () => {
-      setTimeout(() => {
+      setTimeout(() => remeasureIsraelView(), 250);
+    });
+    window.addEventListener('resize', () => {
+      if (!mapInstance) return;
+      mapInstance.invalidateSize({ pan: false });
+      applyIsraelZoomConstraints(mapInstance);
+    });
+    if (typeof ResizeObserver !== 'undefined') {
+      const ro = new ResizeObserver(() => {
         if (!mapInstance) return;
         mapInstance.invalidateSize({ pan: false });
         applyIsraelZoomConstraints(mapInstance);
-      }, 250);
-    });
+      });
+      ro.observe(container);
+    }
     orientationBound = true;
   }
 

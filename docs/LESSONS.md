@@ -88,3 +88,7 @@ Testers reported login and signup looking the same. Share one page but change ti
 ## 9. Add-spot map + extracted coords
 - `input type=number step=0.001` rejects Google-extracted coords (e.g. 33.17509) — Chrome shows Hebrew «הערך שחולץ לא תקין». Use `step=any`.
 - Leaflet must not be created while the wizard panel is `display:none`; otherwise the view looks stuck north (Lebanon/Cyprus). Init/refresh on step 3 with `invalidateSize` + Israel center.
+
+## 10. Map page desktop: viewport height vs sidebar list
+- **Bug:** On desktop the map column was ~full `100dvh` while a hero sat above it, so the page scrolled a long way; the left spot name list grew with every spot and stretched the grid (`min-height: auto` + `overflow: visible`).
+- **Fix:** Cap `.map-page .map-layout` to `100dvh - nav - hero` (~7rem), set sidebar/list `min-height: 0` + `overflow-y: auto` on `.map-spot-list` so names scroll inside the column. Mobile (`max-width: 900px`) keeps height:auto / overflow visible. Remeasure Leaflet (`invalidateSize` + Israel bounds) after layout.
