@@ -31,6 +31,10 @@
   --content-top: var(--nav-offset);
   --chrome-top: calc(var(--nav-h) + env(safe-area-inset-top, 0px));
   --tab-bar-h: 0px;
+  /* Space reserved by the fixed mobile tab bar (+ home indicator).
+     Any scrollable page content OR bottom sheet must clear this, OR
+     sit at z-index above .tab-bar (1100). */
+  --chrome-bottom: calc(var(--tab-bar-h) + var(--safe-bottom));
   --radius: 14px;
   --radius-sm: 10px;
   --success: #5dba7a;
@@ -2624,7 +2628,7 @@ button.ig-stat {
 .ig-avatar-modal {
   position: fixed;
   inset: 0;
-  z-index: 80;
+  z-index: 1300;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2705,7 +2709,7 @@ html[data-theme="light"] .ig-avatar-modal {
 .ig-avatar-crop {
   position: fixed;
   inset: 0;
-  z-index: 90;
+  z-index: 1310;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2865,7 +2869,8 @@ html[data-theme="light"] .ig-avatar-crop-circle {
 .profile-favs-sheet {
   position: fixed;
   inset: 0;
-  z-index: 80;
+  /* Above .tab-bar (1100): otherwise the first/last fav rows sit under the bar */
+  z-index: 1300;
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -2881,10 +2886,12 @@ html[data-theme="light"] .ig-avatar-crop-circle {
   width: min(520px, 100%);
   max-height: min(78vh, 640px);
   overflow: auto;
+  -webkit-overflow-scrolling: touch;
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: 16px 16px 0 0;
-  padding: 1rem 1rem calc(1rem + var(--safe-bottom, 0px));
+  /* Sheet sits above the tab bar; still clear the home indicator + a little breathing room */
+  padding: 1rem 1rem calc(1.25rem + var(--safe-bottom, 0px));
   box-shadow: var(--shadow);
 }
 
@@ -3621,7 +3628,14 @@ html.pwa-standalone .tab-bar {
 
   body {
     --tab-bar-h: 56px;
-    padding-bottom: calc(var(--tab-bar-h) + env(safe-area-inset-bottom, 0px));
+    padding-bottom: var(--chrome-bottom);
+  }
+
+  /* Bottom sheets/drawers that dock to the screen bottom must sit
+     above .tab-bar (z-index > 1100). In-flow content relies on
+     body { padding-bottom: var(--chrome-bottom) }. */
+  .profile-favs-card {
+    padding-bottom: calc(1.25rem + var(--safe-bottom));
   }
 
   .tab-bar {
