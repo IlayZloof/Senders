@@ -118,3 +118,19 @@ Testers reported login and signup looking the same. Share one page but change ti
   dark-theme dialog with name, submitter, coords, rocks, depth, warnings, etc.;
   approve/reject confirm + surface errors; `approveSpot`/`rejectSpot` require an
   admin session.
+
+## 13. Fixed bottom tab bar covering bottom sheets / last rows
+- **Bug (Oct 15):** Eli — saving a spot to מועדפים hid the first item under
+  «השורה של למטה» (the mobile tab bar).
+- **Root cause:** `.profile-favs-sheet` was `z-index: 80` while `.tab-bar` is
+  `1100`, so the bottom sheet (and its first/only fav rows) rendered *under*
+  the tab bar. Card padding only cleared `safe-area`, not the bar. Same class
+  of bug for any fixed bottom overlay below the tab bar, or any scrollable
+  page that zeroes `body` padding without replacing `--chrome-bottom`.
+- **Guard:**
+  - CSS var `--chrome-bottom: calc(var(--tab-bar-h) + var(--safe-bottom))`.
+  - Mobile `body { padding-bottom: var(--chrome-bottom) }` for in-flow content.
+  - Bottom sheets/modals (favorites, avatar) use `z-index` ≥ 1300 (above the
+    tab bar), matching `.home-sheet`.
+  - Rule for new UI: dock-to-bottom overlays must sit above `.tab-bar` **or**
+    pad with `--chrome-bottom`; never invent a one-off pixel hack per page.
