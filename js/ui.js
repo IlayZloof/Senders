@@ -1,5 +1,5 @@
 import { APP_VERSION } from './version.js';
-import { shouldReloadForVersion } from './data-guards.js';
+import { shouldReloadForVersion, isSoftKeyboardOpen, visualViewportBottomShift } from './data-guards.js';
 import { getSession, invalidateSessionCache, signOut, isAdmin, hasApprovedAccess, isWaitingAccess, getUnreadNotificationCount, buildLoginUrl } from './store.js';
 import { prefetchReelsShellAndFeed } from './reels-prefetch.js';
 import { initFooter } from './footer.js';
@@ -588,11 +588,27 @@ function syncKeyboardChrome() {
   const bar = document.getElementById('tabBar');
   const focused = isTextFieldFocused();
   const overlap = keyboardOverlapPx();
-  const keyboardOpen = focused || overlap > 80;
+  // Overlap alone is iOS URL-bar / rubber-band — not the soft keyboard.
+  const keyboardOpen = isSoftKeyboardOpen({ focused, overlapPx: overlap, minOverlap: 40 });
   document.documentElement.classList.toggle('keyboard-open', keyboardOpen);
-  if (bar) {
-    bar.setAttribute('aria-hidden', keyboardOpen ? 'true' : 'false');
+  if (!bar) return;
+  bar.setAttribute('aria-hidden', keyboardOpen ? 'true' : 'false');
+
+  // Keep a fixed bottom bar pinned to the *visual* viewport. On iOS, layout
+  // viewport bottom can sit mid-screen while the URL bar animates; without
+  // this shift the tab bar appears to "jump" into the middle of the page.
+  if (keyboardOpen) {
+    bar.style.removeProperty('transform');
+    return;
   }
+  const vv = window.visualViewport;
+  if (!vv) {
+    bar.style.removeProperty('transform');
+    return;
+  }
+  const shift = visualViewportBottomShift(window.innerHeight, vv.height, vv.offsetTop);
+  if (shift > 0) bar.style.transform = `translate3d(0, ${-shift}px, 0)`;
+  else bar.style.removeProperty('transform');
 }
 
 function initTabBarViewportLock() {
