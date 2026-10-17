@@ -134,3 +134,35 @@ Testers reported login and signup looking the same. Share one page but change ti
     tab bar), matching `.home-sheet`.
   - Rule for new UI: dock-to-bottom overlays must sit above `.tab-bar` **or**
     pad with `--chrome-bottom`; never invent a one-off pixel hack per page.
+
+## 14. Google OAuth must not re-flash the login form
+- **Bug (Oct 17):** Ilay — after Google sign-in the login page appeared ~3 times
+  before the app finally opened ("stuck", felt like failure).
+- **Root cause:** PKCE return hits `/login.html?code=…` before
+  `detectSessionInUrl` finishes exchanging the code. `getSession()` ran once,
+  got `null`, and bailed (`if (!s) return`) while the full login form stayed
+  visible. Nothing waited for `SIGNED_IN` / a later session. Slow mobile
+  networks made the empty form linger and feel like a redirect loop.
+- **Guard:** `isAuthCallbackUrl()`; on callback (or Google click) show Hebrew
+  «מתחבר…» resolving UI immediately (inline boot class before modules load);
+  poll `getSession` + `onAuthStateChange`; never paint the login form again
+  until exchange fails/times out. Covered by `tests/data-guards.test.js`.
+
+## 15. Fixed tab bar must stay on the visual viewport bottom
+- **Bug (Oct 17):** Ilay — while scrolling (users/admin and other pages) the
+  bottom `.tab-bar` sometimes sat in the **middle** of the screen.
+- **Root causes (combined):**
+  1. `body { overflow-x: hidden }` with default `overflow-y: visible` computes
+     to `overflow-y: auto`, making **body a second scroller**. On iOS,
+     `position:fixed` then tracks the document instead of the viewport.
+  2. Keyboard chrome used `focused || overlap > 80`. iOS URL-bar / rubber-band
+     changes `visualViewport` during scroll, so overlap alone is not a keyboard.
+  3. Layout vs visual viewport gap: a `bottom:0` fixed bar can sit below the
+     visible area while the URL bar animates.
+- **Guard:**
+  - Body uses `overflow-x: clip` only (never `hidden`).
+  - `isSoftKeyboardOpen({ focused, overlapPx })` requires a focused field.
+  - `visualViewportBottomShift()` + `translate3d` pins the bar to the visual
+    bottom while scrolling. LESSON: do not put `transform`/`filter` on
+    `html`/`body` ancestors of `.tab-bar`.
+

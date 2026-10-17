@@ -58,8 +58,34 @@
   <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Hebrew:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@500;600;700&display=swap" /></noscript>
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="ops-theme.css" />
+  <script>
+    (function () {
+      try {
+        var q = location.search || '';
+        var h = location.hash || '';
+        // Only OAuth/session exchange — never hide the recovery password form.
+        if (/[?&]code=/.test(q) || /access_token=/.test(h)) {
+          document.documentElement.classList.add('auth-boot-resolving');
+        }
+      } catch (e) {}
+    })();
+  </script>
 </head>
 <body class="login-page">
+  <script>
+    (function () {
+      if (!document.documentElement.classList.contains('auth-boot-resolving')) return;
+      function reveal() {
+        var el = document.getElementById('authResolving');
+        var card = document.querySelector('.auth-card');
+        if (el) el.hidden = false;
+        if (card) card.classList.add('is-resolving');
+      }
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', reveal);
+      else reveal();
+    })();
+  </script>
+
   <nav class="nav" id="nav">
     <a href="index.html" class="nav-logo">SEND<span>ERS</span></a>
     <button class="nav-toggle" id="navToggle" aria-label="תפריט מידע">
@@ -96,6 +122,11 @@
 
           <div id="formError" class="form-error" hidden></div>
           <div id="formInfo" class="form-info" hidden></div>
+
+          <div id="authResolving" class="auth-resolving" hidden role="status" aria-live="polite">
+            <div class="auth-resolving-spinner" aria-hidden="true"></div>
+            <p id="authResolvingLabel">מתחבר…</p>
+          </div>
 
           <div id="authMain">
             <button type="button" class="btn btn-google btn-full" id="googleBtn" hidden>
@@ -203,6 +234,7 @@
       resetLocalPassword,
       supabase,
     } from './js/store.js';
+    import { isAuthCallbackUrl } from './js/data-guards.js';
 
     initNav();
 
@@ -406,7 +438,10 @@
       document.getElementById('googleBtn').hidden = false;
       document.getElementById('authDivider').hidden = false;
       supabase.auth.onAuthStateChange((event) => {
-        if (event === 'PASSWORD_RECOVERY') showView('recovery');
+        if (event === 'PASSWORD_RECOVERY') {
+          setAuthResolving(false);
+          showView('recovery');
+        }
       });
     }
 
@@ -417,35 +452,100 @@
       showView('recovery');
     }
 
-    const hasAuthCallback =
-      urlAuth.type === 'recovery' ||
-      window.location.hash.includes('access_token') ||
-      params.has('code');
+    const hasAuthCallback = isAuthCallbackUrl(window.location.search, window.location.hash);
+    const authCard = document.querySelector('.auth-card');
+    const authResolving = document.getElementById('authResolving');
+    const authResolvingLabel = document.getElementById('authResolvingLabel');
+    let authResolved = false;
+
+    function setAuthResolving(on, label = 'מתחבר…') {
+      if (authResolvingLabel && label) authResolvingLabel.textContent = label;
+      if (authResolving) authResolving.hidden = !on;
+      authCard?.classList.toggle('is-resolving', Boolean(on));
+      document.documentElement.classList.toggle('auth-boot-resolving', Boolean(on));
+      if (on) {
+        // Never flash the login form while PKCE / session bootstrap runs.
+        formError.hidden = true;
+        formInfo.hidden = true;
+      }
+    }
 
     function goAfterAuth() {
+      if (authResolved) return;
+      authResolved = true;
+      setAuthResolving(true, 'מתחבר…');
       getSession().then((session) => {
         if (isWaitingAccess(session?.profile, session?.user)) {
-          window.location.href = 'waiting.html';
+          window.location.replace('waiting.html');
           return;
         }
-        window.location.href = consumeAuthRedirect(queryRedirect || 'index.html');
+        window.location.replace(consumeAuthRedirect(queryRedirect || 'index.html'));
       }).catch(() => {
-        window.location.href = consumeAuthRedirect(queryRedirect || 'index.html');
+        window.location.replace(consumeAuthRedirect(queryRedirect || 'index.html'));
       });
     }
 
-    getSession().then((s) => {
-      if (!s || view === 'recovery') return;
-      if (hasAuthCallback && supabaseOn) {
-        setTimeout(() => {
-          if (view !== 'recovery') goAfterAuth();
-        }, 400);
-        return;
+    function waitForSession(maxMs = 14000) {
+      const started = Date.now();
+      return new Promise((resolve) => {
+        const tick = () => {
+          getSession()
+            .then((s) => {
+              if (s?.user) {
+                resolve(s);
+                return;
+              }
+              if (Date.now() - started >= maxMs) {
+                resolve(null);
+                return;
+              }
+              setTimeout(tick, 280);
+            })
+            .catch(() => {
+              if (Date.now() - started >= maxMs) resolve(null);
+              else setTimeout(tick, 280);
+            });
+        };
+        tick();
+      });
+    }
+
+    if (supabaseOn) {
+      try {
+        supabase.auth.onAuthStateChange((event, session) => {
+          if (view === 'recovery' || event === 'PASSWORD_RECOVERY') return;
+          if (!session?.user) return;
+          if (event === 'SIGNED_IN' || event === 'INITIAL_SESSION' || event === 'TOKEN_REFRESHED') {
+            if (hasAuthCallback || authCard?.classList.contains('is-resolving')) {
+              goAfterAuth();
+            }
+          }
+        });
+      } catch {
+        /* ignore */
       }
-      goAfterAuth();
-    }).catch((err) => {
-      showMessage(formError, formatAuthError(err));
-    });
+    }
+
+    if (hasAuthCallback && supabaseOn && view !== 'recovery') {
+      setAuthResolving(true, 'מתחבר…');
+      waitForSession().then((s) => {
+        if (s?.user) {
+          goAfterAuth();
+          return;
+        }
+        // Exchange failed or timed out — show the form once, never loop.
+        setAuthResolving(false);
+        showView('auth');
+        showMessage(formError, 'ההתחברות לא הושלמה. נסו שוב עם Google.');
+      });
+    } else {
+      getSession().then((s) => {
+        if (!s || view === 'recovery') return;
+        goAfterAuth();
+      }).catch((err) => {
+        showMessage(formError, formatAuthError(err));
+      });
+    }
 
     setMode(mode, { syncUrl: mode === 'signup' });
 
@@ -463,9 +563,13 @@
 
     document.getElementById('googleBtn')?.addEventListener('click', async () => {
       formError.hidden = true;
+      setAuthResolving(true, 'מעבירים ל-Google…');
       try {
         await signInWithGoogle(queryRedirect || 'index.html');
+        // Browser navigates away; if it does not, fall back below.
       } catch (err) {
+        setAuthResolving(false);
+        showView('auth');
         showMessage(formError, formatAuthError(err));
       }
     });

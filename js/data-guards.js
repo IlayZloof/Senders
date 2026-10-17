@@ -301,3 +301,38 @@ export function classifySignUpResult(data) {
   if (data.user) return 'confirm_email';
   return 'empty';
 }
+
+/**
+ * True when the URL is an OAuth / magic-link / recovery return that Supabase
+ * still needs to exchange (PKCE `code` or implicit `access_token` hash).
+ * While this is true the login form must not flash — show a resolving state.
+ */
+export function isAuthCallbackUrl(search = '', hash = '') {
+  const q = String(search || '').replace(/^\?/, '');
+  const h = String(hash || '').replace(/^#/, '');
+  const sp = new URLSearchParams(q);
+  const hp = new URLSearchParams(h);
+  if (sp.has('code')) return true;
+  if (hp.has('access_token') || hp.has('refresh_token')) return true;
+  const type = sp.get('type') || hp.get('type') || '';
+  return type === 'recovery' || type === 'signup' || type === 'magiclink' || type === 'invite';
+}
+
+/**
+ * Should the mobile tab bar hide for the soft keyboard?
+ * Overlap alone (iOS URL-bar / rubber-band) must NOT count — that used to
+ * flicker chrome during scroll. Require a focused text field.
+ */
+export function isSoftKeyboardOpen({ focused = false, overlapPx = 0, minOverlap = 40 } = {}) {
+  return Boolean(focused) && Number(overlapPx) >= Number(minOverlap);
+}
+
+/**
+ * Pixels to translate a `position:fixed; bottom:0` bar so it sits on the
+ * visual viewport bottom (iOS layout vs visual mismatch).
+ */
+export function visualViewportBottomShift(innerHeight, vvHeight, vvOffsetTop) {
+  const gap = Math.round(Number(innerHeight) - Number(vvHeight) - Number(vvOffsetTop));
+  return gap > 0 ? gap : 0;
+}
+

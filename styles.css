@@ -121,7 +121,9 @@ body {
   min-height: 100svh;
   min-height: 100lvh;
   direction: rtl;
-  overflow-x: hidden;
+  /* clip only — never overflow-x:hidden here. hidden+visible computes to
+     overflow-y:auto and makes body a scroller; on iOS position:fixed then
+     tracks the document and the tab bar appears mid-screen while scrolling. */
   overflow-x: clip;
   max-width: 100%;
 }
@@ -504,8 +506,11 @@ a, button, input, select, textarea, .filter-btn, .auth-tab {
   align-items: stretch;
   justify-content: space-around;
   gap: 0;
+  /* Default none; ui.js may set translate3d to pin to visual viewport. */
   transform: none;
   transition: none;
+  margin: 0;
+  isolation: isolate;
 }
 
 /* iOS PWA: hide the tab bar while the keyboard is open so it cannot
@@ -4561,3 +4566,52 @@ html.pwa-standalone .tab-bar {
   font-size: 1rem; padding: .7rem 1.1rem; background: rgba(0,0,0,.75);
 }
 .spot-reel-open { z-index: 5; }
+
+/* ─── Auth resolving (OAuth / session bootstrap) ─── */
+.auth-resolving {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  min-height: 12rem;
+  padding: 2rem 1rem;
+  text-align: center;
+  color: var(--text-muted);
+}
+.auth-resolving[hidden] { display: none !important; }
+.auth-resolving-spinner {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  animation: auth-spin 0.75s linear infinite;
+}
+.auth-resolving p {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--text);
+}
+@keyframes auth-spin {
+  to { transform: rotate(360deg); }
+}
+.auth-card.is-resolving #authWelcome,
+.auth-card.is-resolving #authMain,
+.auth-card.is-resolving #forgotPanel,
+.auth-card.is-resolving #recoveryPanel {
+  display: none !important;
+}
+
+html.auth-boot-resolving .auth-card #authWelcome,
+html.auth-boot-resolving .auth-card #authMain,
+html.auth-boot-resolving .auth-card #forgotPanel,
+html.auth-boot-resolving .auth-card #recoveryPanel {
+  display: none !important;
+}
+html.auth-boot-resolving .auth-card #authResolving {
+  display: flex !important;
+}
+
+

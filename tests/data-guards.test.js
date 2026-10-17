@@ -7,6 +7,7 @@ import {
   fitWithin, videoErrorKind, shouldReloadForVersion, clearWebmAlphaFlag,
   isUnshippedLocalVideo, isWebmUrl, repairedWebmBytes,
   classifySignUpResult, isAlreadyRegisteredAuthError,
+  isAuthCallbackUrl, isSoftKeyboardOpen, visualViewportBottomShift,
 } from '../js/data-guards.js';
 
 const all = [
@@ -204,3 +205,27 @@ describe('email signup classification (bug: signup flipped to login / wrong-pass
     expect(isAlreadyRegisteredAuthError({ message: 'Invalid login credentials' })).toBe(false);
   });
 });
+
+describe('OAuth return + tab bar chrome guards (v1.0.27)', () => {
+  it('isAuthCallbackUrl detects PKCE code, hash tokens, and recovery type', () => {
+    expect(isAuthCallbackUrl('?code=abc', '')).toBe(true);
+    expect(isAuthCallbackUrl('', '#access_token=x&refresh_token=y')).toBe(true);
+    expect(isAuthCallbackUrl('?type=recovery', '')).toBe(true);
+    expect(isAuthCallbackUrl('?mode=signup', '')).toBe(false);
+    expect(isAuthCallbackUrl('', '')).toBe(false);
+  });
+
+  it('isSoftKeyboardOpen requires a focused field (overlap alone is iOS chrome)', () => {
+    expect(isSoftKeyboardOpen({ focused: false, overlapPx: 200 })).toBe(false);
+    expect(isSoftKeyboardOpen({ focused: true, overlapPx: 20 })).toBe(false);
+    expect(isSoftKeyboardOpen({ focused: true, overlapPx: 80 })).toBe(true);
+  });
+
+  it('visualViewportBottomShift only shifts when visual viewport is inset', () => {
+    expect(visualViewportBottomShift(800, 800, 0)).toBe(0);
+    expect(visualViewportBottomShift(800, 700, 0)).toBe(100);
+    expect(visualViewportBottomShift(800, 700, 50)).toBe(50);
+    expect(visualViewportBottomShift(800, 850, 0)).toBe(0);
+  });
+});
+
